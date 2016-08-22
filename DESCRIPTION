@@ -8,5 +8,9 @@ Description: Transformations between different types/classes of data, and other 
 License: GPL-3
 LazyData: TRUE
 Suggests:
+    flipExampleData,
     testthat
+Imports:
+    stats,
+    flipU
 RoxygenNote: 5.0.1

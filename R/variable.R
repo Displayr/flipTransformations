@@ -3,6 +3,7 @@
 #' representing one of the levels from the factor variable.
 #' @param variable The factor variable to convert.
 #' @param variable.name The name of the input variable.
+#' @importFrom stats model.matrix
 #' @export
 FactorToIndicators <- function(variable, variable.name = deparse(substitute(variable)))
 {
@@ -14,6 +15,7 @@ FactorToIndicators <- function(variable, variable.name = deparse(substitute(vari
 #' \code{OrderedToNumeric}
 #' @description Convert an ordered factor to a numeric vector.
 #' @param x An ordered factor.
+#' @importFrom stats model.matrix
 #' @export
 OrderedToNumeric <- function(x)
 {
@@ -21,7 +23,7 @@ OrderedToNumeric <- function(x)
     {
         return(unclass(x))
     }
-    return(stats::model.matrix( ~ x - 1))
+    return(model.matrix( ~ x - 1))
 }
 
 #' \code{UnclassIfNecessary}
@@ -62,12 +64,10 @@ FactorToNumeric <- function(x, variable.name = deparse(substitute(x)))
 
 #' \code{DichotomizeFactor} Converts a list of variable or data frames into a
 #' data.frame.
-#'
 #' @param variable A variable in a DataSet or data.frame.
 #' @param cutoff The cutoff point to split the variable into.
 #' @param warning If TRUE, raise a warning showing the new levels.
-#' @param variable.name An alternate name to show instead of the deparsed
-#'   variable name.
+#' @param variable.name An alternate name to show instead of the deparsed variable name.
 #' @export
 DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.name = deparse(substitute(variable))) {
     label <- attr(variable, "label")
@@ -92,7 +92,11 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.
 }
 
 
-
+#' \code{CreatingBinaryDependentVariableIfNecessary}
+#' @description Dichotomizes the dependent variable in a data.frame if not already dichotomized.
+#' @param formula A formula.
+#' @param data A data.frame
+#' @importFrom flipU OutcomeName
 #' @export
 CreatingBinaryDependentVariableIfNecessary <- function(formula, data)
 {
@@ -101,13 +105,17 @@ CreatingBinaryDependentVariableIfNecessary <- function(formula, data)
     data
 }
 
+#' \code{CreatingBinaryVariableIfNecessary}
+#' @description Dichotomizes a variable.
+#' @param data A data.frame
+#' @param variable.name The name of the variable in the data.frame.
 #' @export
 CreatingBinaryVariableIfNecessary <- function(data, variable.name)
 {
     variable <- data[[variable.name]]
     n.unique <- length(unique(variable))
     if (n.unique < 2)
-        stopTooFewForBinary()
+        warning("The Outcome variable needs to contain two or more categories. It does not.")
     else
     {
         if (n.unique > 2) {

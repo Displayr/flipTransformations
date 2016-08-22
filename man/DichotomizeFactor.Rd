@@ -15,8 +15,7 @@ DichotomizeFactor(variable, cutoff = 0.5, warning = FALSE,
 
 \item{warning}{If TRUE, raise a warning showing the new levels.}
 
-\item{variable.name}{An alternate name to show instead of the deparsed
-variable name.}
+\item{variable.name}{An alternate name to show instead of the deparsed variable name.}
 }
 \description{
 \code{DichotomizeFactor} Converts a list of variable or data frames into a
