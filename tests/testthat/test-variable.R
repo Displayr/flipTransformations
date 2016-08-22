@@ -1,4 +1,4 @@
-context("Linear regression")
+context("Variables")
 data(bank, package = "flipExampleData")
 
 test_that("Dichotomizing works",
@@ -7,7 +7,8 @@ test_that("Dichotomizing works",
     expect_true(all(table(DichotomizeFactor(bank$Overall)) == c(265, 497)))
     attr(bank$Fees, "label") <- "Bank Fees"
     expect_equal(attr(DichotomizeFactor(bank$Fees), "label"), "Bank Fees >= 3")
-    attr(bank$Fees, "label") <- "Bank Fees"
     expect_equal(attr(DichotomizeFactor(bank$Overall), "label"), "bank$Overall >= 4")
+    expect_equal(attr(suppressWarnings(CreatingBinaryVariableIfNecessary(bank, "Fees")), "label"), "Bank Fees >= 3")
+
 })
 
