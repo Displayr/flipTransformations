@@ -70,6 +70,9 @@ FactorToNumeric <- function(x, variable.name = deparse(substitute(x)))
 #'   variable name.
 #' @export
 DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.name = deparse(substitute(variable))) {
+    label <- attr(variable, "label")
+    if (is.null(label))
+        label <- variable.name
     if (!is.factor(variable))
         variable <- factor(variable)
     if (nlevels(variable) == 1)
@@ -81,10 +84,10 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.
     if (cut.point == 1)
         stop(paste(variable.name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
     new.factor <- factor(unclass(variable) >= cut.point)
-    levels(new.factor) <- paste0(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
+    levels(new.factor) <- paste(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
         warning(paste(variable.name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))
-    attr(new.factor, "label") <- levels(new.factor)[2]
+    attr(new.factor, "label") <- paste(label, levels(new.factor)[2])
     new.factor
 }
 
