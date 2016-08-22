@@ -84,6 +84,7 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.
     levels(new.factor) <- paste0(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
         warning(paste(variable.name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))
+    attr(new.factor, "label") <- levels(new.factor)[2]
     new.factor
 }
 
