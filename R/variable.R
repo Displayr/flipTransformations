@@ -100,7 +100,7 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.
 #' @export
 CreatingBinaryDependentVariableIfNecessary <- function(formula, data)
 {
-    outcome.name <- flipU::OutcomeName(formula)
+    outcome.name <- OutcomeName(formula)
     data[, outcome.name] <- CreatingBinaryVariableIfNecessary(data, outcome.name)
     data
 }
