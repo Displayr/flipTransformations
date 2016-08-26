@@ -4,12 +4,12 @@
 \alias{CreatingBinaryVariableIfNecessary}
 \title{\code{CreatingBinaryVariableIfNecessary}}
 \usage{
-CreatingBinaryVariableIfNecessary(data, variable.name)
+CreatingBinaryVariableIfNecessary(data, name)
 }
 \arguments{
 \item{data}{A data.frame}
 
-\item{variable.name}{The name of the variable in the data.frame.}
+\item{name}{The name of the variable in the data.frame.}
 }
 \description{
 Dichotomizes a variable.

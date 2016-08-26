@@ -1,14 +1,13 @@
-#' \code{FactorsToIndicators}
-#' @description Convert a factor variable to a matrix whose columns are binary variables
-#' representing one of the levels from the factor variable.
-#' @param variable The factor variable to convert.
-#' @param variable.name The name of the input variable.
+
+#' \code{Unclass}
+#' @description Unclasses, and removes the levels attribute.
+#' @param x An ordered factor.
 #' @importFrom stats model.matrix
 #' @export
-FactorToIndicators <- function(variable, variable.name = deparse(substitute(variable)))
+Unclass <- function(x)
 {
-    result <- stats::model.matrix( ~ variable - 1)
-    colnames(result) <- paste0(variable.name, ":", levels(variable))
+    result <- unclass(x)
+    attr(result, "levels") <- NULL
     result
 }
 
@@ -19,11 +18,11 @@ FactorToIndicators <- function(variable, variable.name = deparse(substitute(vari
 #' @export
 OrderedToNumeric <- function(x)
 {
-    if (is.ordered(x))
-    {
-        return(unclass(x))
-    }
-    return(model.matrix( ~ x - 1))
+    # if (is.ordered(x))
+    # {
+        return(Unclass(x))
+    #}
+    # return(model.matrix( ~ x - 1))
 }
 
 #' \code{UnclassIfNecessary}
@@ -34,7 +33,7 @@ OrderedToNumeric <- function(x)
 UnclassIfNecessary <- function(x)
 {
     if(is.factor(x))
-        return(unclass(x));
+        return(Unclass(x));
     return(x);
 }
 
@@ -42,15 +41,15 @@ UnclassIfNecessary <- function(x)
 #' @description Convert a factor variable to a numeric vector (when the factor is ordered),
 #' or a matrix of indicator variables (when the factor is not ordered).
 #' @param x A factor or ordered factor.
-#' @param variable.name The name of the variable.
+#' @param binary Returns the factor as binary variables.
+#' @param name The name of the variable.
+#' @importFrom flipFormat RemoveParentName
 #' @export
-FactorToNumeric <- function(x, variable.name = deparse(substitute(x)))
+FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
 {
-    if (is.ordered(x))
-    {
+    if (!binary)#(is.ordered(x))
         return(OrderedToNumeric(x))
-    }
-    indicators <- FactorToIndicators(x, variable.name)
+    indicators <- FactorToIndicators(x, name)
     if (nrow(indicators) < length(x))
     {
         new.indicators <- matrix(NA, length(x), ncol(indicators))
@@ -62,17 +61,33 @@ FactorToNumeric <- function(x, variable.name = deparse(substitute(x)))
     return(indicators)
 }
 
+#' \code{FactorsToIndicators}
+#' @description Convert a factor variable to a matrix whose columns are binary variables
+#' representing one of the levels from the factor variable.
+#' @param variable The factor variable to convert.
+#' @param name The name of the input variable.
+#' @importFrom stats model.matrix
+#' @importFrom flipFormat RemoveParentName
+#' @export
+FactorToIndicators <- function(variable, name = RemoveParentName(deparse(substitute(variable))))
+{
+    result <- stats::model.matrix( ~ variable - 1)
+    colnames(result) <- paste0(name, ":", levels(variable))
+    result
+}
+
 #' \code{DichotomizeFactor} Converts a list of variable or data frames into a
 #' data.frame.
 #' @param variable A variable in a DataSet or data.frame.
 #' @param cutoff The cutoff point to split the variable into.
 #' @param warning If TRUE, raise a warning showing the new levels.
-#' @param variable.name An alternate name to show instead of the deparsed variable name.
+#' @param name An alternate name to show instead of the deparsed variable name.
+#' @importFrom flipFormat RemoveParentName
 #' @export
-DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.name = deparse(substitute(variable))) {
+DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = RemoveParentName(deparse(substitute(variable)))) {
     label <- attr(variable, "label")
     if (is.null(label))
-        label <- variable.name
+        label <- name
     if (!is.factor(variable))
         variable <- factor(variable)
     if (nlevels(variable) == 1)
@@ -82,11 +97,11 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, variable.
     cumulative.probs <- cumsum(prop.table(table(variable)))
     cut.point <- match(TRUE, cumulative.probs > cutoff)
     if (cut.point == 1)
-        stop(paste(variable.name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
-    new.factor <- factor(unclass(variable) >= cut.point)
+        stop(paste(name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
+    new.factor <- factor(Unclass(variable) >= cut.point)
     levels(new.factor) <- paste(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
-        warning(paste(variable.name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))
+        warning(paste(name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))
     attr(new.factor, "label") <- paste(label, levels(new.factor)[2])
     new.factor
 }
@@ -108,11 +123,11 @@ CreatingBinaryDependentVariableIfNecessary <- function(formula, data)
 #' \code{CreatingBinaryVariableIfNecessary}
 #' @description Dichotomizes a variable.
 #' @param data A data.frame
-#' @param variable.name The name of the variable in the data.frame.
+#' @param name The name of the variable in the data.frame.
 #' @export
-CreatingBinaryVariableIfNecessary <- function(data, variable.name)
+CreatingBinaryVariableIfNecessary <- function(data, name)
 {
-    variable <- data[[variable.name]]
+    variable <- data[[name]]
     n.unique <- length(unique(variable))
     if (n.unique < 2)
         warning("The Outcome variable needs to contain two or more categories. It does not.")
@@ -126,7 +141,7 @@ CreatingBinaryVariableIfNecessary <- function(data, variable.name)
                 attr(variable, "label") <- label
             }
             if (nlevels(variable) > 2)
-                variable <- DichotomizeFactor(variable, warning = TRUE, variable.name = variable.name)
+                variable <- DichotomizeFactor(variable, warning = TRUE, name = name)
         }
     }
     variable

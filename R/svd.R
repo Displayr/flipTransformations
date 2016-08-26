@@ -4,7 +4,7 @@
 #' @param weights Frequency Weights.
 #' @param nu the number of left singular vectors to be computed. This must between 0 and n = nrow(x).
 #' @export
-WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p)) {
+WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p)) {
   n <-nrow(x)
   p <- ncol(x)
   if(!is.matrix(x))
@@ -13,8 +13,8 @@ WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p)) {
   d <- sqrt(x.eigen$values)
   v <- x.eigen$vectors
   if (nu == 0L)
-    return(list(d = d, v = v))
+    return(list(d = d[1:nv], v = v[, 1:nv]))
   u <- t(solve(sweep(v, 2, d, "*"), t(x)))
-  list(d = d, u = u[,1:nu], v = v)
+  list(d = d[1:max(nu, nv)], u = u[, 1:nu], v = v[, 1:nv])
 }
 

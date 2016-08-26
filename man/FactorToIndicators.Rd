@@ -4,12 +4,13 @@
 \alias{FactorToIndicators}
 \title{\code{FactorsToIndicators}}
 \usage{
-FactorToIndicators(variable, variable.name = deparse(substitute(variable)))
+FactorToIndicators(variable,
+  name = RemoveParentName(deparse(substitute(variable))))
 }
 \arguments{
 \item{variable}{The factor variable to convert.}
 
-\item{variable.name}{The name of the input variable.}
+\item{name}{The name of the input variable.}
 }
 \description{
 Convert a factor variable to a matrix whose columns are binary variables

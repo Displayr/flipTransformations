@@ -1,4 +1,4 @@
-#' Adjust data to reflect weights
+#' \code{AdjustDataToReflectWeights}
 #'
 #' Creates a new \code{\link{data.frame}} to reflect weights.
 #'
