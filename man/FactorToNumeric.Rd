@@ -4,12 +4,15 @@
 \alias{FactorToNumeric}
 \title{\code{FactorToNumeric}}
 \usage{
-FactorToNumeric(x, variable.name = deparse(substitute(x)))
+FactorToNumeric(x, binary = TRUE,
+  name = RemoveParentName(deparse(substitute(x))))
 }
 \arguments{
 \item{x}{A factor or ordered factor.}
 
-\item{variable.name}{The name of the variable.}
+\item{binary}{Returns the factor as binary variables.}
+
+\item{name}{The name of the variable.}
 }
 \description{
 Convert a factor variable to a numeric vector (when the factor is ordered),
