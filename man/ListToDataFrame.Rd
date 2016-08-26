@@ -4,11 +4,14 @@
 \alias{ListToDataFrame}
 \title{\code{ListToDataFrame}}
 \usage{
-ListToDataFrame(list.of.variables, coerce.to.numeric = FALSE)
+ListToDataFrame(list.of.variables, binary = TRUE)
 }
 \arguments{
 \item{list.of.variables}{A list containing the variables to combine. The
 elements of the list should be of class numeric, factor, or ordered factor.}
+
+\item{binary}{If \code{TRUE}, unordered factors are represented as dummy variables.
+Otherwise, they are represented as sequential integers.}
 
 \item{coerce.to.numeric}{A boolean value specifying whether or not factor
 variables should be coerced to numeric.}
