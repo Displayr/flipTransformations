@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataframe.R
 \name{AdjustDataToReflectWeights}
 \alias{AdjustDataToReflectWeights}
-\title{Adjust data to reflect weights}
+\title{\code{AdjustDataToReflectWeights}}
 \usage{
 AdjustDataToReflectWeights(data, weights, seed = 123)
 }
