@@ -5,7 +5,7 @@
 \title{Weighted Singular Value Decomposition
 \code{WeightedSVD} Computes a SVD with frequency weights.}
 \usage{
-WeightedSVD(x, weights = rep(1, n), nu = min(n, p))
+WeightedSVD(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p))
 }
 \arguments{
 \item{x}{A numeric or complex matrix whose SVD decomposition is to be computed. Logical matrices are coerced to numeric.}
