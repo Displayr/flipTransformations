@@ -4,8 +4,6 @@
 #'   elements of the list should be of class numeric, factor, or ordered factor.
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
-#' @param coerce.to.numeric A boolean value specifying whether or not factor
-#'   variables should be coerced to numeric.
 #' @export
 ListToDataFrame <- function(list.of.variables, binary = TRUE)
 {

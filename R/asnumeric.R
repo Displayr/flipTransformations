@@ -34,7 +34,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(
 }
 
 #' @export
-AsNumeric.data.frame <- function(x, binary = TRUE)
+AsNumeric.data.frame <- function(x, binary = TRUE, ...)
 {
     ListToDataFrame(x, binary = binary)
 }

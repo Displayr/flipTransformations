@@ -2,9 +2,11 @@
 #' \code{WeightedSVD} Computes a SVD with frequency weights.
 #' @param x A numeric or complex matrix whose SVD decomposition is to be computed. Logical matrices are coerced to numeric.
 #' @param weights Frequency Weights.
-#' @param nu the number of left singular vectors to be computed. This must between 0 and n = nrow(x).
+#' @param nu The number of left singular vectors to be computed. This must between 0 and n = nrow(x).
+#' @param nv The number of right singular vectors to be computed. This must between 0 and n = ncol(x).
 #' @export
-WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p)) {
+WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p))
+{
   n <-nrow(x)
   p <- ncol(x)
   if(!is.matrix(x))

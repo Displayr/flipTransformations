@@ -12,7 +12,9 @@ WeightedSVD(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p))
 
 \item{weights}{Frequency Weights.}
 
-\item{nu}{the number of left singular vectors to be computed. This must between 0 and n = nrow(x).}
+\item{nu}{The number of left singular vectors to be computed. This must between 0 and n = nrow(x).}
+
+\item{nv}{The number of right singular vectors to be computed. This must between 0 and n = ncol(x).}
 }
 \description{
 Weighted Singular Value Decomposition

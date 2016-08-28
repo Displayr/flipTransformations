@@ -1,5 +1,6 @@
 context("Variables")
 data(bank, package = "flipExampleData")
+data(cola, package = "flipExampleData")
 
 test_that("Dichotomizing works",
 {
@@ -11,6 +12,11 @@ test_that("Dichotomizing works",
     expect_equal(attr(suppressWarnings(CreatingBinaryVariableIfNecessary(bank, "Fees")), "label"), "Bank Fees >= 3")
     z <- suppressWarnings(CreatingBinaryDependentVariableIfNecessary(Fees ~ Overall, bank))$Fees
     expect_equal(attr(z, "label"), "Bank Fees >= 3")
-
 })
+
+test_that("Factor",
+{
+    expect_equal(attr(cola$Q2,"label"), attr(Factor(cola$Q2),"label"))
+})
+
 

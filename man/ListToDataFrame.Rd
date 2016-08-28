@@ -12,9 +12,6 @@ elements of the list should be of class numeric, factor, or ordered factor.}
 
 \item{binary}{If \code{TRUE}, unordered factors are represented as dummy variables.
 Otherwise, they are represented as sequential integers.}
-
-\item{coerce.to.numeric}{A boolean value specifying whether or not factor
-variables should be coerced to numeric.}
 }
 \description{
 Coerce a list of numeric or factor variables into a data frame.

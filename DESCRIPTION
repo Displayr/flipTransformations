@@ -11,6 +11,7 @@ Suggests:
     flipExampleData,
     testthat
 Imports:
+    flipFormat,
     stats,
     flipU
 RoxygenNote: 5.0.1
