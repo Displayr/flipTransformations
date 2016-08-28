@@ -2,9 +2,12 @@
 #' @description Converts to a factor, but retains the label attribute.
 #' @param x A vector of data, usually taking a small number of distinct values.
 #' @param ... Further arguments passed to \code{factor}.
+#' @details If the variable is already a factor, nothing is done to it.
 #' @export
 Factor <- function(x, ...)
 {
+    if (is.factor(x))
+        return(x)
     result <- factor(x, ...)
     attr(result, "label") <- attr(x, "label")
     result
