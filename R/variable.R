@@ -34,7 +34,7 @@ OrderedToNumeric <- function(x)
 {
     # if (is.ordered(x))
     # {
-        return(Unclass(x))
+    return(Unclass(x))
     #}
     # return(model.matrix( ~ x - 1))
 }
@@ -70,15 +70,15 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
         new.indicators <- matrix(NA, length(x), ncol(indicators))
         row.names <- as.numeric(dimnames(indicators)[[1]])
         colnames(new.indicators) <- colnames(indicators)
-        new.indicators[row.names, ] <- indicators
-        indicators <- new.indicators
+        new.indicators[row.names, ] <- as.matrix(indicators)
+        indicators <- as.data.frame(new.indicators)
     }
     if (remove.first)
-        return(indicators[, -1])
+        indicators <- indicators[, -1]
     return(indicators)
 }
 
-#' \code{FactorsToIndicators}
+#' \code{FactorToIndicators}
 #' @description Convert a factor variable to a matrix whose columns are binary variables
 #' representing one of the levels from the factor variable.
 #' @param variable The factor variable to convert.
@@ -90,7 +90,7 @@ FactorToIndicators <- function(variable, name = RemoveParentName(deparse(substit
 {
     result <- stats::model.matrix( ~ variable - 1)
     levs <- levels(variable)
-    colnames(result) <- paste0(name, 1:nlevels(variable))
+    colnames(result) <- paste0(name, ".", 1:nlevels(variable))
     result <- as.data.frame(result)
     label <- attr(variable, "label")
     if (!is.null(label))

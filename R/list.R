@@ -14,35 +14,7 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
         variable <- list.of.variables[[counter]]
         name <- names(list.of.variables)[counter]
         if (is.factor(variable) | is.character(variable))
-            variable <- AsNumeric(variable, binary = binary, name = name, remove.first =remove.first)
-#
-#         if (is.null(variable.name) || variable.name == "")
-#         {
-#             variable.name <- counter
-#         }
-#         transformed.variable <- AsNumeric(variables)
-#         if (is.character(variable))
-#         {
-#             stop("Variable '", variable.name,
-#                 "' is a Text variable. It needs to be converted to numeric data if to be used in cluster analysis.")
-#         }
-#         if (is.data.frame(variable))
-#         {
-#             transformed.variable <- ListToDataFrame(variable, coerce.to.numeric)
-#             colnames(transformed.variable) <- paste0(variable.name, ":", colnames(transformed.variable))
-#         }
-#         else
-#         {
-#             if (coerce.to.numeric && is.factor(variable) & !is.ordered(variable))
-#             {
-#                 transformed.variable <- FactorToNumeric(variable, variable.name)#,                 variable.name = nms[counter])
-#             }
-#             else
-#             {
-#                 transformed.variable <- variable
-#             }
-#         }
-
+            variable <- AsNumeric(variable, binary = binary, name = name, remove.first = remove.first)
         if (is.null(result))
         {
             result <- as.data.frame(variable)

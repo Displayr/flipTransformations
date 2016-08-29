@@ -10,6 +10,15 @@ X <- data.frame("a" = LETTERS[1:20],
 
 test_that("AsNumeric",
           {
+
+              Q2 <- factor(bank$Overall)
+              Q3 <- factor(bank$Fees)
+              Q4 <- factor(bank$Fees)
+              head(AsNumeric(data.frame(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE))
+              head(AsNumeric(data.frame(Q2, Q3, Q4),  binary = TRUE, remove.first = FALSE))
+              head(AsNumeric(data.frame(Q2, Q3, Q4),  binary = FALSE, remove.first = FALSE))
+
+
               AsNumeric(X$a)
               AsNumeric(X$b)
               AsNumeric(X$c)
