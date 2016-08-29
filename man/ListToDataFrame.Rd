@@ -4,7 +4,7 @@
 \alias{ListToDataFrame}
 \title{\code{ListToDataFrame}}
 \usage{
-ListToDataFrame(list.of.variables, binary = TRUE)
+ListToDataFrame(list.of.variables, binary = TRUE, remove.first = FALSE)
 }
 \arguments{
 \item{list.of.variables}{A list containing the variables to combine. The
@@ -12,6 +12,8 @@ elements of the list should be of class numeric, factor, or ordered factor.}
 
 \item{binary}{If \code{TRUE}, unordered factors are represented as dummy variables.
 Otherwise, they are represented as sequential integers.}
+
+\item{remove.first}{Remove the first binary variable.}
 }
 \description{
 Coerce a list of numeric or factor variables into a data frame.

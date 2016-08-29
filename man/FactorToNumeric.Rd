@@ -5,7 +5,7 @@
 \title{\code{FactorToNumeric}}
 \usage{
 FactorToNumeric(x, binary = TRUE,
-  name = RemoveParentName(deparse(substitute(x))))
+  name = RemoveParentName(deparse(substitute(x))), remove.first = TRUE)
 }
 \arguments{
 \item{x}{A factor or ordered factor.}
@@ -13,6 +13,8 @@ FactorToNumeric(x, binary = TRUE,
 \item{binary}{Returns the factor as binary variables.}
 
 \item{name}{The name of the variable.}
+
+\item{remove.first}{Remove the first binary variable, if a binary variable is being created.}
 }
 \description{
 Convert a factor variable to a numeric vector (when the factor is ordered),

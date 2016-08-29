@@ -13,6 +13,8 @@ test_that("AsNumeric",
               AsNumeric(X$a)
               AsNumeric(X$b)
               AsNumeric(X$c)
+              expect_equal(ncol(AsNumeric(X$d, binary = TRUE, remove.first = TRUE)) + 1,
+                           ncol(AsNumeric(X$d, binary = TRUE, remove.first = FALSE)))
               AsNumeric(X$d, binary = TRUE)
               AsNumeric(X$d, binary = FALSE)
               AsNumeric(X$e, binary = FALSE)

@@ -4,7 +4,8 @@
 \alias{AsNumeric}
 \title{\code{AsNumeric}}
 \usage{
-AsNumeric(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
+AsNumeric(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))),
+  remove.first = FALSE)
 }
 \arguments{
 \item{x}{The \code{\link{data.frame}} or \code{\link{vector}}.}
@@ -12,7 +13,10 @@ AsNumeric(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
 \item{binary}{If \code{TRUE}, unordered factors are represented as dummy variables.
 Otherwise, they are represented as sequential integers.}
 
-\item{name}{Used if \code{binary} is \code{TRUE} to construct variable names.}
+\item{name}{Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
+ignored if x is a \code{\link{data.frame}}.}
+
+\item{remove.first}{Remove the first binary variable.}
 }
 \description{
 Coerces a \code{\link{data.frame}} or \code{\link{vector}} that may contain

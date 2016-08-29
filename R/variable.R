@@ -57,9 +57,10 @@ UnclassIfNecessary <- function(x)
 #' @param x A factor or ordered factor.
 #' @param binary Returns the factor as binary variables.
 #' @param name The name of the variable.
+#' @param remove.first Remove the first binary variable, if a binary variable is being created.
 #' @importFrom flipFormat RemoveParentName
 #' @export
-FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
+FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = TRUE)
 {
     if (!binary)#(is.ordered(x))
         return(OrderedToNumeric(x))
@@ -70,8 +71,10 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
         row.names <- as.numeric(dimnames(indicators)[[1]])
         colnames(new.indicators) <- colnames(indicators)
         new.indicators[row.names, ] <- indicators
-        return(new.indicators)
+        indicators <- new.indicators
     }
+    if (remove.first)
+        return(indicators[, -1])
     return(indicators)
 }
 

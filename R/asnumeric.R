@@ -4,18 +4,20 @@
 #' @param x The \code{\link{data.frame}} or \code{\link{vector}}.
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
-#' @param name Used if \code{binary} is \code{TRUE} to construct variable names.
+#' @param name Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
+#' ignored if x is a \code{\link{data.frame}}.
+#' @param remove.first Remove the first binary variable.
 #' @details Characters are treated as factors.
 #' @importFrom flipFormat RemoveParentName
 #' @export
-AsNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
+AsNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = FALSE)
 {
     UseMethod("AsNumeric")
 }
 
 #' @importFrom flipFormat RemoveParentName
 #' @export
-AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))))
+AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = FALSE)
 {
     if (is.character(x))
         x <- factor(x)
@@ -23,7 +25,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(
         stop("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
     if (!is.factor(x))
         return(x)
-    FactorToNumeric(x, binary & !is.ordered(x), name)
+    FactorToNumeric(x, binary & !is.ordered(x), name = name, remove.first = remove.first)
     # {
     #     x <- unclass(x)
     #     attr(x, "levels") <- NULL
@@ -34,9 +36,9 @@ AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(
 }
 
 #' @export
-AsNumeric.data.frame <- function(x, binary = TRUE, ...)
+AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
-    ListToDataFrame(x, binary = binary)
+    ListToDataFrame(x, binary = binary, remove.first = remove.first)
 }
 
 

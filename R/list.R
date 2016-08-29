@@ -4,8 +4,9 @@
 #'   elements of the list should be of class numeric, factor, or ordered factor.
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
+#' @param remove.first Remove the first binary variable.
 #' @export
-ListToDataFrame <- function(list.of.variables, binary = TRUE)
+ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FALSE)
 {
     result <- NULL
     for (counter in seq(along = list.of.variables))
@@ -13,7 +14,7 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE)
         variable <- list.of.variables[[counter]]
         name <- names(list.of.variables)[counter]
         if (is.factor(variable) | is.character(variable))
-            variable <- AsNumeric(variable, binary, name)
+            variable <- AsNumeric(variable, binary = binary, name = name, remove.first =remove.first)
 #
 #         if (is.null(variable.name) || variable.name == "")
 #         {
