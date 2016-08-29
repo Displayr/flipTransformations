@@ -89,7 +89,17 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
 FactorToIndicators <- function(variable, name = RemoveParentName(deparse(substitute(variable))))
 {
     result <- stats::model.matrix( ~ variable - 1)
-    colnames(result) <- paste0(name, ":", levels(variable))
+    levs <- levels(variable)
+    colnames(result) <- paste0(name, 1:nlevels(variable))
+    result <- as.data.frame(result)
+    label <- attr(variable, "label")
+    if (!is.null(label))
+    {
+        labels <- paste0(label, ": ", levs)
+        for (i in 1:nlevels(variable))
+            if (!is.null(label))
+                attr(result[, i], "label") <- labels[i]
+    }
     result
 }
 
