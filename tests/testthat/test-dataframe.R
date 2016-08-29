@@ -24,5 +24,15 @@ test_that("Creating bootrapped sample with weights", {
     expect_warning(AdjustDataToReflectWeights(dat[rep(1:2, 50), ], runif(100)))
 })
 
+data(phone, package = "flipExampleData")
+z <- data.frame(q23a_2 = phone$q23a,
+     q23b_2 = phone$q23b,
+     q23c_2 = phone$q23c,
+     q23d_2 = phone$q23d,
+     q23e_2 = phone$q23e,
+     q23f_2 = phone$q23f)
+
+    dat <- flipTransformations::AsNumeric(z, binary = TRUE, remove.first = TRUE)
+dat[,1]
 
 

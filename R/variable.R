@@ -71,6 +71,9 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
         row.names <- as.numeric(dimnames(indicators)[[1]])
         colnames(new.indicators) <- colnames(indicators)
         new.indicators[row.names, ] <- as.matrix(indicators)
+        new.indicators <- as.data.frame(new.indicators)
+        for (i in 1:ncol(indicators))
+            attr(new.indicators[,i], "label") <- attr(indicators[,i], "label")
         indicators <- as.data.frame(new.indicators)
     }
     if (remove.first)
