@@ -2,7 +2,7 @@
 % Please edit documentation in R/variable.R
 \name{FactorToIndicators}
 \alias{FactorToIndicators}
-\title{\code{FactorsToIndicators}}
+\title{\code{FactorToIndicators}}
 \usage{
 FactorToIndicators(variable,
   name = RemoveParentName(deparse(substitute(variable))))
