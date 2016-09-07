@@ -20,3 +20,9 @@ test_that("Factor",
 })
 
 
+test_that("Ordered",
+{
+    expect_equal(attr(cola$Q2,"label"), attr(Ordered(cola$Q2),"label"))
+})
+
+

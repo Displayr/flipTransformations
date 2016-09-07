@@ -33,6 +33,18 @@ z <- data.frame(q23a_2 = phone$q23a,
      q23f_2 = phone$q23f)
 
     dat <- flipTransformations::AsNumeric(z, binary = TRUE, remove.first = TRUE)
-dat[,1]
+
+
+test_that("RemoveMissingLevelsFromFactors", {
+    data(phone, package = "flipExampleData")
+    phone <- phone[, 1:10]
+    levels(phone$q2)[9] <- "Dog"
+    phone1 <- suppressWarnings(RemoveMissingLevelsFromFactors(phone))
+    expect_equal(nlevels(phone$q2) - 2, nlevels(phone1$q2))
+    expect_equal(flipFormat::Labels(phone),flipFormat::Labels(phone1))
+    expect_equal(sapply(phone1, class),sapply(phone1, class))
+
+})
+
 
 

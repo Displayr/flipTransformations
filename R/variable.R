@@ -2,14 +2,27 @@
 #' @description Converts to a factor, but retains the label attribute.
 #' @param x A vector of data, usually taking a small number of distinct values.
 #' @param ... Further arguments passed to \code{factor}.
-#' @details If the variable is already a factor, nothing is done to it.
+#' @details If the variable is already a factor, removes any empty levels
 #' @export
 Factor <- function(x, ...)
 {
-    if (is.factor(x))
-        return(x)
     result <- factor(x, ...)
-    attr(result, "label") <- attr(x, "label")
+    for (a in c("label", "name", "question"))
+         attr(result, a) <- attr(x, a)
+    result
+}
+
+#' \code{Ordered}
+#' @description Converts to an ordered, but retains the label attribute.
+#' @param x A vector of data, usually taking a small number of distinct values.
+#' @param ... Further arguments passed to \code{factor}.
+#' @details If the variable is already a factor, nothing is done to it.
+#' @export
+Ordered <- function(x, ...)
+{
+    result <- ordered(x, ...)
+    for (a in c("label", "name", "question"))
+         attr(result, a) <- attr(x, a)
     result
 }
 

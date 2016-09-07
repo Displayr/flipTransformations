@@ -36,3 +36,20 @@ AdjustDataToReflectWeights <- function(data, weights, seed = 123)
 
     return(data[replicants, ])
 }
+
+
+#' RemoveMissingLevelsFromFactors
+#' @param data A \code{data.frame}.
+#' @export
+RemoveMissingLevelsFromFactors <- function(data)
+{
+    for (i in seq_along(data))
+    {
+        v <- data[, i]
+        if (is.ordered(v))
+            data[, i] <- Ordered(v)
+        else if (is.factor(v))
+            data[, i] <- Factor(v)
+    }
+    return(data)
+}
