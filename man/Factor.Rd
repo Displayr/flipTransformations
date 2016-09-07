@@ -15,6 +15,6 @@ Factor(x, ...)
 Converts to a factor, but retains the label attribute.
 }
 \details{
-If the variable is already a factor, nothing is done to it.
+If the variable is already a factor, removes any empty levels
 }
 
