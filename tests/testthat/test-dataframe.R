@@ -43,7 +43,6 @@ test_that("RemoveMissingLevelsFromFactors", {
     expect_equal(nlevels(phone$q2) - 2, nlevels(phone1$q2))
     expect_equal(flipFormat::Labels(phone),flipFormat::Labels(phone1))
     expect_equal(sapply(phone1, class),sapply(phone1, class))
-
 })
 
 
