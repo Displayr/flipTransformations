@@ -7,3 +7,13 @@ test_that("ListToDataFrame works as expected",
     row.names(tdf) <- as.character(row.names(tdf))
     expect_equal(ListToDataFrame(list("A" = c(1,2,3), "B" = as.factor(c("a","b","c"))), binary = TRUE), tdf)
 })
+
+test_that("QuestionListToDataFrame works as expected",
+{
+    q1 <- data.frame("A" = c(0,0,0), "B" = c(1,0,0), "C" = c(0,1,0), "NET" = c(1,1,0))
+    q2 <- 1:3
+    attr(q2, "question") <- "q2"
+    q.list <- list(q1, q2)
+    tdf <- data.frame("A" = c(0,0,0), "B" = c(1,0,0), "C" = c(0,1,0), "q2" = q2)
+    expect_equal(QuestionListToDataFrame(q.list), tdf)
+})
