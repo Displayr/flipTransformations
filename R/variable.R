@@ -190,16 +190,14 @@ CreatingBinaryVariableIfNecessary <- function(data, name)
         warning("The Outcome variable needs to contain two or more categories. It does not.")
     else
     {
-        if (n.unique > 2) {
-            if(!is.factor(variable))
-            {
-                label <- attr(variable, "label")
-                variable <- factor(variable)
-                attr(variable, "label") <- label
-            }
-            if (nlevels(variable) > 2)
-                variable <- DichotomizeFactor(variable, warning = TRUE, name = name)
+        if(!is.factor(variable))
+        {
+            label <- attr(variable, "label")
+            variable <- factor(variable)
+            attr(variable, "label") <- label
         }
+        if (nlevels(variable) > 2)
+            variable <- DichotomizeFactor(variable, warning = TRUE, name = name)
     }
     variable
 }
