@@ -192,9 +192,7 @@ CreatingBinaryVariableIfNecessary <- function(data, name)
     {
         if(!is.factor(variable))
         {
-            label <- attr(variable, "label")
-            variable <- factor(variable)
-            attr(variable, "label") <- label
+            variable <- Factor(variable)
         }
         if (nlevels(variable) > 2)
             variable <- DichotomizeFactor(variable, warning = TRUE, name = name)
