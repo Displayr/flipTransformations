@@ -64,7 +64,7 @@ test_that("Standardization", {
     expect_equal(mean1[, 2], -5:5)
     sd1 <- StandardizeData(dat, "Standard deviation of 1")
     expect_equal(unname(apply(sd1, 2, sd)), c(1, 1))
-    expect_warning(no.variation <- StandardizeData(data.frame(rep(1, 10)), "z-scores"), "no variation")
+    expect_warning(no.variation <- StandardizeData(data.frame(z = rep(1, 10)), "z-scores"), "no variation")
     expect_equal(no.variation[, 1], rep(0, 10))
 })
 

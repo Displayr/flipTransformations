@@ -61,19 +61,25 @@ RemoveMissingLevelsFromFactors <- function(data)
 #' @export
 StandardizeData <- function(data, method)
 {
+    require.variation <- method == "z-scores" ||
+                         method == "Range [-1,1]" ||
+                         method == "Range [0,1]" ||
+                         method == "Standard deviation of 1"
+
     result <- data
+    var.names.warning <- ""
     for (i in 1:ncol(result)) {
         vec <- result[, i]
         min.val <- min(vec)
         max.val <- max(vec)
-        if (max.val == min.val &&
-            (method == "z-scores" ||
-             method == "Range [-1,1]" ||
-             method == "Range [0,1]" ||
-             method == "Standard deviation of 1")) {
+        if (max.val == min.val && require.variation) {
             result[, i] <- rep(0, length(vec))
-            warning(paste("The variable", colnames(data)[i],
-                          "has been set to zero as it has no variation and cannot be standardized using the method:", method))
+            if (nchar(var.names.warning) == 0)
+                var.names.warning <- colnames(data)[i]
+            else if (nchar(var.names.warning) > 100)
+                var.names.warning <- paste0(var.names.warning, "...")
+            else
+                var.names.warning <- paste0(var.names.warning, ", ", colnames(data)[i])
         } else {
             if (method == "z-scores") {
                 result[, i] <- scale(vec)
@@ -89,13 +95,26 @@ StandardizeData <- function(data, method)
                 mean.vec <- mean(vec)
                 if (mean.vec != 0)
                     result[, i] <- vec / mean(vec)
-                else
-                    warning(paste("The variable", colnames(data)[i],
-                                 "has a mean of 0 and cannot be standardized to have a mean of 1 by scaling."))
+                else {
+                    if (nchar(var.names.warning) == 0)
+                        var.names.warning <- colnames(data)[i]
+                    else if (nchar(var.names.warning) > 100)
+                        var.names.warning <- paste0(var.names.warning, "...")
+                    else
+                        var.names.warning <- paste0(var.names.warning, ", ", colnames(data)[i])
+                }
             } else if (method == "Standard deviation of 1") {
                 result[, i] <- vec / sd(vec)
             }
         }
+    }
+    if (nchar(var.names.warning) > 0) {
+        if (require.variation)
+            warning(paste("The values for", var.names.warning,
+                          "have been set to zero as they have no variation and cannot be standardized using the method:", method))
+        else if (method == "Mean of 1")
+            warning(paste("The values for", var.names.warning,
+                          "have a mean of 0 and they cannot be standardized to have a mean of 1 by scaling."))
     }
     result
 }
