@@ -53,3 +53,49 @@ RemoveMissingLevelsFromFactors <- function(data)
     }
     return(data)
 }
+
+#' StandardizeData
+#' @param data A \code{data.frame} or \code{matrix}.
+#' @param method The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
+#'  \code{"Range [0,1]"}, \code{"Maximum magnitude of 1"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.
+#' @export
+StandardizeData <- function(data, method)
+{
+    result <- data
+    for (i in 1:ncol(result)) {
+        vec <- result[, i]
+        min.val <- min(vec)
+        max.val <- max(vec)
+        if (max.val == min.val &&
+            (method == "z-scores" ||
+             method == "Range [-1,1]" ||
+             method == "Range [0,1]" ||
+             method == "Standard deviation of 1")) {
+            result[, i] <- rep(0, length(vec))
+            warning(paste("The variable", colnames(data)[i],
+                          "has been set to zero as it has no variation and cannot be standardized using the method:", method))
+        } else {
+            if (method == "z-scores") {
+                result[, i] <- scale(vec)
+            } else if (method == "Range [-1,1]") {
+                result[, i] <- vec / (max.val - min.val)
+            } else if (method == "Range [0,1]") {
+                result[, i] <- (vec - min.val) / (max.val - min.val)
+            } else if (method == "Maximum magnitude of 1") {
+                max.mag <- max(abs(vec))
+                if (max.mag > 0)
+                    result[, i] <- vec / max(abs(vec))
+            } else if (method == "Mean of 1") {
+                mean.vec <- mean(vec)
+                if (mean.vec != 0)
+                    result[, i] <- vec / mean(vec)
+                else
+                    warning(paste("The variable", colnames(data)[i],
+                                 "has a mean of 0 and cannot be standardized to have a mean of 1 by scaling."))
+            } else if (method == "Standard deviation of 1") {
+                result[, i] <- vec / sd(vec)
+            }
+        }
+    }
+    result
+}

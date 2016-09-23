@@ -45,5 +45,26 @@ test_that("RemoveMissingLevelsFromFactors", {
     expect_equal(sapply(phone1, class),sapply(phone1, class))
 })
 
-
+dat <- data.frame(x = 0:10, y = -5:5)
+test_that("Standardization", {
+    zscore <- StandardizeData(dat, "z-scores")
+    expect_equal(unname(colMeans(zscore)), c(0, 0))
+    expect_equal(unname(apply(zscore, 2, sd)), c(1, 1))
+    range11 <- StandardizeData(dat, "Range [-1,1]")
+    expect_equal(range11[, 1], 0.1 * (0:10))
+    expect_equal(range11[, 2], 0.1 * (-5:5))
+    range01 <- StandardizeData(dat, "Range [0,1]")
+    expect_equal(range01[, 1], 0.1 * (0:10))
+    expect_equal(range01[, 2], 0.1 * (0:10))
+    max.mag <- StandardizeData(dat, "Maximum magnitude of 1")
+    expect_equal(max.mag[, 1], 0.1 * (0:10))
+    expect_equal(max.mag[, 2], 0.2 * (-5:5))
+    expect_warning(mean1 <- StandardizeData(dat, "Mean of 1"), "mean of 0")
+    expect_equal(mean1[, 1], 0.2 * (0:10))
+    expect_equal(mean1[, 2], -5:5)
+    sd1 <- StandardizeData(dat, "Standard deviation of 1")
+    expect_equal(unname(apply(sd1, 2, sd)), c(1, 1))
+    expect_warning(no.variation <- StandardizeData(data.frame(rep(1, 10)), "z-scores"), "no variation")
+    expect_equal(no.variation[, 1], rep(0, 10))
+})
 
