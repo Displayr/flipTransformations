@@ -54,12 +54,55 @@ RemoveMissingLevelsFromFactors <- function(data)
     return(data)
 }
 
+
+
 #' StandardizeData
 #' @param data A \code{data.frame} or \code{matrix}.
 #' @param method The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
 #'  \code{"Range [0,1]"}, \code{"Maximum magnitude of 1"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.
+#' @param no.variation If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.
+#' @param no.variation.value The value to assign to data where there is no variance.
+#' @importFrom stats sd
 #' @export
-StandardizeData <- function(data, method)
+StandardizeData <- function(data, method, no.variation = "warn", no.variation.value = 0)
+{
+    sd.0 <- apply(result, 2, sd) == 0
+    if (no.variation != "ignore")
+    {
+        if (any(sd.0))
+        {
+            vars <- paste("The following variables have no variation:", paste0(names(data)[which(no.variation)], collapse = ", "))
+            if (no.variation == "stop")
+                stop(vars)
+            else
+                warning(paste(vars,"Values that could not be transformed have been set to", no.variation.value))
+        }
+    }
+    result <- switch(method,
+                     "z-scores" = scale(data),
+                     "Smallest is 0" = data - apply(data, 2, min, na.rm = TRUE),
+                     "Range [0,1]" = {df <- StandardizeData(data, "Smallest is 0")
+                                      df / apply(df, 2, max, na.rm = TRUE)}
+                     "Range [-1,1]" = StandardizeData(data, "Range [0,1]") * 2 - 1)
+    if (is.na(no.variation.value) & any(sd.0))
+        result[, sd.0][!is.na(result[, sd.0])] <- no.variation.value
+
+
+    if (nchar(var.names.warning) > 0) {
+        if (require.variation)
+            warning(paste("The values for", var.names.warning,
+                          "have been set to zero as they have no variation and cannot be standardized using the method:", method))
+        else if (method == "Mean of 1")
+            warning(paste("The values for", var.names.warning,
+                          "have a mean of 0 and they cannot be standardized to have a mean of 1 by scaling."))
+    }
+    result
+
+}
+
+
+
+oldStandardizeData <- function(data, method)
 {
     require.variation <- method == "z-scores" ||
                          method == "Range [-1,1]" ||
