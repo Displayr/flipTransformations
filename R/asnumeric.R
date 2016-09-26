@@ -20,19 +20,12 @@ AsNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitu
 AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = FALSE)
 {
     if (is.character(x))
-        x <- factor(x)
+        x <- Factor(x)
     else if (!is.vector(x) & !is.factor(x))
         stop("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
     if (!is.factor(x))
         return(x)
     FactorToNumeric(x, binary & !is.ordered(x), name = name, remove.first = remove.first)
-    # {
-    #     x <- unclass(x)
-    #     attr(x, "levels") <- NULL
-    # }
-    # else if (is.factor(x))
-    #     x <- FactorToNumeric(x, name)
-    #x
 }
 
 #' @export

@@ -35,8 +35,16 @@ Unclass <- function(x)
 {
     result <- unclass(x)
     attr(result, "levels") <- NULL
+    if (is.null(attr(x, "InLoop")))
+        warning(asNumericWarning())
+    else
+        attr(result, "Unclassed") <- TRUE
     result
 }
+
+
+asNumericWarning <- function() "Data has been automatically converted from a categorical to numeric variable within R. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its Question Type)."
+
 
 #' \code{OrderedToNumeric}
 #' @description Convert an ordered factor to a numeric vector.
@@ -45,11 +53,7 @@ Unclass <- function(x)
 #' @export
 OrderedToNumeric <- function(x)
 {
-    # if (is.ordered(x))
-    # {
     return(Unclass(x))
-    #}
-    # return(model.matrix( ~ x - 1))
 }
 
 #' \code{UnclassIfNecessary}
@@ -141,7 +145,7 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = Re
     cut.point <- match(TRUE, cumulative.probs > cutoff)
     if (cut.point == 1)
         stop(paste(name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
-    new.factor <- factor(Unclass(variable) >= cut.point)
+    new.factor <- factor(suppressWarnings(Unclass(variable)) >= cut.point)
     levels(new.factor) <- paste(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
         warning(paste(name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))

@@ -9,12 +9,22 @@
 ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FALSE)
 {
     result <- NULL
+    unclassed <- FALSE
     for (counter in seq(along = list.of.variables))
     {
         variable <- list.of.variables[[counter]]
         name <- names(list.of.variables)[counter]
+        attr(variable, "InLoop") <- TRUE
         if (is.factor(variable) | is.character(variable))
+        {
             variable <- AsNumeric(variable, binary = binary, name = name, remove.first = remove.first)
+            if (!is.null(attr(variable, "Unclassed")))
+            {
+                unclassed <- TRUE
+                attr(result, "Unclassed") <- NULL
+            }
+        }
+        attr(variable, "InLoop") <- NULL
         if (is.null(result))
         {
             result <- as.data.frame(variable)
@@ -29,6 +39,8 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
             colnames(result)[ncol(result)] <- names(list.of.variables)[counter]#variable.name
         }
     }
+    if (unclassed)
+        warning(asNumericWarning())
     return (result)
 }
 

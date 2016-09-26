@@ -1,4 +1,4 @@
-context("Variables")
+context("Variable")
 data(bank, package = "flipExampleData")
 data(cola, package = "flipExampleData")
 
