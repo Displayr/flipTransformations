@@ -55,7 +55,6 @@ RemoveMissingLevelsFromFactors <- function(data)
 }
 
 
-
 #' StandardizeData
 #' @param data A \code{data.frame} or \code{matrix}.
 #' @param method The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
@@ -75,7 +74,7 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
         sd.0 <- apply(data, 2, sd) == 0
         if (no.variation != "ignore" && any(sd.0))
         {
-            vars <- paste("There is no variation in the values of:", paste0(names(data)[sd.0], collapse = ", "))
+            vars <- paste("There is no variation in the values of:", paste0(colnames(data)[sd.0], collapse = ", "))
             if (no.variation == "stop")
                 stop(vars)
             else
@@ -86,7 +85,7 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
     {
         mean.0 <- apply(data, 2, mean) == 0
         if (any(mean.0))
-            stop(paste("The values for:", paste0(names(data)[mean.0], collapse = ", "), "have a mean of 0."))
+            stop(paste("The values for:", paste0(colnames(data)[mean.0], collapse = ", "), "have a mean of 0."))
     }
     result <- switch(method,
                      "z-scores" = scale(data),
