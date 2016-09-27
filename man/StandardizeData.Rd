@@ -4,13 +4,17 @@
 \alias{StandardizeData}
 \title{StandardizeData}
 \usage{
-StandardizeData(data, method)
+StandardizeData(data, method, no.variation = "warn", no.variation.value = 0)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix}.}
 
 \item{method}{The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
-\code{"Range [0,1]"}, \code{"Maximum magnitude of 1"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.}
+\code{"Range [0,1]"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.}
+
+\item{no.variation}{If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.}
+
+\item{no.variation.value}{The value to assign to data where there is no variance.}
 }
 \description{
 StandardizeData
