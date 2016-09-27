@@ -4,7 +4,8 @@
 \alias{StandardizeData}
 \title{StandardizeData}
 \usage{
-StandardizeData(data, method, no.variation = "warn", no.variation.value = 0)
+StandardizeData(data, method, no.variation = "warn", no.variation.value = 0,
+  mean.zero = "warn")
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix}.}
@@ -14,7 +15,9 @@ StandardizeData(data, method, no.variation = "warn", no.variation.value = 0)
 
 \item{no.variation}{If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.}
 
-\item{no.variation.value}{The value to assign to data where there is no variance.}
+\item{no.variation.value}{The value to assign to data where there is no variance, if the method requires variation.}
+
+\item{mean.zero}{If the method is \code{"Mean of 1"} and the mean is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.}
 }
 \description{
 StandardizeData

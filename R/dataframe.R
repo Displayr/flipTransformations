@@ -60,10 +60,11 @@ RemoveMissingLevelsFromFactors <- function(data)
 #' @param method The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
 #'  \code{"Range [0,1]"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.
 #' @param no.variation If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.
-#' @param no.variation.value The value to assign to data where there is no variance.
+#' @param no.variation.value The value to assign to data where there is no variance, if the method requires variation.
+#' @param mean.zero If the method is \code{"Mean of 1"} and the mean is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.
 #' @importFrom stats sd
 #' @export
-StandardizeData <- function(data, method, no.variation = "warn", no.variation.value = 0)
+StandardizeData <- function(data, method, no.variation = "warn", no.variation.value = 0, mean.zero = "warn")
 {
     require.variation <- method == "z-scores" ||
                          method == "Range [-1,1]" ||
@@ -74,18 +75,24 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
         sd.0 <- apply(data, 2, sd) == 0
         if (no.variation != "ignore" && any(sd.0))
         {
-            vars <- paste("There is no variation in the values of:", paste0(colnames(data)[sd.0], collapse = ", "))
+            vars <- paste("There is no variation in the values of", collapseNames(colnames(data)[sd.0]))
             if (no.variation == "stop")
                 stop(vars)
             else
                 warning(paste0(vars, ". Values that could not be transformed have been set to ", no.variation.value))
         }
     }
-    if (method == "Mean of 1")
+    else if (method == "Mean of 1")
     {
         mean.0 <- apply(data, 2, mean) == 0
-        if (any(mean.0))
-            stop(paste("The values for:", paste0(colnames(data)[mean.0], collapse = ", "), "have a mean of 0."))
+        if (mean.zero != "ignore" && any(mean.0))
+        {
+            vars <- paste("The values for", collapseNames(colnames(data)[mean.0]), "have a mean of 0.")
+            if (mean.zero == "stop")
+                stop(vars)
+            else
+                warning(paste(vars, "They have not been standardized."))
+        }
     }
     result <- switch(method,
                      "z-scores" = scale(data),
@@ -97,5 +104,15 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
     colnames(result) <- colnames(data)
     if (require.variation && any(sd.0))
         result[, sd.0] <- no.variation.value
+    else if (method == "Mean of 1" && any(mean.0))
+        result[, mean.0] <- data[, mean.0]
     result
+}
+
+collapseNames <- function(names, max.names = 10)
+{
+    if (length(names) > max.names)
+        paste0(paste0(names[1:max.names], collapse = ", "), ", ...")
+    else
+        paste0(names, collapse = ", ")
 }
