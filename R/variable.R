@@ -30,21 +30,38 @@ Ordered <- function(x, ...)
 #' @description Unclasses, and removes the levels attribute.
 #' @param x An ordered factor.
 #' @importFrom stats model.matrix
+#' @param warn Show warning.
+#' @importFrom flipFormat Labels
 #' @export
-Unclass <- function(x)
+Unclass <- function(x, warn = TRUE)
 {
     result <- unclass(x)
     attr(result, "levels") <- NULL
-    if (is.null(attr(x, "InLoop")))
-        warning(asNumericWarning())
+    if (warn & is.null(attr(x, "InLoop")))
+        warning(asNumericWarning(Labels(x)))
     else
-        attr(result, "Unclassed") <- TRUE
+        attr(result, "Unclassed") <- Labels(x)
     result
 }
 
+#' \code{UnclassIfNecessary}
+#' @description Unclasses a variable if it is a factor. Otherwise, returns x.
+#' @param x A vector.
+#' @param warn Show warning.
+#' @return A vector
+#' @export
+UnclassIfNecessary <- function(x, warn = TRUE)
+{
+    if(is.factor(x))
+        return(Unclass(x, warn));
+    return(x);
+}
 
-asNumericWarning <- function() "Data has been automatically converted from a categorical to numeric variable within R. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its Question Type)."
-
+asNumericWarning <- function(variables)
+{
+    paste("Data has been automatically converted from a categorical to numeric variable within R. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its Question Type): ",
+    paste0(variables, collapse = ", "))
+}
 
 #' \code{OrderedToNumeric}
 #' @description Convert an ordered factor to a numeric vector.
@@ -56,17 +73,6 @@ OrderedToNumeric <- function(x)
     return(Unclass(x))
 }
 
-#' \code{UnclassIfNecessary}
-#' @description Unclasses a variable if it is a factor. Otherwise, returns x.
-#' @param x A vector.
-#' @return A vector
-#' @export
-UnclassIfNecessary <- function(x)
-{
-    if(is.factor(x))
-        return(Unclass(x));
-    return(x);
-}
 
 #' \code{FactorToNumeric}
 #' @description Convert a factor variable to a numeric vector (when the factor is ordered),

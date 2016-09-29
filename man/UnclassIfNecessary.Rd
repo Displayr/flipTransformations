@@ -4,10 +4,12 @@
 \alias{UnclassIfNecessary}
 \title{\code{UnclassIfNecessary}}
 \usage{
-UnclassIfNecessary(x)
+UnclassIfNecessary(x, warn = TRUE)
 }
 \arguments{
 \item{x}{A vector.}
+
+\item{warn}{Show warning.}
 }
 \value{
 A vector

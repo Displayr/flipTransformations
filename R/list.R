@@ -9,7 +9,7 @@
 ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FALSE)
 {
     result <- NULL
-    unclassed <- FALSE
+    unclassed <- list()
     for (counter in seq(along = list.of.variables))
     {
         variable <- list.of.variables[[counter]]
@@ -18,9 +18,10 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
         if (is.factor(variable) | is.character(variable))
         {
             variable <- AsNumeric(variable, binary = binary, name = name, remove.first = remove.first)
-            if (!is.null(attr(variable, "Unclassed")))
+            uc <- attr(variable, "Unclassed")
+            if (!is.null(uc))
             {
-                unclassed <- TRUE
+                unclassed <- c(unclassed, uc)
                 attr(result, "Unclassed") <- NULL
             }
         }
@@ -39,8 +40,8 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
             colnames(result)[ncol(result)] <- names(list.of.variables)[counter]#variable.name
         }
     }
-    if (unclassed)
-        warning(asNumericWarning())
+    if (length(unclassed) > 0)
+        warning(asNumericWarning(unclassed))
     return (result)
 }
 

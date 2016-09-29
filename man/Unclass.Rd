@@ -4,10 +4,12 @@
 \alias{Unclass}
 \title{\code{Unclass}}
 \usage{
-Unclass(x)
+Unclass(x, warn = TRUE)
 }
 \arguments{
 \item{x}{An ordered factor.}
+
+\item{warn}{Show warning.}
 }
 \description{
 Unclasses, and removes the levels attribute.
