@@ -38,7 +38,7 @@ Unclass <- function(x, warn = TRUE)
     result <- unclass(x)
     attr(result, "levels") <- NULL
     if (warn & is.null(attr(x, "InLoop")))
-        warning(asNumericWarning(Labels(x)))
+        warning(asNumericWarning(Labels(x, show.name = TRUE)))
     else
         attr(result, "Unclassed") <- Labels(x)
     result
