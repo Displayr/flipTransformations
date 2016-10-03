@@ -4,8 +4,7 @@
 \alias{AsNumeric}
 \title{\code{AsNumeric}}
 \usage{
-AsNumeric(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))),
-  remove.first = FALSE)
+AsNumeric(x, binary = TRUE, name = NULL, remove.first = FALSE)
 }
 \arguments{
 \item{x}{The \code{\link{data.frame}} or \code{\link{vector}}.}

@@ -3,13 +3,12 @@
 #' @param x A vector of data, usually taking a small number of distinct values.
 #' @param ... Further arguments passed to \code{factor}.
 #' @details If the variable is already a factor, removes any empty levels
+#' @importFrom flipU CopyAttributes
 #' @export
 Factor <- function(x, ...)
 {
     result <- factor(x, ...)
-    for (a in c("label", "name", "question"))
-         attr(result, a) <- attr(x, a)
-    result
+    CopyAttributes(result, x)
 }
 
 #' \code{Ordered}
@@ -21,9 +20,7 @@ Factor <- function(x, ...)
 Ordered <- function(x, ...)
 {
     result <- ordered(x, ...)
-    for (a in c("label", "name", "question"))
-         attr(result, a) <- attr(x, a)
-    result
+    return(CopyAttributes(result, x))
 }
 
 #' \code{Unclass}
@@ -36,11 +33,13 @@ Ordered <- function(x, ...)
 Unclass <- function(x, warn = TRUE)
 {
     result <- unclass(x)
-    attr(result, "levels") <- NULL
-    if (warn & is.null(attr(x, "InLoop")))
-        warning(asNumericWarning(Labels(x, show.name = TRUE)))
-    else
-        attr(result, "Unclassed") <- Labels(x)
+    attr(result, "levels") <- NULL # As some functions get confused by levels and use as a proxy for factor.
+    in.loop <- !is.null(attr(x, "InLoop"))
+    labels <- Labels(x, show.name = TRUE)
+    if (in.loop)
+        attr(result, "Unclassed") <- labels
+    else if (warn)
+        warning(asNumericWarning(labels))
     result
 }
 
@@ -73,7 +72,6 @@ OrderedToNumeric <- function(x)
     return(Unclass(x))
 }
 
-
 #' \code{FactorToNumeric}
 #' @description Convert a factor variable to a numeric vector (when the factor is ordered),
 #' or a matrix of indicator variables (when the factor is not ordered).
@@ -82,11 +80,14 @@ OrderedToNumeric <- function(x)
 #' @param name The name of the variable.
 #' @param remove.first Remove the first binary variable, if a binary variable is being created.
 #' @importFrom flipFormat RemoveParentName
+#' @importFrom flipU CopyAttributes
 #' @export
-FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = TRUE)
+FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
 {
     if (!binary)#(is.ordered(x))
         return(OrderedToNumeric(x))
+    if (is.null(name))
+        name = RemoveParentName(Name(x))
     indicators <- FactorToIndicators(x, name)
     if (nrow(indicators) < length(x))
     {
@@ -95,9 +96,7 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
         colnames(new.indicators) <- colnames(indicators)
         new.indicators[row.names, ] <- as.matrix(indicators)
         new.indicators <- as.data.frame(new.indicators)
-        for (i in 1:ncol(indicators))
-            attr(new.indicators[,i], "label") <- attr(indicators[,i], "label")
-        indicators <- as.data.frame(new.indicators)
+        indicators <- CopyAttributes(new.indicators, indicators)
     }
     if (remove.first)
         indicators <- indicators[, -1]
@@ -110,15 +109,17 @@ FactorToNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(su
 #' @param variable The factor variable to convert.
 #' @param name The name of the input variable.
 #' @importFrom stats model.matrix
-#' @importFrom flipFormat RemoveParentName
+#' @importFrom flipFormat RemoveParentName Names
 #' @export
-FactorToIndicators <- function(variable, name = RemoveParentName(deparse(substitute(variable))))
+FactorToIndicators <- function(variable, name = NULL)
 {
+    if (is.null(name))
+        name = Names(variable)
     result <- stats::model.matrix( ~ variable - 1)
     levs <- levels(variable)
     colnames(result) <- paste0(name, ".", 1:nlevels(variable))
     result <- as.data.frame(result)
-    label <- attr(variable, "label")
+    label <- Labels(variable)
     if (!is.null(label))
     {
         labels <- paste0(label, ": ", levs)

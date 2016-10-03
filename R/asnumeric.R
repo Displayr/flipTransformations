@@ -10,15 +10,17 @@
 #' @details Characters are treated as factors.
 #' @importFrom flipFormat RemoveParentName
 #' @export
-AsNumeric <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = FALSE)
+AsNumeric <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
     UseMethod("AsNumeric")
 }
 
-#' @importFrom flipFormat RemoveParentName
+#' @importFrom flipFormat RemoveParentName Names
 #' @export
-AsNumeric.default <- function(x, binary = TRUE, name = RemoveParentName(deparse(substitute(x))), remove.first = FALSE)
+AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
+    if (is.null(name))
+        name <- RemoveParentName(Names(x))
     if (is.character(x))
         x <- Factor(x)
     else if (!is.vector(x) & !is.factor(x))

@@ -10,14 +10,16 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
 {
     result <- NULL
     unclassed <- list()
+    nms <- names(list.of.variables)
     for (counter in seq(along = list.of.variables))
     {
         variable <- list.of.variables[[counter]]
-        name <- names(list.of.variables)[counter]
+        if (is.null(attr(variable, "name")))
+            attr(variable, "name") <- nms[counter]
         attr(variable, "InLoop") <- TRUE
         if (is.factor(variable) | is.character(variable))
         {
-            variable <- AsNumeric(variable, binary = binary, name = name, remove.first = remove.first)
+            variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"), remove.first = remove.first)
             uc <- attr(variable, "Unclassed")
             if (!is.null(uc))
             {

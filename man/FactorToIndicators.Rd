@@ -4,8 +4,7 @@
 \alias{FactorToIndicators}
 \title{\code{FactorToIndicators}}
 \usage{
-FactorToIndicators(variable,
-  name = RemoveParentName(deparse(substitute(variable))))
+FactorToIndicators(variable, name = NULL)
 }
 \arguments{
 \item{variable}{The factor variable to convert.}

@@ -4,8 +4,7 @@
 \alias{FactorToNumeric}
 \title{\code{FactorToNumeric}}
 \usage{
-FactorToNumeric(x, binary = TRUE,
-  name = RemoveParentName(deparse(substitute(x))), remove.first = TRUE)
+FactorToNumeric(x, binary = TRUE, name = NULL, remove.first = TRUE)
 }
 \arguments{
 \item{x}{A factor or ordered factor.}
