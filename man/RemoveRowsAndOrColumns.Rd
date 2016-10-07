@@ -10,9 +10,9 @@ RemoveRowsAndOrColumns(x, row.names.to.remove = c("NET", "Total", "SUM"),
 \arguments{
 \item{x}{The data that is being analyzed}
 
-\item{row.names.to.remove}{A vector of the row labels to remove.}
+\item{row.names.to.remove}{A vector or comma-separated string containing the row labels to remove, if row names are defined. Trailing spaces are removed and lower/upper case is ignored}
 
-\item{column.names.to.remove}{A vector of the column labels to remove.}
+\item{column.names.to.remove}{A vector or comma-separated string containing the column labels to remove, if column names are defined}
 }
 \description{
 Removes rows or columns from the table.
