@@ -5,7 +5,7 @@
 \title{\code{RemoveRowsAndOrColumns}}
 \usage{
 RemoveRowsAndOrColumns(x, row.names.to.remove = c("NET", "Total", "SUM"),
-  column.names.to.remove = c("NET", "Total", "SUM"))
+  column.names.to.remove = c("NET", "Total", "SUM"), split = ",")
 }
 \arguments{
 \item{x}{The data that is being analyzed}
@@ -13,6 +13,8 @@ RemoveRowsAndOrColumns(x, row.names.to.remove = c("NET", "Total", "SUM"),
 \item{row.names.to.remove}{A vector or comma-separated string containing the row labels to remove, if row names are defined. Trailing spaces are removed and lower/upper case is ignored}
 
 \item{column.names.to.remove}{A vector or comma-separated string containing the column labels to remove, if column names are defined}
+
+\item{split}{delimiter to split string on}
 }
 \description{
 Removes rows or columns from the table.
