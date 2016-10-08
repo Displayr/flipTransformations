@@ -4,7 +4,7 @@
 #'
 #' @param data A \code{\link{data.frame}}.
 #' @param weights The sampling or replication weights.
-#' @param seed The seed used in random number generation.
+#' @param seed The seed used in random number generation. If \code{NULL}, the seed is not set.
 #' @details In situations where an algorithm does not accomodate weights, this
 #' function modifies the \code{\link{data.frame}} by either: (A) stretching it
 #' out, where the the weights are integers, or (B) resampling to create a new
