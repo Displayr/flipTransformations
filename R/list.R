@@ -60,7 +60,7 @@ QuestionListToDataFrame <- function(list.of.questions, names.to.remove = c("NET"
         q <- list.of.questions[[c]]
         df <- if (is.data.frame(q))
         {
-            question.df <- q[, !(names(q) %in% names.to.remove)]
+            question.df <- q[, !(tolower(names(q)) %in% tolower(names.to.remove))]
             question.df
         }
         else # Single variable questions
