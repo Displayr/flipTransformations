@@ -79,7 +79,7 @@ OrderedToNumeric <- function(x)
 #' @param binary Returns the factor as binary variables.
 #' @param name The name of the variable.
 #' @param remove.first Remove the first binary variable, if a binary variable is being created.
-#' @importFrom flipFormat RemoveParentName
+#' @importFrom flipFormat RemoveParentName Names
 #' @importFrom flipU CopyAttributes
 #' @export
 FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
@@ -87,7 +87,7 @@ FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
     if (!binary)#(is.ordered(x))
         return(OrderedToNumeric(x))
     if (is.null(name))
-        name = RemoveParentName(Name(x))
+        name = RemoveParentName(Names(x))
     indicators <- FactorToIndicators(x, name)
     if (nrow(indicators) < length(x))
     {

@@ -10,16 +10,25 @@ StandardizeData(data, method, no.variation = "warn", no.variation.value = 0,
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix}.}
 
-\item{method}{The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
-\code{"Range [0,1]"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.}
+\item{method}{The standardization method. Takes values \code{"z-scores"},
+\code{"Mean centered"},\code{"Range [-1,1]"}, \code{"Range [0,1]"},
+and \code{"Standard deviation of 1"}.}
 
-\item{no.variation}{If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.}
+\item{no.variation}{If \code{"ignore"}, the absence of variation is
+ignored. Other options are \code{"warn"} and \code{"stop"}.}
 
-\item{no.variation.value}{The value to assign to data where there is no variance, if the method requires variation.}
+\item{no.variation.value}{The value to assign to data where there
+is no variance, if the method requires variation.}
 
-\item{mean.zero}{If the method is \code{"Mean of 1"} and the mean is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.}
+\item{mean.zero}{If the method is \code{"Mean of 1"} and the mean
+is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.}
 }
 \description{
 StandardizeData
+}
+\details{
+Mean of 1 multiples by a constant to set the mean to 1,
+whereas \code{"Mean centered"} subtracts a constant such that each
+variable has a mean of 0.
 }
 

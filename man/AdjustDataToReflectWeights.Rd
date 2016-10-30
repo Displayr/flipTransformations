@@ -11,7 +11,7 @@ AdjustDataToReflectWeights(data, weights, seed = 123)
 
 \item{weights}{The sampling or replication weights.}
 
-\item{seed}{The seed used in random number generation.}
+\item{seed}{The seed used in random number generation. If \code{NULL}, the seed is not set.}
 }
 \description{
 Creates a new \code{\link{data.frame}} to reflect weights.

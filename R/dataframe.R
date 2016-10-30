@@ -56,12 +56,20 @@ RemoveMissingLevelsFromFactors <- function(data)
 
 
 #' StandardizeData
+#'
 #' @param data A \code{data.frame} or \code{matrix}.
-#' @param method The standardization method. Takes values \code{"z-scores"}, \code{"Range [-1,1]"},
-#'  \code{"Range [0,1]"}, \code{"Mean of 1"} and \code{"Standard deviation of 1"}.
-#' @param no.variation If \code{"ignore"}, the absence of variation is ignored. Other options are \code{"warn"} and \code{"stop"}.
-#' @param no.variation.value The value to assign to data where there is no variance, if the method requires variation.
-#' @param mean.zero If the method is \code{"Mean of 1"} and the mean is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.
+#' @param method The standardization method. Takes values \code{"z-scores"},
+#'  \code{"Mean centered"},\code{"Range [-1,1]"}, \code{"Range [0,1]"},
+#'  and \code{"Standard deviation of 1"}.
+#' @param no.variation If \code{"ignore"}, the absence of variation is
+#' ignored. Other options are \code{"warn"} and \code{"stop"}.
+#' @param no.variation.value The value to assign to data where there
+#' is no variance, if the method requires variation.
+#' @param mean.zero If the method is \code{"Mean of 1"} and the mean
+#' is 0. Options are \code{"ignore"}, \code{"warn"} and \code{"stop"}.
+#' @details Mean of 1 multiples by a constant to set the mean to 1,
+#' whereas \code{"Mean centered"} subtracts a constant such that each
+#' variable has a mean of 0.
 #' @importFrom stats sd
 #' @export
 StandardizeData <- function(data, method, no.variation = "warn", no.variation.value = 0, mean.zero = "warn")
@@ -95,7 +103,8 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
         }
     }
     result <- switch(method,
-                     "z-scores" = scale(data),
+                     "z-scores" = scale(data, center = TRUE, scale = TRUE),
+                     "Mean centered" = scale(data, center = TRUE, scale = FALSE),
                      "Range [-1,1]" = apply(data, 2, function(x) x / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))),
                      "Range [0,1]" = apply(data, 2, function(x) (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))),
                      "Mean of 1" = apply(data, 2, function(x) x / mean(x, na.rm = TRUE)),

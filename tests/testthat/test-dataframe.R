@@ -64,5 +64,11 @@ test_that("Standardization", {
     expect_warning(no.variation <- StandardizeData(data.frame(z = rep(1, 10)), "z-scores", no.variation.value = 1), "no variation")
     expect_equal(unname(no.variation[, 1]), rep(1, 10))
     expect_error(StandardizeData(data.frame(z = rep(1, 10)), "z-scores", no.variation = "stop"), "no variation")
+
+    sd1 <- StandardizeData(dat, "Mean centered")
+    expect_equal(unname(apply(sd1, 2, mean)), c(0, 0))
+    sd1 <- StandardizeData(t(dat), "Mean centered")
+    expect_equal(unname(apply(sd1, 2, mean)), rep(0, 11))
+
 })
 
