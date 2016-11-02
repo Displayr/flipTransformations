@@ -5,6 +5,7 @@
 #' @param data A \code{\link{data.frame}}.
 #' @param weights The sampling or replication weights.
 #' @param seed The seed used in random number generation. If \code{NULL}, the seed is not set.
+#' @param silent If  \code{FALSE}, a warning is given if the weights are non-integers.
 #' @details In situations where an algorithm does not accomodate weights, this
 #' function modifies the \code{\link{data.frame}} by either: (A) stretching it
 #' out, where the the weights are integers, or (B) resampling to create a new
@@ -14,7 +15,7 @@
 #'# Inspired by Zelig, 13-11-15.
 
 #' @export
-AdjustDataToReflectWeights <- function(data, weights, seed = 123)
+AdjustDataToReflectWeights <- function(data, weights, seed = 123, silent = FALSE)
 {
     set.seed(seed)
     n <- nrow(data)
@@ -25,10 +26,11 @@ AdjustDataToReflectWeights <- function(data, weights, seed = 123)
     }
     else
     {   # Creating bootstrapped data file by resampling.
-        warning("Weights have been applied, but the algorithm you have selected ",
-            "is only able to use integer valued weights. ",
-            "A bootstrapped version of the dataset was constructed using the ",
-            "weights as sample probabilities.")
+        if (!silent)
+            warning("Weights have been applied, but the algorithm you have selected ",
+                "is only able to use integer valued weights. ",
+                "A bootstrapped version of the dataset was constructed using the ",
+                "weights as sample probabilities.")
         sum.weights <- max(round(sum(weights)), 1)
         replicants <- sample.int(n, size = sum.weights,
             replace = TRUE, prob = weights / sum.weights)

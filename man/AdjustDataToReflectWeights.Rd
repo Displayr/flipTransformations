@@ -4,7 +4,7 @@
 \alias{AdjustDataToReflectWeights}
 \title{\code{AdjustDataToReflectWeights}}
 \usage{
-AdjustDataToReflectWeights(data, weights, seed = 123)
+AdjustDataToReflectWeights(data, weights, seed = 123, silent = FALSE)
 }
 \arguments{
 \item{data}{A \code{\link{data.frame}}.}
@@ -12,6 +12,8 @@ AdjustDataToReflectWeights(data, weights, seed = 123)
 \item{weights}{The sampling or replication weights.}
 
 \item{seed}{The seed used in random number generation. If \code{NULL}, the seed is not set.}
+
+\item{silent}{If  \code{FALSE}, a warning is given if the weights are non-integers.}
 }
 \description{
 Creates a new \code{\link{data.frame}} to reflect weights.
