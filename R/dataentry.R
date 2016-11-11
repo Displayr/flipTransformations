@@ -37,18 +37,22 @@ ParseEnteredData <- function(raw.matrix)
         m
     else if (n.col == 2 && isTextNumeric(m[, 2])) # numeric vector with labels
         structure(as.numeric(m[, 2]), names = m[, 1])
-    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with labels
+    else if (m[1, 1] == "" && isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with labels
     {
         numeric.m <- matrix(as.numeric(m[2:n.row, 2:n.col, drop = FALSE]), nrow = n.row - 1)
-        colnames(numeric.m) <- m[1, 2:n.col]
-        rownames(numeric.m) <- m[2:n.col, 1]
+        if (any(m[1, 2:n.col] != ""))
+            colnames(numeric.m) <- m[1, 2:n.col]
+        if (any(m[2:n.row, 1] != ""))
+            rownames(numeric.m) <- m[2:n.row, 1]
         numeric.m
     }
     else if (isNumericMatrixWithLabelsAndTitles(m)) # numeric matrix with row and column labels and titles
     {
         numeric.m <- matrix(as.numeric(m[3:n.row, 3:n.col, drop = FALSE]), nrow = n.row - 2)
-        colnames(numeric.m) <- m[2, 3:n.col]
-        rownames(numeric.m) <- m[3:n.col, 2]
+        if (any(m[2, 3:n.col] != ""))
+            colnames(numeric.m) <- m[2, 3:n.col]
+        if (any(m[3:n.row, 2] != ""))
+            rownames(numeric.m) <- m[3:n.row, 2]
         attr(numeric.m, "row.column.names") <- c(m[3, 1], m[1, 3])
         numeric.m
     }
