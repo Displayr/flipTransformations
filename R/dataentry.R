@@ -28,12 +28,14 @@ ParseEnteredData <- function(raw.matrix)
     n.row <- nrow(m)
     n.col <- ncol(m)
 
-    if (isTextNumeric(m)) {
+    if (isTextNumeric(m))
+    {
         if (is.vector(m))
             as.numeric(m) # numeric vector, without labels
         else
             matrix(as.numeric(m), nrow = n.row) # numeric matrix, without labels
-    } else if (is.vector(m)) # character vector
+    }
+    else if (is.vector(m)) # character vector
         m
     else if (n.col == 2 && isTextNumeric(m[, 2])) # numeric vector with labels
         structure(as.numeric(m[, 2]), names = m[, 1])
@@ -73,6 +75,6 @@ isNumericMatrixWithLabelsAndTitles <- function(m)
     if (n.row > 3)
         result <- result && m[4:n.row, 1] == ""
     if (n.col > 3)
-        result <- result && m[4:n.col, 1] == ""
+        result <- result && m[1, 4:n.col] == ""
     result
 }
