@@ -13,5 +13,6 @@ Suggests:
 Imports:
     flipFormat,
     flipU,
+    lubridate,
     stats
 RoxygenNote: 5.0.1
