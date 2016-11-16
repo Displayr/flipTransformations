@@ -53,8 +53,14 @@ test_that("Parse date time",
     expect_equal(ParseDateTime("2 January 2016 12:34 AM"), dt2)
     expect_equal(ParseDateTime("2 January 2016 00:34"), dt2)
     expect_equal(ParseDateTime("2 January 2016"), dt3)
-
     expect_equal(ParseDateTime("January 2016"), dt4)
+
+    # Shortened year
+    expect_equal(ParseDateTime("2 January 16 12:34:56 AM"), dt1)
+    expect_equal(ParseDateTime("2 January 16 00:34:56"), dt1)
+    expect_equal(ParseDateTime("2 January 16 12:34 AM"), dt2)
+    expect_equal(ParseDateTime("2 January 16 00:34"), dt2)
+    expect_equal(ParseDateTime("2 January 16"), dt3)
     expect_equal(ParseDateTime("January 16"), dt4)
 
     # Vector input

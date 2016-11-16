@@ -4,10 +4,24 @@
 \alias{ParseEnteredData}
 \title{\code{ParseEnteredData}}
 \usage{
-ParseEnteredData(raw.matrix)
+ParseEnteredData(raw.matrix, warn = TRUE, want.data.frame = FALSE,
+  want.factors = TRUE, want.col.names = TRUE, want.row.names = FALSE,
+  us.format = TRUE)
 }
 \arguments{
 \item{raw.matrix}{Character matrix}
+
+\item{warn}{Whether to show warnings}
+
+\item{want.data.frame}{Whether to return a data frame instead of a matrix or vector.}
+
+\item{want.factors}{Whether a text variable should be converted to a factor in a data frame.}
+
+\item{want.col.names}{Whether to interpret the first row as column names in a data frame.}
+
+\item{want.row.names}{Whether to interpret the first col as row names in a data frame.}
+
+\item{us.format}{Whether to use the US convention when parsing dates in a data frame.}
 }
 \description{
 Takes a raw character matrix returned by dataEntry R GUI control
