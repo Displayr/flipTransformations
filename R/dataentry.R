@@ -117,6 +117,7 @@ parseAsVectorOrMatrix <- function(m, warn)
 parseAsDataFrame <- function(m, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
 {
+    m <- as.matrix(m)
     n.row <- nrow(m)
     n.col <- ncol(m)
 
