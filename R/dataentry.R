@@ -15,9 +15,9 @@ ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, w
     if (all(raw.matrix == ""))
         stop("No data has been entered.")
 
-    m <- removeEmptyRowsAndColumns(raw.matrix)
+    m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
     if (want.data.frame)
-        parseAsDataFrame(m, want.factors, want.col.names, want.row.names, us.format)
+        parseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
     else
         parseAsVectorOrMatrix(m, warn)
 }
@@ -49,7 +49,7 @@ asNumericWithPercent <- function(t)
 }
 
 # Remove first few rows and columns if they are empty
-removeEmptyRowsAndColumns <- function(m)
+removeEmptyRowsAndColumns <- function(m, drop)
 {
     start.row <- 1
     for (i in 1:nrow(m))
@@ -63,7 +63,7 @@ removeEmptyRowsAndColumns <- function(m)
                 start.col <- i + 1
             else
                 break
-    m[start.row:nrow(m), start.col:ncol(m)]
+    m[start.row:nrow(m), start.col:ncol(m), drop = drop]
 }
 
 parseAsVectorOrMatrix <- function(m, warn)
@@ -114,10 +114,9 @@ parseAsVectorOrMatrix <- function(m, warn)
     result
 }
 
-parseAsDataFrame <- function(m, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
+parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
 {
-    m <- as.matrix(m)
     n.row <- nrow(m)
     n.col <- ncol(m)
 
@@ -133,7 +132,16 @@ parseAsDataFrame <- function(m, want.factors = FALSE, want.col.names = TRUE, wan
 
     df <- data.frame(m[start.row:n.row, start.col:n.col], stringsAsFactors = FALSE)
     if (want.col.names)
-        colnames(df) <- m[1, start.col:n.col]
+    {
+        col.names <- m[1, start.col:n.col]
+        colnames(df) <- col.names
+        if (warn && any(col.names == ""))
+            warning("Some variables have been assigned blank names.")
+        else if (warn && length(unique(col.names)) < length(col.names))
+            warning("Some variables share the same name.")
+    }
+    else
+        colnames(df) <- paste0("X", 1:(n.col - start.col + 1))
     if (want.row.names)
         rownames(df) <- m[start.row:n.row, 1]
 

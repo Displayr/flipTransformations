@@ -1,25 +1,25 @@
 context("dataentry")
 
-test_that("numeric matrix without labels", {
+test_that("numeric matrix without names", {
     raw.matrix <- structure(c("", "", "", "", "", "", "", "", "1", "", "999", "-111",
                               "", "", "3", "2", "3.14", "", "", "", "", "6", "", "7"), .Dim = c(6L, 4L))
     expect_equal(ParseEnteredData(raw.matrix), structure(c(1, NA, 999, -111, 3, 2, 3.14, NA, NA, 6, NA, 7), .Dim = c(4L, 3L)))
 })
 
-test_that("numeric vector without labels", {
+test_that("numeric vector without names", {
     raw.matrix <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "1",
                               "2", "3", "", "5", "6"), .Dim = c(9L, 2L))
     expect_equal(ParseEnteredData(raw.matrix), c(1, 2, 3, NA, 5, 6))
 })
 
-test_that("numeric vector with labels", {
+test_that("numeric vector with names", {
     raw.matrix <- structure(c("one", "two", "three", "", "five", "six", "1",
                               "2", "3", "", "5", "6"), .Dim = c(6L, 2L))
     expect_equal(ParseEnteredData(raw.matrix), structure(c(1, 2, 3, NA, 5, 6), .Names = c("one", "two", "three",
                                                                                          "", "five", "six")))
 })
 
-test_that("numeric matrix with labels", {
+test_that("numeric matrix with names", {
     raw.matrix <- structure(c("", "", "", "", "", "Height", "Weight", "Strength",
                 "Australia", "8", "8", "7", "USA", "7", "10", "10", "Denmark",
                 "10", "4", "2"), .Dim = 4:5)
@@ -27,7 +27,7 @@ test_that("numeric matrix with labels", {
         c("Height", "Weight", "Strength"), c("Australia", "USA", "Denmark"))))
 })
 
-test_that("numeric matrix with labels and titles", {
+test_that("numeric matrix with names and titles", {
     raw.matrix <- structure(c("", "", "Product", "", "", "", "", "", "", "", "",
                               "", "Coke", "Diet Coke", "Coke Zero", "Pepsi", "Diet Pepsi",
                               "Pepsi Max", "None of these", "NET", "Attribute", "Feminine",
@@ -145,4 +145,26 @@ test_that("data frame no names", {
                                 X3 = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
                                                .Label = c("a", "b", "c", "f"), class = "factor")),
                            .Names = c("X1", "X2", "X3"), row.names = c(NA, -15L), class = "data.frame"))
+})
+
+test_that("data frame blank names", {
+    raw.matrix <- structure(c("V1", "2", "", "4", "2", "", "5", "", "23", "", "2",
+                              "3.14", "5", "", "6", "", "2-Feb-16", "3-Feb-16", "4-Feb-16",
+                              "5-Feb-16", "6-Feb-16", "7-Feb-16", "8-Feb-16", "9-Feb-16", "10-Feb-16",
+                              "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16", "15-Feb-16",
+                              "V3", "b", "b", "a", "f", "f", "c", "f", "c", "c", "c", "f",
+                              "f", "f", "c"), .Dim = c(15L, 3L))
+    expect_warning(ParseEnteredData(raw.matrix, want.data.frame = TRUE),
+                   "Some variables have been assigned blank names.")
+})
+
+test_that("data frame duplicate names", {
+    raw.matrix <- structure(c("V1", "2", "", "4", "2", "", "5", "", "23", "", "2",
+                              "3.14", "5", "", "6", "V1", "2-Feb-16", "3-Feb-16", "4-Feb-16",
+                              "5-Feb-16", "6-Feb-16", "7-Feb-16", "8-Feb-16", "9-Feb-16", "10-Feb-16",
+                              "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16", "15-Feb-16",
+                              "V3", "b", "b", "a", "f", "f", "c", "f", "c", "c", "c", "f",
+                              "f", "f", "c"), .Dim = c(15L, 3L))
+    expect_warning(ParseEnteredData(raw.matrix, want.data.frame = TRUE),
+                   "Some variables share the same name.")
 })
