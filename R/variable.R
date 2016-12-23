@@ -7,8 +7,16 @@
 #' @export
 Factor <- function(x, ...)
 {
-    result <- factor(x, ...)
-    CopyAttributes(result, x)
+
+    if ("QDate" %in% class(x))
+        # When the input is a Date from Q (class QDate)
+        # extract the date categories which tell us
+        # about the aggregation that has been used in Q.
+        result <- attr(x, "QDate")
+    else
+        result <- factor(x, ...)
+
+    return(CopyAttributes(result, x))
 }
 
 #' \code{Ordered}
@@ -19,7 +27,13 @@ Factor <- function(x, ...)
 #' @export
 Ordered <- function(x, ...)
 {
-    result <- ordered(x, ...)
+    if ("QDate" %in% class(x))
+        # When the input is a Date from Q (class QDate)
+        # extract the date categories which tell us
+        # about the aggregation that has been used in Q.
+        result <- attr(x, "QDate")
+    else
+        result <- ordered(x, ...)
     return(CopyAttributes(result, x))
 }
 
