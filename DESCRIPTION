@@ -15,4 +15,8 @@ Imports:
     flipU,
     lubridate,
     stats
+Remotes:
+    NumbersInternational/flipU,
+    NumbersInternational/flipFormat,
+    NumbersInternational/flipExampleData
 RoxygenNote: 5.0.1
