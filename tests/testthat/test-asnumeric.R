@@ -14,7 +14,7 @@ test_that("AsNumeric",
               Q2 <- factor(bank$Overall)
               Q3 <- factor(bank$Fees)
               Q4 <- factor(bank$Fees)
-              flipU::ExpectWarning(AsNumeric(data.frame(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE), "Question Type")
+              flipU::ExpectWarning(AsNumeric(data.frame(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE), "structure")
               head(suppressWarnings(AsNumeric(data.frame(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE)))
               head(suppressWarnings(AsNumeric(data.frame(Q2, Q3, Q4),  binary = TRUE, remove.first = FALSE)))
               head(suppressWarnings(AsNumeric(data.frame(Q2, Q3, Q4),  binary = FALSE, remove.first = FALSE)))
