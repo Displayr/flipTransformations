@@ -33,7 +33,9 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
 #' @export
 AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
-    ListToDataFrame(x, binary = binary, remove.first = remove.first)
+    new.x = ListToDataFrame(x, binary = binary, remove.first = remove.first)
+    row.names(new.x) = row.names(x)
+    new.x
 }
 
 

@@ -32,5 +32,11 @@ test_that("AsNumeric",
 
               expect_error(suppressWarnings(AsNumeric(X, binary = FALSE)), NA)
               expect_error(suppressWarnings(AsNumeric(X, binary = TRUE)), NA)
+              # Checking that names are not changed.
+              xz = data.frame(Q2, Q3, Q4)
+              rownames(xz)[2] = "dog"
+              xz1 = AsNumeric(xz,  binary = FALSE, remove.first = FALSE)
+              expect_equal(rownames(xz)[2], rownames(xz1)[2])
+
           })
 
