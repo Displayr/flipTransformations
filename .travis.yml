@@ -16,7 +16,10 @@ r_github_packages: hadley/devtools#1263
 
 script:
   - R CMD build --no-manual --no-build-vignettes --no-resave-data .
-  - R CMD check --as-cran --no-manual --no-build-vignettes *.tar.gz
+  - sudo Rscript -e 'require(devtools); install_github("NumbersInternational/flipExampleData")'
+  - R CMD check --as-cran --no-manual --no-build-vignettes --no-tests *.tar.gz
+  - sudo Rscript -e 'install.packages("roxygen2")'
+  - if [ -d tests/testthat ]; then Rscript -e 'res<-devtools::test(); df <- as.data.frame(res); pass <- sum(df$failed)==0 && all(!df$error); quit(status=1-pass, save="no")'; fi
 
 notifications:
   slack:
@@ -32,6 +35,7 @@ after_success: >-
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipStatistics/requests";
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipData/requests";
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipStandardCharts/requests";
+    curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipPictographs/requests";
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipDimensionReduction/requests";
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipRegression/requests";
     curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $ACCESS_TOKEN" -d '{"request":{"message":"Build triggered by flipTransformations", "branch":"master"}}' "https://api.travis-ci.org/repo/NumbersInternational%2FflipStartup/requests";
