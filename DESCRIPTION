@@ -12,11 +12,13 @@ Suggests:
     testthat
 Imports:
     flipFormat,
+    flipTime,
     flipU,
     lubridate,
     stats
 Remotes:
     NumbersInternational/flipU,
+    NumbersInternational/flipTime,
     NumbersInternational/flipFormat,
     NumbersInternational/flipExampleData
 RoxygenNote: 5.0.1

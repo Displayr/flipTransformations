@@ -114,6 +114,7 @@ parseAsVectorOrMatrix <- function(m, warn)
     result
 }
 
+#' @importFrom flipTime ParseDateTime
 parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
 {
