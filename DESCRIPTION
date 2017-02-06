@@ -19,6 +19,5 @@ Imports:
 Remotes:
     NumbersInternational/flipU,
     NumbersInternational/flipTime,
-    NumbersInternational/flipFormat,
-    NumbersInternational/flipExampleData
+    NumbersInternational/flipFormat
 RoxygenNote: 5.0.1
