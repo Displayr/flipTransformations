@@ -17,7 +17,7 @@ Imports:
     lubridate,
     stats
 Remotes:
-    NumbersInternational/flipU,
-    NumbersInternational/flipTime,
-    NumbersInternational/flipFormat
+    Displayr/flipU,
+    Displayr/flipTime,
+    Displayr/flipFormat
 RoxygenNote: 5.0.1
