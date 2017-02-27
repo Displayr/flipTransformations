@@ -2,7 +2,7 @@ Package: flipTransformations
 Type: Package
 Title: Data transformations for flip
 Version: 0.1.0
-Author: Displayr
+Author: Displayr <opensource@displayr.com>
 Maintainer: Displayr <opensource@displayr.com>
 Description: Contains functions handling ransformations between different types/classes of data, and other types of general transformations (e.g., stacking by weight).
 License: GPL-3
