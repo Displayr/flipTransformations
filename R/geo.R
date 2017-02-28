@@ -5,12 +5,18 @@
 #' @details This fuction iterates through a character vector of locations and returns
 #' a data.frame of geocoded variables including country, city, latitude, longitude, etc.
 #' @examples
-#' x <- c('98406', '40601', '32801', '79835', '61701') #vector of US postal codes
-#' x <- c('Yorba Linda, CA', 'Boise, ID', 'Tulsa, OK', 'Pittsburgh, PA', 'Birmingham, AL') #vector of US cities and states
-#' x <- c('Okinawa, Japan', 'Lisbon, Portugal', 'Toronto, Canada', 'Melbourne, Australia', 'Cairo, Egypt') #vector of cities around the world
+#' # vector of US postal codes
+#' x <- c('98406', '40601', '32801', '79835', '61701')
+#' # vector of US cities and states
+#' x <- c('Yorba Linda, CA', 'Boise, ID', 'Tulsa, OK', 'Pittsburgh, PA', 'Birmingham, AL')
+#' #vector of cities around the world
+#' x <- c('Okinawa, Japan', 'Lisbon, Portugal', 'Toronto, Canada', 'Melbourne, Australia')
 #' @importFrom data.table rbindlist
 #' @export
-tidyGeography <- function(x, api.key) {
+tidyGeography <- function(x, api.key)
+{
+    # Define an empty function that will be redefined in the source to avoid a note when checking
+    geocode <- function(){}
 
     source("https://raw.githubusercontent.com/LucasPuente/geocoding/master/geocode_helpers.R")
     source("https://raw.githubusercontent.com/LucasPuente/geocoding/master/modified_geocode.R")
@@ -129,7 +135,9 @@ tidyGeography <- function(x, api.key) {
 
             results_e <- rbindlist(results_d)
 
-            results_f <- results_e[,Original_value:=names(results_d)]
+            results_f <- results_e
+            # Commented out because := is not recognized
+            # results_f <- results_e[,Original_value:=names(results_d)]
         #}
 
         results_f$city <- unname(sapply(geocode_results, .extractCity))

@@ -19,8 +19,11 @@ This fuction iterates through a character vector of locations and returns
 a data.frame of geocoded variables including country, city, latitude, longitude, etc.
 }
 \examples{
-x <- c('98406', '40601', '32801', '79835', '61701') #vector of US postal codes
-x <- c('Yorba Linda, CA', 'Boise, ID', 'Tulsa, OK', 'Pittsburgh, PA', 'Birmingham, AL') #vector of US cities and states
-x <- c('Okinawa, Japan', 'Lisbon, Portugal', 'Toronto, Canada', 'Melbourne, Australia', 'Cairo, Egypt') #vector of cities around the world
+# vector of US postal codes
+x <- c('98406', '40601', '32801', '79835', '61701')
+# vector of US cities and states
+x <- c('Yorba Linda, CA', 'Boise, ID', 'Tulsa, OK', 'Pittsburgh, PA', 'Birmingham, AL')
+#vector of cities around the world
+x <- c('Okinawa, Japan', 'Lisbon, Portugal', 'Toronto, Canada', 'Melbourne, Australia')
 }
 

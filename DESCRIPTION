@@ -15,7 +15,8 @@ Imports:
     flipTime,
     flipU,
     lubridate,
-    stats
+    stats,
+    data.table
 Remotes:
     Displayr/flipU,
     Displayr/flipTime,
