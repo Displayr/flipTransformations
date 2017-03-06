@@ -35,7 +35,7 @@ test_that("AsNumeric",
               # Checking that names are not changed.
               xz = data.frame(Q2, Q3, Q4)
               rownames(xz)[2] = "dog"
-              xz1 = AsNumeric(xz,  binary = FALSE, remove.first = FALSE)
+              xz1 = suppressWarnings(AsNumeric(xz,  binary = FALSE, remove.first = FALSE))
               expect_equal(rownames(xz)[2], rownames(xz1)[2])
 
           })
