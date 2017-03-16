@@ -19,6 +19,8 @@ AsNumeric <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 #' @export
 AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
+    if (is.numeric(x))
+        return(x)
     if (is.null(name))
         name <- RemoveParentName(Names(x))
     if (is.character(x))
