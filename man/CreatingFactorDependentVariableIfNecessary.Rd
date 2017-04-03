@@ -14,4 +14,3 @@ CreatingFactorDependentVariableIfNecessary(formula, data)
 \description{
 Turns a numeric outcome variable into a factor outcome variable in a data.frame if not already a factor.
 }
-

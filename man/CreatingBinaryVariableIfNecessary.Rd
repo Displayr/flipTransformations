@@ -14,4 +14,3 @@ CreatingBinaryVariableIfNecessary(data, name)
 \description{
 Dichotomizes a variable.
 }
-

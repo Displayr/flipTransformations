@@ -15,4 +15,3 @@ FactorToIndicators(variable, name = NULL)
 Convert a factor variable to a matrix whose columns are binary variables
 representing one of the levels from the factor variable.
 }
-

@@ -27,4 +27,3 @@ proportional to the probability of selection. When creating the bootstrap
 sample, the sample size is whichever is greatest of the rounded sum and 1.
 # Inspired by Zelig, 13-11-15.
 }
-

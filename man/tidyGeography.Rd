@@ -26,4 +26,3 @@ x <- c('Yorba Linda, CA', 'Boise, ID', 'Tulsa, OK', 'Pittsburgh, PA', 'Birmingha
 #vector of cities around the world
 x <- c('Okinawa, Japan', 'Lisbon, Portugal', 'Toronto, Canada', 'Melbourne, Australia')
 }
-

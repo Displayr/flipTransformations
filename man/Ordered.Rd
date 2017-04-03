@@ -17,4 +17,3 @@ Converts to an ordered, but retains the label attribute.
 \details{
 If the variable is already a factor, nothing is done to it.
 }
-

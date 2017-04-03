@@ -225,3 +225,27 @@ CreatingBinaryVariableIfNecessary <- function(data, name)
     variable
 }
 
+#' @title ProcessQVariables
+#' @description Processes Q variables, e.g.: converting date variables to be categorical
+#' based on their period. This function should be called to process Q variables before they are used.
+#' @param x A Q variable or a data frame containing Q variables.
+#' @importFrom flipU CopyAttributes
+#' @export
+ProcessQVariables <- function(x)
+{
+    .processQVariable <- function(v)
+    {
+        if ("QDate" %in% class(v))
+            CopyAttributes(attr(v, "QDate"), v)
+        else
+            v
+    }
+
+    if (is.null(x))
+        NULL
+    else if (is.data.frame(x))
+        data.frame(lapply(x, function(v) .processQVariable(v)), check.names = FALSE,
+                   stringsAsFactors = FALSE)
+    else
+        .processQVariable(x)
+}

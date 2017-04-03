@@ -14,4 +14,3 @@ CreatingBinaryDependentVariableIfNecessary(formula, data)
 \description{
 Dichotomizes the dependent variable in a data.frame if not already dichotomized.
 }
-

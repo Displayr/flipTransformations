@@ -14,4 +14,3 @@ Unclass(x, warn = TRUE)
 \description{
 Unclasses, and removes the levels attribute.
 }
-

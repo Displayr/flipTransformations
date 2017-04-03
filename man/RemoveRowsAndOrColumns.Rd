@@ -19,4 +19,3 @@ RemoveRowsAndOrColumns(x, row.names.to.remove = c("NET", "Total", "SUM"),
 \description{
 Removes rows or columns from the table.
 }
-

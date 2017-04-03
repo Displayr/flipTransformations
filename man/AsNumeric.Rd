@@ -24,4 +24,3 @@ factors into a \code{\link{vector}} or \code{\link{data.frame}} that does not co
 \details{
 Characters are treated as factors.
 }
-

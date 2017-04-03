@@ -15,4 +15,3 @@ QuestionListToDataFrame(list.of.questions, names.to.remove = c("NET", "Total",
 \description{
 Combine a list of questions into a data frame.
 }
-

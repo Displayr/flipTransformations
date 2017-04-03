@@ -17,4 +17,3 @@ Converts to a factor, but retains the label attribute.
 \details{
 If the variable is already a factor, removes any empty levels
 }
-

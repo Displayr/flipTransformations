@@ -17,4 +17,3 @@ A vector
 \description{
 Unclasses a variable if it is a factor. Otherwise, returns x.
 }
-

@@ -19,4 +19,3 @@ FactorToNumeric(x, binary = TRUE, name = NULL, remove.first = TRUE)
 Convert a factor variable to a numeric vector (when the factor is ordered),
 or a matrix of indicator variables (when the factor is not ordered).
 }
-

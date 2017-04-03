@@ -18,4 +18,3 @@ Otherwise, they are represented as sequential integers.}
 \description{
 Coerce a list of numeric or factor variables into a data frame.
 }
-

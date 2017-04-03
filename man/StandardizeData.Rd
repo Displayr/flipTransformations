@@ -31,4 +31,3 @@ Mean of 1 multiples by a constant to set the mean to 1,
 whereas \code{"Mean centered"} subtracts a constant such that each
 variable has a mean of 0.
 }
-

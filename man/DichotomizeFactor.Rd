@@ -21,4 +21,3 @@ DichotomizeFactor(variable, cutoff = 0.5, warning = FALSE,
 \code{DichotomizeFactor} Converts a list of variable or data frames into a
 data.frame.
 }
-

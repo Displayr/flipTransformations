@@ -12,4 +12,3 @@ RemoveMissingLevelsFromFactors(data)
 \description{
 RemoveMissingLevelsFromFactors
 }
-

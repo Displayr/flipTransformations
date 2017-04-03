@@ -27,4 +27,3 @@ ParseEnteredData(raw.matrix, warn = TRUE, want.data.frame = FALSE,
 Takes a raw character matrix returned by dataEntry R GUI control
 and attempts to parse it to something more friendly such as a numeric matrix.
 }
-

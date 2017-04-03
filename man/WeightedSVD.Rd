@@ -20,4 +20,3 @@ WeightedSVD(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p))
 Weighted Singular Value Decomposition
 \code{WeightedSVD} Computes a SVD with frequency weights.
 }
-

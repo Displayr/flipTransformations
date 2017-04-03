@@ -12,4 +12,3 @@ OrderedToNumeric(x)
 \description{
 Convert an ordered factor to a numeric vector.
 }
-
