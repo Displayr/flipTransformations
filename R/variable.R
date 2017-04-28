@@ -13,6 +13,8 @@ Factor <- function(x, ...)
         # extract the date categories which tell us
         # about the aggregation that has been used in Q.
         result <- attr(x, "QDate")
+    else if ("factor" %in% class(x))
+        result <- droplevels(factor(x, levels <- unique(levels(x)), ...))  # bug in 3.4.0
     else
         result <- factor(x, ...)
 
