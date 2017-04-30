@@ -25,22 +25,28 @@ test_that("Ordered",
     expect_equal(attr(cola$Q2,"label"), attr(Ordered(cola$Q2),"label"))
 })
 
-date.var <- structure(list(date = structure(c(1327795200, 1330041600, 1328486400, 1330214400, 1331596800, 1325376000,
-                                              1326412800, 1329609600, 1327017600, 1331942400),
-                                            class = c("POSIXct", "POSIXt", "QDate"),
-                                            QDate = structure(c(1L, 2L, 2L, 2L, 3L, 1L, 1L, 2L, 1L, 3L),
-                                                              class = c("ordered", "factor"),
-                                                              .Label = c("January 2012", "February 2012", "March 2012",
-                                                                         "April 2012", "May 2012", "June 2012", "July 2012", "August 2012", "September 2012")),
-                                            questiontype = "Date", name = "date", label = "Interview Date", question = "Interview Date")),
-                      .Names = "date", row.names = c(NA, -10L), class = "data.frame")
 
-processed.date.var <- structure(list(date = structure(c(1L, 2L, 2L, 2L, 3L, 1L, 1L, 2L, 1L, 3L),
-                                                      class = c("ordered", "factor"),
-                                                      .Label = c("January 2012","February 2012", "March 2012", "April 2012",
-                                                                 "May 2012", "June 2012", "July 2012", "August 2012", "September 2012"),
-                                                      name = "date", label = "Interview Date", question = "Interview Date",
-                                                      questiontype = "Date")),
-                                .Names = "date", row.names = c(NA, -10L), class = "data.frame")
+test_that("Dates",
+{
 
-test_that("ProcessQVariables", expect_equal(ProcessQVariables(date.var), processed.date.var))
+    date.var <- structure(list(date = structure(c(1327795200, 1330041600, 1328486400, 1330214400, 1331596800, 1325376000,
+                                                  1326412800, 1329609600, 1327017600, 1331942400),
+                                                class = c("POSIXct", "POSIXt", "QDate"),
+                                                QDate = structure(c(1L, 2L, 2L, 2L, 3L, 1L, 1L, 2L, 1L, 3L),
+                                                                  class = c("ordered", "factor"),
+                                                                  .Label = c("January 2012", "February 2012", "March 2012",
+                                                                             "April 2012", "May 2012", "June 2012", "July 2012", "August 2012", "September 2012")),
+                                                questiontype = "Date", name = "date", label = "Interview Date", question = "Interview Date")),
+                          .Names = "date", row.names = c(NA, -10L), class = "data.frame")
+
+    processed.date.var <- structure(list(date = structure(c(1L, 2L, 2L, 2L, 3L, 1L, 1L, 2L, 1L, 3L),
+                                                          class = c("ordered", "factor"),
+                                                          .Label = c("January 2012","February 2012", "March 2012", "April 2012",
+                                                                     "May 2012", "June 2012", "July 2012", "August 2012", "September 2012"),
+                                                          name = "date", label = "Interview Date", question = "Interview Date",
+                                                          questiontype = "Date")),
+                                    .Names = "date", row.names = c(NA, -10L), class = "data.frame")
+
+    test_that("ProcessQVariables", expect_equal(ProcessQVariables(date.var), processed.date.var))
+})
+
