@@ -12,7 +12,8 @@ Factor(x, ...)
 \item{...}{Further arguments passed to \code{factor}.}
 }
 \description{
-Converts to a factor, but retains the label attribute.
+Converts to a factor, but retains the label attribute. Automatically combines duplicate
+levels, with a warning.
 }
 \details{
 If the variable is already a factor, removes any empty levels

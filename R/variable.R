@@ -1,9 +1,11 @@
 #' \code{Factor}
-#' @description Converts to a factor, but retains the label attribute.
+#' @description Converts to a factor, but retains the label attribute. Automatically combines duplicate
+#' levels, with a warning.
 #' @param x A vector of data, usually taking a small number of distinct values.
 #' @param ... Further arguments passed to \code{factor}.
 #' @details If the variable is already a factor, removes any empty levels
 #' @importFrom flipU CopyAttributes
+#' @importFrom flipFormat Names
 #' @export
 Factor <- function(x, ...)
 {
@@ -14,10 +16,20 @@ Factor <- function(x, ...)
         # about the aggregation that has been used in Q.
         result <- attr(x, "QDate")
     else if ("factor" %in% class(x))
-        result <- droplevels(factor(x, levels <- unique(levels(x)), ...))  # bug in 3.4.0
+    {
+        # Warning and addressing duplicate factor levels (this throws an error in 'factor' since R4.3)
+        level.count <- table(levels(x))
+        if (max(level.count) > 1)
+        {
+            duplicates <- paste0(names(level.count[level.count > 1]), collapse = ", ")
+            warning(paste0(Names(x), " contains duplicate factor levels: ", duplicates, "."))
+            result <- droplevels(factor(x, levels <- unique(levels(x)), ...))  # bug in 3.4.0
+        }
+        else
+            result <- factor(x, ...)
+    }
     else
         result <- factor(x, ...)
-
     return(CopyAttributes(result, x))
 }
 
