@@ -9,11 +9,11 @@ Factor(x, ...)
 \arguments{
 \item{x}{A vector of data, usually taking a small number of distinct values.}
 
-\item{...}{Further arguments passed to \code{factor}.}
+\item{...}{Further arguments passed to \code{\link{factor}}.}
 }
 \description{
 Converts to a factor, but retains the label attribute. Automatically combines duplicate
-levels, with a warning.
+levels, with a warning (\code{\link{factor}} instead throws an error).
 }
 \details{
 If the variable is already a factor, removes any empty levels
