@@ -165,3 +165,42 @@ parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     }
     df
 }
+
+#' \code{TextAsVector}
+#' @description Cleans up input text into a vector of strings. The input text is split
+#'    using the specified deliminater, smart quotes removed and trailing and leading
+#'    white space and quotes removed.
+#' @param x Input text, which may be either a deliminated string which is broken up
+#'    or a vector of strings which need to be cleaned up.
+#' @param split Deliminater to split input text.
+#' @param silent Boolean indicating whether a warning is given if smart quotes are removed
+#' @export
+TextAsVector <- function(x, split = ",", silent = FALSE)
+{
+    if (length(x) == 0)
+        return (NULL)
+
+    # Remove smart quotes
+    patt.win <- '[\x93\x94\x84]'             # smart quotes on windows (latin-1 encoding)
+    patt.utf <- '[\u201C\u201D\u201E]'       # smart quotes on linux (utf-8 encoding)
+
+    if (any(grep(patt.win, x)) || any(grep(patt.utf, x)))
+    {
+        if (!silent)
+            warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
+        x <- gsub(patt.win, "" , x)
+        x <- gsub(patt.utf, "" , x)
+
+    }
+
+    # Split text using deliminater
+    if (split != "")
+        x <- unlist(strsplit(x, split=split))
+
+    # Remove leading/trailing whitespace and quotes
+    x <- trimws(x)
+    x <- gsub("^[\'\"]", "", x)
+    x <- gsub("[\'\"]$", "", x)
+
+    return(x)
+}

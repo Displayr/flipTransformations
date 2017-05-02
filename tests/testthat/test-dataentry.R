@@ -168,3 +168,18 @@ test_that("data frame duplicate names", {
     expect_warning(ParseEnteredData(raw.matrix, want.data.frame = TRUE),
                    "Some variables share the same name.")
 })
+
+test_that("TextAsVector", {
+    res1 <- TextAsVector("What,     is, this")
+    res2 <- TextAsVector(c("'What'", "'is'", "'this'"))
+    res3 <- TextAsVector("What's, this")
+    expect_equal(res1, res2)
+    expect_equal(grep("\'", res3), 1)
+
+    s4 <- '\x93What\x94,is,this'
+    s5 <- '\u201CWhat\u201D,is,this'
+    res4 <- suppressWarnings(TextAsVector(s4))
+    res5 <- suppressWarnings(TextAsVector(s5))
+    expect_equal(res1, res4)
+    expect_equal(res1, res5)
+})
