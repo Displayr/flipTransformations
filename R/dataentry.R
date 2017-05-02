@@ -174,6 +174,7 @@ parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
 #'    or a vector of strings which need to be cleaned up.
 #' @param split Deliminater to split input text.
 #' @param silent Boolean indicating whether a warning is given if smart quotes are removed
+#' @importFrom utils localeToCharset
 #' @export
 TextAsVector <- function(x, split = ",", silent = FALSE)
 {
@@ -181,16 +182,14 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
         return (NULL)
 
     # Remove smart quotes
-    patt.win <- '[\x93\x94\x84]'             # smart quotes on windows (latin-1 encoding)
-    patt.utf <- '[\u201C\u201D\u201E]'       # smart quotes on linux (utf-8 encoding)
+    patt <- if ("UTF-8" %in% localeToCharset()) '[\u201C\u201D\u201E]'  # linux (utf-8 encoding)
+            else                                '[\x93\x94\x84]'        # windows (latin-1)
 
-    if (any(grep(patt.win, x)) || any(grep(patt.utf, x)))
+    if (any(grep(patt, x)))
     {
         if (!silent)
             warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
-        x <- gsub(patt.win, "" , x)
-        x <- gsub(patt.utf, "" , x)
-
+        x <- gsub(patt, "" , x)
     }
 
     # Split text using deliminater
