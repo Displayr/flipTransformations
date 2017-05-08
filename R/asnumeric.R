@@ -57,7 +57,7 @@ OneHot <- function(data, outcome = NULL)
     X <- as.matrix(AsNumeric(data[, !(names(data) == outcome)]))
     # convert outcome variable to numeric vector
     y <- as.numeric(data[, outcome])
-    return(list(X, y))
+    return(list(X = X, y = y))
 }
 
 
