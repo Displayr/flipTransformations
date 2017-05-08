@@ -41,4 +41,23 @@ AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = F
 }
 
 
+#' \code{OneHot}
+#'
+#' Produces a numeric \code{\link{matrix}} of binary predictor variables and a numeric \code{\link{vector}}
+#' of an outcome variable from an input \code{\link{data.frame}}.
+#' With the exception of \code{outcome}, all \code{\link{factor}} variables of \code{data} are
+#' converted to one binary column per factor level.  Numeric variables are unchanged.
+#' @param data A \code{\link{data.frame}}.
+#' @param outcome Optionally, the name of a variable in \code{data} to be converted to a numeric vector.
+#'
+#' @export
+OneHot <- function(data, outcome = NULL)
+{
+    # convert predictor data to numeric matrix
+    X <- as.matrix(AsNumeric(data[, !(names(data) == outcome)]))
+    # convert outcome variable to numeric vector
+    y <- as.numeric(data[, outcome])
+    return(list(X, y))
+}
+
 
