@@ -40,3 +40,13 @@ test_that("AsNumeric",
 
           })
 
+df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)
+
+test_that("OneHot",
+          {
+              expect_error(OneHot(df), NA)
+              expect_error(OneHot(df, "NotPresent"), NA)
+              expect_equal(ncol(OneHot(df, "a")$X), 4)
+              expect_equal(ncol(OneHot(df, "b")$X), 2)
+              expect_equal(ncol(OneHot(df, "c")$X), 4)
+})
