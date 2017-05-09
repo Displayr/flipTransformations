@@ -58,13 +58,17 @@ OneHot <- function(data, outcome = NULL)
 
     # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
     y <- NULL
+    outcome.levels <- NULL
     if (!is.null(outcome) && outcome %in% names(data))
         if (is.factor(data[, outcome]))
+        {
+            outcome.levels <- levels(data[, outcome])
             y <- as.numeric(data[, outcome]) - 1
+        }
         else
             y <- data[, outcome]
 
-    return(list(X = X, y = y))
+    return(list(X = X, y = y, outcome.levels = outcome.levels))
 }
 
 
