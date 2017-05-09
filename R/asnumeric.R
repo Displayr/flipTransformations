@@ -56,10 +56,10 @@ OneHot <- function(data, outcome = NULL)
     # convert predictor data to numeric matrix
     X <- as.matrix(AsNumeric(data[, !names(data) %in% outcome]))
 
-    # convert outcome variable to numeric vector
+    # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
     y <- NULL
     if (!is.null(outcome) && outcome %in% names(data))
-        y <- as.numeric(data[, outcome])
+        y <- as.numeric(data[, outcome]) - 1
     return(list(X = X, y = y))
 }
 
