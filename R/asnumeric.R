@@ -53,13 +53,17 @@ AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = F
 #' @export
 OneHot <- function(data, outcome = NULL)
 {
-    # convert predictor data to numeric matrix
+    # convert predictor data to numeric matrix with factors converted to multiple binary columns
     X <- as.matrix(AsNumeric(data[, !names(data) %in% outcome]))
 
     # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
     y <- NULL
     if (!is.null(outcome) && outcome %in% names(data))
-        y <- as.numeric(data[, outcome]) - 1
+        if (is.factor(data[, outcome]))
+            y <- as.numeric(data[, outcome]) - 1
+        else
+            y <- data[, outcome]
+
     return(list(X = X, y = y))
 }
 
