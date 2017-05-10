@@ -54,7 +54,7 @@ AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = F
 OneHot <- function(data, outcome = NULL)
 {
     # convert predictor data to numeric matrix with factors converted to multiple binary columns
-    X <- as.matrix(AsNumeric(data[, !names(data) %in% outcome]))
+    X <- as.matrix(AsNumeric(data[, !names(data) %in% outcome, drop = FALSE]))
 
     # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
     y <- NULL
