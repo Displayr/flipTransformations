@@ -137,7 +137,6 @@ FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
 #' @param variable The factor variable to convert.
 #' @param name The name of the input variable.
 #' @importFrom stats model.matrix
-#' @importFrom flipFormat RemoveParentName Names
 #' @export
 FactorToIndicators <- function(variable, name = NULL)
 {
