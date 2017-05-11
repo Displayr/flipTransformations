@@ -55,8 +55,9 @@ OneHot <- function(data, outcome = NULL)
 {
     # convert predictor data to numeric matrix with factors converted to multiple binary columns
     X <- AsNumeric(data[, !names(data) %in% outcome, drop = FALSE])
-    #for (i in 1:ncol(X))
-    #    colnames(X)[i] <- attr(X[, i], "label")
+    for (i in 1:ncol(X))
+        if (!is.null(attr(X[, i], "label")))
+            colnames(X)[i] <- attr(X[, i], "label")
     X <- as.matrix(X)
 
     # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
