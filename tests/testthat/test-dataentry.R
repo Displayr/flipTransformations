@@ -194,11 +194,14 @@ test_that("TextAsVector", {
     expect_equal(res1, res2)
     expect_equal(grep("\'", res3), 1)
 
-    #s4 <- '\x93What\x94,is,this'
-    s4 <- '“What”  ,is,this'
+    if ("UTF-8" %in% localeToCharset())
+    {
+        s4 <- '\x93What\x94,is,this'
+        res4 <- suppressWarnings(TextAsVector(s4))
+        expect_equal(res1, res4)
+    }
+
     s5 <- '\u201CWhat\u201D,is,this'
-    res4 <- suppressWarnings(TextAsVector(s4))
     res5 <- suppressWarnings(TextAsVector(s5))
-    expect_equal(res1, res4)
     expect_equal(res1, res5)
 })

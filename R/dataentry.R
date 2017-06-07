@@ -194,14 +194,21 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
         return (NULL)
 
     # Remove smart quotes
-    patt <- if ("UTF-8" %in% localeToCharset()) '[\u201C\u201D\u201E]'  # linux (utf-8 encoding)
-            else                                '[\x93\x94\x84]'        # windows (latin-1)
+    patt.linux <- '[\u201C\u201D\u201E]' # linux (utf-8 encoding)
+    patt.windows <- '[\x93\x94\x84]'     # windows (latin-1)
 
-    if (any(grep(patt, x)))
+    if (any(grep(patt.linux, x)))
     {
         if (!silent)
             warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
-        x <- gsub(patt, "" , x)
+        x <- gsub(patt.linux, "" , x)
+    }
+
+    if (any(grep(patt.windows, x)))
+    {
+        if (!silent)
+            warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
+        x <- gsub(patt.windows, "" , x)
     }
 
     # Split text using deliminater
