@@ -82,7 +82,19 @@ parseAsVectorOrMatrix <- function(m, warn)
         result <- m
     else if (n.col == 2 && isTextNumeric(m[, 2])) # numeric vector with names
         result <- structure(asNumericWithPercent(m[, 2]), names = m[, 1])
-    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with names
+    else if (isTextNumeric(m[, 2:n.col])) # numeric matrix with row names
+    {
+        numeric.m <- matrix(asNumericWithPercent(m[, 2:n.col]), nrow = n.row)
+        rownames(numeric.m) <- m[, 1]
+        result <- numeric.m
+    }
+    else if (isTextNumeric(m[2:n.row, ])) # numeric matrix with column names
+    {
+        numeric.m <- matrix(asNumericWithPercent(m[2:n.row, ]), nrow = n.row - 1)
+        colnames(numeric.m) <- m[1, ]
+        result <- numeric.m
+    }
+    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with row and column names
     {
         numeric.m <- matrix(asNumericWithPercent(m[2:n.row, 2:n.col, drop = FALSE]), nrow = n.row - 1)
         if (any(m[1, 2:n.col] != ""))

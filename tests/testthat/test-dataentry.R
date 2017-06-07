@@ -19,6 +19,24 @@ test_that("numeric vector with names", {
                                                                                          "", "five", "six")))
 })
 
+test_that("numeric matrix with row names", {
+    raw.matrix <- structure(c("a", "b", "c", "d", "e", "f", "g", "h", "i", "1",
+                "2", "5", "2", "5", "7", "3", "3", "1", "5", "2", "2", "4", "6",
+                "7", "4", "3", "2"), .Dim = c(9L, 3L))
+    expect_equal(ParseEnteredData(raw.matrix),
+                 structure(c(1, 2, 5, 2, 5, 7, 3, 3, 1, 5, 2, 2, 4, 6, 7, 4, 3, 2),
+                           .Dim = c(9L, 2L),
+                           .Dimnames = list(c("a", "b", "c", "d", "e", "f", "g", "h", "i"), NULL)))
+})
+
+test_that("numeric matrix with column names", {
+    raw.matrix <- structure(c("x", "1", "2", "5", "2", "5", "7", "3", "3", "1",
+                              "y", "5", "2", "2", "4", "6", "7", "4", "3", "2"), .Dim = c(10L, 2L))
+    expect_equal(ParseEnteredData(raw.matrix),
+                 structure(c(1, 2, 5, 2, 5, 7, 3, 3, 1, 5, 2, 2, 4, 6, 7, 4, 3,
+                             2), .Dim = c(9L, 2L), .Dimnames = list(NULL, c("x", "y"))))
+})
+
 test_that("numeric matrix with names", {
     raw.matrix <- structure(c("", "", "", "", "", "Height", "Weight", "Strength",
                 "Australia", "8", "8", "7", "USA", "7", "10", "10", "Denmark",
