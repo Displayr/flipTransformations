@@ -187,6 +187,36 @@ test_that("data frame duplicate names", {
                    "Some variables share the same name.")
 })
 
+test_that("ParseAsDataFrame", {
+    raw.matrix <- structure(list(X__1 = c("2017-05-31", "2017-06-01", "2017-06-02",
+                        "2017-06-03", "2017-06-04", "2017-06-05", "2017-06-06", "2017-06-07",
+                        "2017-06-08", "2017-06-09"), `Pre-breakfast` = c(NA, 11.4, 10.8,
+                        10.6, 8.7, 9.7, 7, 6.1, 4.6, 4.1), `Post-breakfast` = c(NA, 17.1,
+                        12.6, 8.6, 11.4, 10.6, 11.4, 8.9, 8.6, NA), `Pre-lunch` = c(NA,
+                        NA, 8.9, 5.6, 13.4, 9.2, 5.7, 5.2, NA, NA), `Post-lunch` = c(22.9,
+                        13.9, 9.8, 12.2, 6.6, 8.4, 9.1, 5.3, 8.4, NA), `Pre-dinner` = c(6.55,
+                        12.9, 10.3, 13.1, 8.9, 8.8, 7.3, 5.7, 7.7, NA), `Post-dinner` = c(13.8,
+                        14.8, 10.3, 12.3, 14.5, 8.4, 6.8, 6.5, 7.5, NA)), .Names = c("X__1",
+                        "Pre-breakfast", "Post-breakfast", "Pre-lunch", "Post-lunch",
+                        "Pre-dinner", "Post-dinner"), class = c("tbl_df", "tbl", "data.frame"
+                        ), row.names = c(NA, -10L))
+
+    expect_warning(res1 <- ParseAsDataFrame(raw.matrix), "Some variables have been assigned blank names")
+    expect_equal(nrow(res1), 9)
+    res2 <- ParseAsDataFrame(raw.matrix, want.col.names = FALSE)
+    expect_equal(nrow(res2), 10)
+    expect_equal(colnames(res2), c("X__1","Pre.breakfast", "Post.breakfast", "Pre.lunch", "Post.lunch", "Pre.dinner", "Post.dinner"))
+    expect_equal("POSIXct" %in% class(res2[,1]), TRUE)
+    m2 <- as.matrix(res2)
+    expect_equal(is.numeric(m2), FALSE)
+    res3 <- ParseAsDataFrame(raw.matrix, want.col.names = FALSE, want.row.names = TRUE)
+    expect_equal(ncol(res3), 6)
+    expect_equal(rownames(res3)[1], "2017-05-31")
+    m3 <- as.matrix(res3)
+    expect_equal(is.numeric(m3), TRUE)
+})
+
+
 test_that("TextAsVector", {
     res1 <- TextAsVector("What,     is, this")
     res2 <- TextAsVector(c("'What'", "'is'", "'this'"))

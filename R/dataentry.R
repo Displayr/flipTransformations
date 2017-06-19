@@ -17,7 +17,7 @@ ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, w
 
     m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
     if (want.data.frame)
-        parseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
+        ParseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
     else
         parseAsVectorOrMatrix(m, warn)
 }
@@ -126,8 +126,17 @@ parseAsVectorOrMatrix <- function(m, warn)
     result
 }
 
+#' \code{ParseEnteredData}
+#' @description Takes a data.frame and performs extra parsing, for example with dates and percentages.
+#' @param m Data frame which requires parsing.
+#' @param warn Whether to show warnings.
+#' @param want.factors Whether a text variable should be converted to a factor in a data frame.
+#' @param want.col.names Whether to interpret the first row as column names in a data frame.
+#' @param want.row.names Whether to interpret the first col as row names in a data frame.
+#' @param us.format Whether to use the US convention when parsing dates in a data frame.
 #' @importFrom flipTime ParseDateTime
-parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
+#' @export
+ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
 {
     n.row <- nrow(m)
@@ -146,23 +155,29 @@ parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     df <- data.frame(m[start.row:n.row, start.col:n.col], stringsAsFactors = FALSE)
     if (want.col.names)
     {
-        col.names <- m[1, start.col:n.col]
-        colnames(df) <- col.names
-        if (warn && any(col.names == ""))
+        tmp.colnames <- unlist(m[1, start.col:n.col])
+        tmp.colnames[is.na(tmp.colnames)] <- ""
+        colnames(df) <- tmp.colnames
+        if (warn && any(tmp.colnames == ""))
             warning("Some variables have been assigned blank names.")
-        else if (warn && length(unique(col.names)) < length(col.names))
+        else if (warn && length(unique(tmp.colnames)) < length(tmp.colnames))
             warning("Some variables share the same name.")
     }
-    else
+    else if (is.null(colnames(df)))
         colnames(df) <- paste0("X", 1:(n.col - start.col + 1))
     if (want.row.names)
-        rownames(df) <- m[start.row:n.row, 1]
+    {
+        tmp.rownames <- unlist(m[,1])
+        rownames(df) <- tmp.rownames[start.row:n.row]
+    }
 
     n.var <- ncol(df)
     for (i in 1:n.var)
     {
         v <- df[[i]]
-        if (isTextNumeric(v))
+        if (is.numeric(v)) # do nothing if already converted
+            next
+        else if (isTextNumeric(v))
             df[[i]] <- asNumericWithPercent(v) # numeric
         else
         {
