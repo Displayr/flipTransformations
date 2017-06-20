@@ -134,11 +134,20 @@ parseAsVectorOrMatrix <- function(m, warn)
 #' @param want.col.names Whether to interpret the first row as column names in a data frame.
 #' @param want.row.names Whether to interpret the first col as row names in a data frame.
 #' @param us.format Whether to use the US convention when parsing dates in a data frame.
+#' @param matrix.or.vector Use matrix or vector parsing rules
 #' @importFrom flipTime ParseDateTime
 #' @export
 ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
-                             us.format = TRUE)
+                             us.format = TRUE, matrix.or.vector = FALSE)
 {
+    if (matrix.or.vector)
+    {
+        m <- as.matrix(m)
+        m[which(is.na(m))] <- ""
+        dimnames(m) <- NULL
+        return(parseAsVectorOrMatrix(m, warn))
+    }
+
     n.row <- nrow(m)
     n.col <- ncol(m)
 
