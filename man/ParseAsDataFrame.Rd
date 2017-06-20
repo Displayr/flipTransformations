@@ -5,8 +5,7 @@
 \title{\code{ParseEnteredData}}
 \usage{
 ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
-  want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE,
-  matrix.or.vector = FALSE)
+  want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE)
 }
 \arguments{
 \item{m}{Data frame which requires parsing.}
@@ -20,8 +19,6 @@ ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
 \item{want.row.names}{Whether to interpret the first col as row names in a data frame.}
 
 \item{us.format}{Whether to use the US convention when parsing dates in a data frame.}
-
-\item{matrix.or.vector}{Use matrix or vector parsing rules}
 }
 \description{
 Takes a data.frame and performs extra parsing, for example with dates and percentages.
