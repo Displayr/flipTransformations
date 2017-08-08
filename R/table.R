@@ -5,6 +5,7 @@
 #' @param row.names.to.remove A vector or comma-separated string containing the row labels to remove, if row names are defined. Trailing spaces are removed and lower/upper case is ignored
 #' @param column.names.to.remove A vector or comma-separated string containing the column labels to remove, if column names are defined
 #' @param split delimiter to split string on
+#' @importFrom flipFormat ConvertCommaSeparatedStringToVector
 #' @export
 RemoveRowsAndOrColumns <- function(x,
                                    row.names.to.remove = c("NET", "Total", "SUM"),
@@ -23,9 +24,9 @@ RemoveRowsAndOrColumns <- function(x,
 
             # No splitting if empty delimiter is given (vector is expected)
             if (split != "")
-                tmpstring <- unlist(strsplit(tmpstring, split=split))
+                tmpstring <- ConvertCommaSeparatedStringToVector(tmpstring, split)
 
-            tmpstring <- tolower(trimws(tmpstring))
+            tmpstring <- tolower(tmpstring)
             ind[[i]] <- which(!tmpname %in% tmpstring)
         }
     }
