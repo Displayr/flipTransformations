@@ -17,7 +17,7 @@ ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, w
 
     m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
     if (want.data.frame)
-        parseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
+        ParseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
     else
         parseAsVectorOrMatrix(m, warn)
 }
@@ -82,7 +82,19 @@ parseAsVectorOrMatrix <- function(m, warn)
         result <- m
     else if (n.col == 2 && isTextNumeric(m[, 2])) # numeric vector with names
         result <- structure(asNumericWithPercent(m[, 2]), names = m[, 1])
-    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with names
+    else if (isTextNumeric(m[, 2:n.col])) # numeric matrix with row names
+    {
+        numeric.m <- matrix(asNumericWithPercent(m[, 2:n.col]), nrow = n.row)
+        rownames(numeric.m) <- m[, 1]
+        result <- numeric.m
+    }
+    else if (isTextNumeric(m[2:n.row, ])) # numeric matrix with column names
+    {
+        numeric.m <- matrix(asNumericWithPercent(m[2:n.row, ]), nrow = n.row - 1)
+        colnames(numeric.m) <- m[1, ]
+        result <- numeric.m
+    }
+    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with row and column names
     {
         numeric.m <- matrix(asNumericWithPercent(m[2:n.row, 2:n.col, drop = FALSE]), nrow = n.row - 1)
         if (any(m[1, 2:n.col] != ""))
@@ -114,8 +126,17 @@ parseAsVectorOrMatrix <- function(m, warn)
     result
 }
 
+#' \code{ParseEnteredData}
+#' @description Takes a data.frame and performs extra parsing, for example with dates and percentages.
+#' @param m Data frame which requires parsing.
+#' @param warn Whether to show warnings.
+#' @param want.factors Whether a text variable should be converted to a factor in a data frame.
+#' @param want.col.names Whether to interpret the first row as column names in a data frame.
+#' @param want.row.names Whether to interpret the first col as row names in a data frame.
+#' @param us.format Whether to use the US convention when parsing dates in a data frame.
 #' @importFrom flipTime ParseDateTime
-parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
+#' @export
+ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
 {
     n.row <- nrow(m)
@@ -134,23 +155,29 @@ parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     df <- data.frame(m[start.row:n.row, start.col:n.col], stringsAsFactors = FALSE)
     if (want.col.names)
     {
-        col.names <- m[1, start.col:n.col]
-        colnames(df) <- col.names
-        if (warn && any(col.names == ""))
+        tmp.colnames <- unlist(m[1, start.col:n.col])
+        tmp.colnames[is.na(tmp.colnames)] <- ""
+        colnames(df) <- tmp.colnames
+        if (warn && any(tmp.colnames == ""))
             warning("Some variables have been assigned blank names.")
-        else if (warn && length(unique(col.names)) < length(col.names))
+        else if (warn && length(unique(tmp.colnames)) < length(tmp.colnames))
             warning("Some variables share the same name.")
     }
-    else
+    else if (is.null(colnames(df)))
         colnames(df) <- paste0("X", 1:(n.col - start.col + 1))
     if (want.row.names)
-        rownames(df) <- m[start.row:n.row, 1]
+    {
+        tmp.rownames <- unlist(m[,1])
+        rownames(df) <- tmp.rownames[start.row:n.row]
+    }
 
     n.var <- ncol(df)
     for (i in 1:n.var)
     {
         v <- df[[i]]
-        if (isTextNumeric(v))
+        if (is.numeric(v)) # do nothing if already converted
+            next
+        else if (isTextNumeric(v))
             df[[i]] <- asNumericWithPercent(v) # numeric
         else
         {
@@ -164,4 +191,42 @@ parseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
         }
     }
     df
+}
+
+#' \code{TextAsVector}
+#' @description Cleans up input text into a vector of strings. The input text is split
+#'    using the specified deliminater, smart quotes removed and trailing and leading
+#'    white space and quotes removed.
+#' @param x Input text, which may be either a deliminated string which is broken up
+#'    or a vector of strings which need to be cleaned up.
+#' @param split Deliminater to split input text.
+#' @param silent Boolean indicating whether a warning is given if smart quotes are removed
+#' @importFrom utils localeToCharset
+#' @export
+TextAsVector <- function(x, split = ",", silent = FALSE)
+{
+    if (length(x) == 0)
+        return (NULL)
+
+    # Remove smart quotes
+    patt <- if ("UTF-8" %in% localeToCharset()) '[\u201C\u201D\u201E]'  # linux (utf-8 encoding)
+            else                                '[\x93\x94\x84]'        # windows (latin-1)
+
+    if (any(grep(patt, x)))
+    {
+        if (!silent)
+            warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
+        x <- gsub(patt, "" , x)
+    }
+
+    # Split text using deliminater
+    if (split != "")
+        x <- unlist(strsplit(x, split=split))
+
+    # Remove leading/trailing whitespace and quotes
+    x <- trimws(x)
+    x <- gsub("^[\'\"]", "", x)
+    x <- gsub("[\'\"]$", "", x)
+
+    return(x)
 }

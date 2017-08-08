@@ -38,5 +38,22 @@ test_that("AsNumeric",
               xz1 = suppressWarnings(AsNumeric(xz,  binary = FALSE, remove.first = FALSE))
               expect_equal(rownames(xz)[2], rownames(xz1)[2])
 
+              # Dates
+              dd <- seq(ISOdate(2000,1,1,0), by="day", length.out=10)
+              ds <- sprintf("2000-01-%02d", 1:10)
+              dm <- c(ds[1:5], "dog", "other random thing")
+              expect_equal(range(AsNumeric(dd, binary=F)), c(946684800, 947462400))
+              expect_equal(range(AsNumeric(ds, binary=F)), c(946684800, 947462400))
+              expect_equal(suppressWarnings(AsNumeric(dm, binary=F)), 1:7)
           })
 
+df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)
+
+test_that("OneHot",
+          {
+              expect_error(OneHot(df), NA)
+              expect_error(OneHot(df, "NotPresent"), NA)
+              expect_equal(ncol(OneHot(df, "a")$X), 4)
+              expect_equal(ncol(OneHot(df, "b")$X), 2)
+              expect_equal(ncol(OneHot(df, "c")$X), 4)
+})

@@ -2,9 +2,10 @@
 #' \code{RemoveRowsAndOrColumns}
 #' @description Removes rows or columns from the table.
 #' @param x The data that is being analyzed
-#' @param row.names.to.remove A vector or comma-separated string containing the row labels to remove, if row names are defined. Trailing spaces are removed and lower/upper case is ignored
-#' @param column.names.to.remove A vector or comma-separated string containing the column labels to remove, if column names are defined
-#' @param split delimiter to split string on
+#' @param row.names.to.remove A vector or comma-separated string containing the row labels to remove.
+#' @param column.names.to.remove A vector or comma-separated string containing the column labels to remove.
+#' @param split Delimiter to split string on.
+#' @details Trailing spaces are removed and lower/upper case is ignored.
 #' @importFrom flipFormat ConvertCommaSeparatedStringToVector
 #' @export
 RemoveRowsAndOrColumns <- function(x,
@@ -12,7 +13,30 @@ RemoveRowsAndOrColumns <- function(x,
                                    column.names.to.remove = c("NET", "Total", "SUM"),
                                    split = ",")
 {
-    ind <- list(1:nrow(x), 1:ncol(x))
+    ind <- RetainedRowsAndOrColumns(x = x, row.names.to.remove = row.names.to.remove,
+                                column.names.to.remove = column.names.to.remove,
+                                split = split)
+
+    if (length(ind[[1]]) == 0 || length(ind[[2]]) == 0)
+        stop ("Removing rows/columns gives empty input matrix\n")
+
+    x[ind[[1]], ind[[2]], drop = FALSE]
+}
+
+#' \code{RetainedRowsAndOrColumns}
+#' @description Produces a list of 2 vectors, indices of rows and columns from a table.
+#' @param x The data that is being analyzed.
+#' @param row.names.to.remove A vector or comma-separated string containing the row labels to remove.
+#' @param column.names.to.remove A vector or comma-separated string containing the column labels to remove.
+#' @param split Delimiter to split string on.
+#' @details Trailing spaces are removed and lower/upper case is ignored.
+#' @export
+RetainedRowsAndOrColumns <- function(x,
+                                   row.names.to.remove = c("NET", "Total", "SUM"),
+                                   column.names.to.remove = c("NET", "Total", "SUM"),
+                                   split = ",")
+{
+    ind <- list(retained.rows = 1:nrow(x), retained.cols = 1:ncol(x))
     for (i in 1:2)
     {
         tmpname <- switch(i, rownames(x), colnames(x))
@@ -25,14 +49,9 @@ RemoveRowsAndOrColumns <- function(x,
             # No splitting if empty delimiter is given (vector is expected)
             if (split != "")
                 tmpstring <- ConvertCommaSeparatedStringToVector(tmpstring, split)
-
             tmpstring <- tolower(tmpstring)
             ind[[i]] <- which(!tmpname %in% tmpstring)
         }
     }
-
-    if (length(ind[[1]]) == 0 || length(ind[[2]]) == 0)
-        stop ("Removing rows/columns gives empty input matrix\n")
-
-    x[ind[[1]], ind[[2]], drop = FALSE]
+    return(ind)
 }

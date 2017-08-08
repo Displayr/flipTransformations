@@ -127,3 +127,4 @@ collapseNames <- function(names, max.names = 10)
     else
         paste0(names, collapse = ", ")
 }
+
