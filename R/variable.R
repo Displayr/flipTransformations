@@ -200,7 +200,7 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = Re
 #' @export
 CreatingFactorDependentVariableIfNecessary <- function(formula, data)
 {
-    outcome.name <- OutcomeName(formula)
+    outcome.name <- OutcomeName(formula, data)
     data[, outcome.name] <- Factor(data[[outcome.name]])
     data
 }
@@ -214,7 +214,7 @@ CreatingFactorDependentVariableIfNecessary <- function(formula, data)
 #' @export
 CreatingBinaryDependentVariableIfNecessary <- function(formula, data)
 {
-    outcome.name <- OutcomeName(formula)
+    outcome.name <- OutcomeName(formula, data)
     data[, outcome.name] <- CreatingBinaryVariableIfNecessary(data, outcome.name)
     data
 }
