@@ -109,6 +109,10 @@ OrderedToNumeric <- function(x)
 #' @param remove.first Remove the first binary variable, if a binary variable is being created.
 #' @importFrom flipFormat RemoveParentName Names
 #' @importFrom flipU CopyAttributes
+#' @seealso \code{\link[stats]{model.matrix}}
+#' @return a vector of length \code{x}, if \code{x} is an ordered factor; otherwise, a 0-1 matrix
+#' with number of rows equal to the length of \code{x} an number of columns equal to the number of
+#' levels in \code{x}
 #' @export
 FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
 {

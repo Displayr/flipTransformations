@@ -3,11 +3,16 @@
 #' and attempts to parse it to something more friendly such as a numeric matrix.
 #' @param raw.matrix Character matrix
 #' @param warn Whether to show warnings
-#' @param want.data.frame Whether to return a data frame instead of a matrix or vector.
-#' @param want.factors Whether a text variable should be converted to a factor in a data frame.
-#' @param want.col.names Whether to interpret the first row as column names in a data frame.
-#' @param want.row.names Whether to interpret the first col as row names in a data frame.
-#' @param us.format Whether to use the US convention when parsing dates in a data frame.
+#' @param want.data.frame logical; should a \code{data.frame} be returned instead
+#' of a matrix or vector?
+#' @param want.factors logical; should a text variable be converted to a factor?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param want.col.names logical; should the first row be interpretted as column names?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param want.row.names logical; should the first colulm be interpretted as row names?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param us.format logical; should the U.S. convention be used when parsing dates?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
 #' @export
 ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, want.factors = TRUE,
                              want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE)
@@ -199,7 +204,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
 #'    white space and quotes removed.
 #' @param x Input text, which may be either a deliminated string which is broken up
 #'    or a vector of strings which need to be cleaned up.
-#' @param split Deliminater to split input text.
+#' @param split Deliminator to split input text.
 #' @param silent Boolean indicating whether a warning is given if smart quotes are removed
 #' @importFrom utils localeToCharset
 #' @export
@@ -212,7 +217,7 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
     patt <- if ("UTF-8" %in% localeToCharset()) '[\u201C\u201D\u201E]'  # linux (utf-8 encoding)
             else                                '[\x93\x94\x84]'        # windows (latin-1)
 
-    if (any(grep(patt, x)))
+    if (any(grepl(patt, x)))
     {
         if (!silent)
             warning (sprintf("Text variable '%s' contains smart quotes which have been removed", x))
