@@ -15,7 +15,15 @@ FactorToNumeric(x, binary = TRUE, name = NULL, remove.first = TRUE)
 
 \item{remove.first}{Remove the first binary variable, if a binary variable is being created.}
 }
+\value{
+a vector of length \code{x}, if \code{x} is an ordered factor; otherwise, a 0-1 matrix
+with number of rows equal to the length of \code{x} an number of columns equal to the number of
+levels in \code{x}
+}
 \description{
 Convert a factor variable to a numeric vector (when the factor is ordered),
 or a matrix of indicator variables (when the factor is not ordered).
+}
+\seealso{
+\code{\link[stats]{model.matrix}}
 }

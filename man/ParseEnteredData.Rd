@@ -13,15 +13,20 @@ ParseEnteredData(raw.matrix, warn = TRUE, want.data.frame = FALSE,
 
 \item{warn}{Whether to show warnings}
 
-\item{want.data.frame}{Whether to return a data frame instead of a matrix or vector.}
+\item{want.data.frame}{logical; should a \code{data.frame} be returned instead
+of a matrix or vector?}
 
-\item{want.factors}{Whether a text variable should be converted to a factor in a data frame.}
+\item{want.factors}{logical; should a text variable be converted to a factor?
+Ignored if \code{want.data.frame} is \code{FALSE}}
 
-\item{want.col.names}{Whether to interpret the first row as column names in a data frame.}
+\item{want.col.names}{logical; should the first row be interpretted as column names?
+Ignored if \code{want.data.frame} is \code{FALSE}}
 
-\item{want.row.names}{Whether to interpret the first col as row names in a data frame.}
+\item{want.row.names}{logical; should the first colulm be interpretted as row names?
+Ignored if \code{want.data.frame} is \code{FALSE}}
 
-\item{us.format}{Whether to use the US convention when parsing dates in a data frame.}
+\item{us.format}{logical; should the U.S. convention be used when parsing dates?
+Ignored if \code{want.data.frame} is \code{FALSE}}
 }
 \description{
 Takes a raw character matrix returned by dataEntry R GUI control

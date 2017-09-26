@@ -10,7 +10,7 @@ TextAsVector(x, split = ",", silent = FALSE)
 \item{x}{Input text, which may be either a deliminated string which is broken up
 or a vector of strings which need to be cleaned up.}
 
-\item{split}{Deliminater to split input text.}
+\item{split}{Deliminator to split input text.}
 
 \item{silent}{Boolean indicating whether a warning is given if smart quotes are removed}
 }
