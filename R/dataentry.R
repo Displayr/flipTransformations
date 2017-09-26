@@ -53,7 +53,14 @@ asNumericWithPercent <- function(t)
     result
 }
 
-# Remove first few rows and columns if they are empty
+#' Remove first few rows and columns if they are empty
+#'
+#' Removes empty rows and columns before the first
+#' non-empty cell in a character matrix
+#' @param m character matrix
+#' @param drop logical; should output be conver
+#' @noRd
+#' @keywords internal
 removeEmptyRowsAndColumns <- function(m, drop)
 {
     start.row <- 1
