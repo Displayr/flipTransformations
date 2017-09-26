@@ -78,66 +78,6 @@ removeEmptyRowsAndColumns <- function(m, drop)
     m[start.row:nrow(m), start.col:ncol(m), drop = drop]
 }
 
-parseAsVectorOrMatrix <- function(m, warn)
-{
-    n.row <- nrow(m)
-    n.col <- ncol(m)
-
-    if (isTextNumeric(m))
-    {
-        if (is.vector(m))
-            result <- asNumericWithPercent(m) # numeric vector, without names
-        else
-            result <- matrix(asNumericWithPercent(m), nrow = n.row) # numeric matrix, without names
-    }
-    else if (is.vector(m)) # character vector
-        result <- m
-    else if (n.col == 2 && isTextNumeric(m[, 2])) # numeric vector with names
-        result <- structure(asNumericWithPercent(m[, 2]), names = m[, 1])
-    else if (isTextNumeric(m[, 2:n.col])) # numeric matrix with row names
-    {
-        numeric.m <- matrix(asNumericWithPercent(m[, 2:n.col]), nrow = n.row)
-        rownames(numeric.m) <- m[, 1]
-        result <- numeric.m
-    }
-    else if (isTextNumeric(m[2:n.row, ])) # numeric matrix with column names
-    {
-        numeric.m <- matrix(asNumericWithPercent(m[2:n.row, ]), nrow = n.row - 1)
-        colnames(numeric.m) <- m[1, ]
-        result <- numeric.m
-    }
-    else if (isTextNumeric(m[2:n.row, 2:n.col])) # numeric matrix with row and column names
-    {
-        numeric.m <- matrix(asNumericWithPercent(m[2:n.row, 2:n.col, drop = FALSE]), nrow = n.row - 1)
-        if (any(m[1, 2:n.col] != ""))
-            colnames(numeric.m) <- m[1, 2:n.col]
-        if (any(m[2:n.row, 1] != ""))
-            rownames(numeric.m) <- m[2:n.row, 1]
-        if (any(m[1, 1] != ""))
-            attr(numeric.m, "statistic") <- m[1, 1]
-        result <- numeric.m
-    }
-    else if (isNumericMatrixWithLabelsAndTitles(m)) # numeric matrix with row and column names and titles
-    {
-        numeric.m <- matrix(asNumericWithPercent(m[3:n.row, 3:n.col, drop = FALSE]), nrow = n.row - 2)
-        if (any(m[2, 3:n.col] != ""))
-            colnames(numeric.m) <- m[2, 3:n.col]
-        if (any(m[3:n.row, 2] != ""))
-            rownames(numeric.m) <- m[3:n.row, 2]
-        if (any(m[2, 2] != ""))
-            attr(numeric.m, "statistic") <- m[2, 2]
-        attr(numeric.m, "row.column.names") <- c(m[3, 1], m[1, 3]) # titles
-        result <- numeric.m
-    }
-    else # character matrix
-    {
-        if (warn)
-            warning("The entered data could not be interpreted.")
-        result <- m
-    }
-    result
-}
-
 #' \code{ParseEnteredData}
 #' @description Takes a data.frame and performs extra parsing, for example with dates and percentages.
 #' @param m Data frame which requires parsing.
