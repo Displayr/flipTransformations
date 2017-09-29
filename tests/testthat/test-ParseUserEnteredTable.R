@@ -220,3 +220,36 @@ test_that("numeric matrix with names and titles", {
                                               "Rebellious", "Sleepy", "Traditional", "Weight-conscious", "NET")),
                            row.column.names = c("Product", "Attribute")))
 })
+
+
+test_that("DS-1558: all character table, row/col labels",
+{
+    x <- structure(c("", "21 July", "5/8 Aug", "22 Aug", "1st Sep", "12/14 Sep",
+    "", "Chris", "Immediate contact for new Displayr users who appear in Slack.",
+    "Immediate contact for new Displayr users who appear in Slack.",
+    "Immediate contact for new Displayr users who appear in Slack.",
+    "Review long-resolution tickets", "Immediate contact for new Displayr users who appear in Slack.",
+    "", "Matt E", "Follow up with 10 Q non users in our region. Continue with Phrase express",
+    "Follow up with lapsed Displayr users - 3+ uses, not used for 7 days or more, restrict to outside of US + UK.Continue with time-saving macros in Zendesk.",
+    "Follow up with lapsed Displayr users - 3+ uses, not used for 7 days or more, restrict to outside of US + UK.Continue with time-saving macros in Zendesk.",
+    "Monitor pending in Zendesk, makes notes for areas for improvement.",
+    "Follow up with 10 Q non users in our region.", "Review 10 tickets with longest resolution time from last 30 days and categorise as to reasons.",
+    "Tim", "Contact people in app when first sign up and if notice they are seen \"just now\". Follow up with lapsed Displayr users.",
+    "Contact people in app when first sign up and if notice they are seen \"just now\". Follow up with lapsed Displayr users - 3+ uses, not used for 7 days or more, restrict to US.",
+    "", "Contact people in app when first sign up and if notice they are seen \"just now\". Triallist research.",
+    "Contact people in app when first sign up and if notice they are seen \"just now\". Triallist research.",
+    "Review 10 Displayr users, active last two weeks, who have had 5 or more uses or a demo. Review 5 tickets with longest resolution time from last 30 days and categorise as to reasons.",
+    "Neal", "", "Contact 10 Q non-users.", "Contact 10 Q non-users.",
+    "Contact 10 Q non-users.", "", "Research + Contact 5 US Displayr users. Review 5 tickets with longest resolution time from last 30 days and categorise as to reasons.",
+    "Matt S", "Monitor new Displayr users in UK daytime and approach with in-app messages",
+    "Monitor new Displayr users in UK daytime and approach with in-app messages",
+    "", "", "", "Record tickets with large number of replies and classify reasons. Review 5 tickets with longest resolution time from last 30 days and categorise as to reasons.",
+    "Nigel", "Contact 5-10 EU / UK Displayr users", "Contact 20 EU / UK Displayr users",
+    "", "", "Contact 5 EU / UK Displayr users", "Contact 5 EU / UK Displayr users. Review 5 tickets with longest resolution time from last 30 days and categorise as to reasons."
+  ), .Dim = c(7L, 7L))
+
+    out <- suppressWarnings(ParseUserEnteredTable(x))
+    expect_equal(dim(out), c(6, 6))
+    expect_equal(colnames(out), x[1, -1])
+    expect_equal(rownames(out), x[-1, 1])
+})
