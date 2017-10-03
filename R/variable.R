@@ -262,7 +262,7 @@ ProcessQVariables <- function(x)
         NULL
     else if (is.data.frame(x))
         data.frame(lapply(x, function(v) .processQVariable(v)), check.names = FALSE,
-                   stringsAsFactors = FALSE, row.names = rownames(x))
+                   stringsAsFactors = FALSE, row.names = attr(x, "row.names"))
     else
         .processQVariable(x)
 }
