@@ -14,7 +14,6 @@ Imports:
     flipFormat,
     flipTime,
     flipU,
-    lubridate,
     stats,
     data.table
 Remotes:
