@@ -102,6 +102,10 @@ test_that("RemoveRowsAndOrColumns data.frame no col. attrs",
     out <- RemoveRowsAndOrColumns(dat, column.names.to.remove = c("x", "z"))
     expect_equal(dim(out), dim(dat) - c(0, 2))
     expect_is(out, "data.frame")
+
+    dat <- data.frame(x = 1:2, z = 1:2)
+    out <- RemoveRowsAndOrColumns(dat)
+    expect_equal(dim(dat), dim(out))
 })
 
 

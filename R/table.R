@@ -40,7 +40,7 @@ RemoveRowsAndOrColumns <- function(x,
             tatts <- attributes(x[[idx]])
             tatts <- tatts[!names(tatts) %in% c("dimnames", "dim", "row.names",
                                                 "names", "class", "levels")]
-            if (length(tatts))  # copying NULL would delete element/chg length
+            if (length(tatts))  # assigning NULL would delete element/chg length
                 col.attrs[[i]] <- tatts
         }
     }
