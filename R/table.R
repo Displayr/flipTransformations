@@ -39,13 +39,14 @@ RemoveRowsAndOrColumns <- function(x,
             idx <- cidx[i]
             tatts <- attributes(x[[idx]])
             tatts <- tatts[!names(tatts) %in% c("dimnames", "dim", "row.names",
-                                                            "names", "class", "levels")]
-            col.attrs[[i]] <- tatts
+                                                "names", "class", "levels")]
+            if (length(tatts))  # copying NULL would delete element/chg length
+                col.attrs[[i]] <- tatts
         }
     }
 
     x <- x[ind[[1]], ind[[2]], drop = FALSE]
-    if (is.data.frame(x) && length(col.attrs))
+    if (is.data.frame(x) && length(col.attrs) && !is.null(unlist(col.attrs)))
     {
         for (i in seq_along(cidx))
             if (length(col.attrs[[i]]))
