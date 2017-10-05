@@ -7,6 +7,7 @@
 #' @param split Delimiter to split string on.
 #' @details Trailing spaces are removed and lower/upper case is ignored.
 #' @importFrom flipFormat ConvertCommaSeparatedStringToVector
+#' @importFrom utils modifyList
 #' @export
 RemoveRowsAndOrColumns <- function(x,
                                    row.names.to.remove = c("NET", "Total", "SUM"),
@@ -20,7 +21,14 @@ RemoveRowsAndOrColumns <- function(x,
     if (length(ind[[1]]) == 0 || length(ind[[2]]) == 0)
         stop ("Removing rows/columns gives empty input matrix\n")
 
-    x[ind[[1]], ind[[2]], drop = FALSE]
+    ## careful to preserve attributes attributes extracting
+    old.attrs <- attributes(x)
+    old.attrs <- old.attrs[!names(old.attrs) %in% c("dimnames", "dim", "row.names",
+                                                    "names", "class")]
+    x <- x[ind[[1]], ind[[2]], drop = FALSE]
+    if (length(old.attrs))
+        attributes(x) <- modifyList(old.attrs, attributes(x))
+    x
 }
 
 #' \code{RetainedRowsAndOrColumns}

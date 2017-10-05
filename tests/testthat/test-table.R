@@ -38,6 +38,12 @@ test_that("RemoveRowAndOrColumns ignores lower/upper case",
               expect_equal(nrow(d5), 7)
           })
 
-
+test_that("RemoveRowsAndOrColumns perserves attriubtes",
+{
+    out <- RemoveRowsAndOrColumns(dat, row.names.to.remove = "diet coke, coke zero")
+    expect_equal(attr(out, "name"), attr(dat, "name"))
+    expect_equal(attr(out, "questions"), attr(dat, "questions"))
+    expect_equal(attr(out, "statistic"), attr(dat, "statistic"))
+})
 
 
