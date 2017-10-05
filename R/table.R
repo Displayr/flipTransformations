@@ -14,6 +14,8 @@ RemoveRowsAndOrColumns <- function(x,
                                    column.names.to.remove = c("NET", "Total", "SUM"),
                                    split = ",")
 {
+    if (is.null(row.names.to.remove) && is.null(column.names.to.remove))
+        return(x)
     ind <- RetainedRowsAndOrColumns(x = x, row.names.to.remove = row.names.to.remove,
                                 column.names.to.remove = column.names.to.remove,
                                 split = split)
@@ -21,11 +23,33 @@ RemoveRowsAndOrColumns <- function(x,
     if (length(ind[[1]]) == 0 || length(ind[[2]]) == 0)
         stop ("Removing rows/columns gives empty input matrix\n")
 
-    ## careful to preserve attributes attributes extracting
+    ## careful to preserve attributes when extracting (both of x and x's columns in data.frame case)
+    ## allows more attributes than flipU::CopyAttributes
     old.attrs <- attributes(x)
     old.attrs <- old.attrs[!names(old.attrs) %in% c("dimnames", "dim", "row.names",
                                                     "names", "class")]
+
+    ## copy column attributes
+    if (is.data.frame(x) )
+    {
+        col.attrs <- vector("list", length(ind[[2]]))
+        cidx <- ind[[2]]
+        for (i in seq_along(cidx))
+        {
+            idx <- cidx[i]
+            tatts <- attributes(x[[idx]])
+            tatts <- tatts[!names(tatts) %in% c("dimnames", "dim", "row.names",
+                                                            "names", "class", "levels")]
+            col.attrs[[i]] <- tatts
+        }
+    }
+
     x <- x[ind[[1]], ind[[2]], drop = FALSE]
+    if (is.data.frame(x))
+    {
+        for (i in seq_along(cidx))
+             attributes(x[[i]]) <- modifyList(col.attrs[[i]], attributes(x[[i]]))
+    }
     if (length(old.attrs))
         attributes(x) <- modifyList(old.attrs, attributes(x))
     x
