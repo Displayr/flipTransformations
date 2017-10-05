@@ -45,10 +45,11 @@ RemoveRowsAndOrColumns <- function(x,
     }
 
     x <- x[ind[[1]], ind[[2]], drop = FALSE]
-    if (is.data.frame(x))
+    if (is.data.frame(x) && length(col.attrs))
     {
         for (i in seq_along(cidx))
-             attributes(x[[i]]) <- modifyList(col.attrs[[i]], attributes(x[[i]]))
+            if (length(col.attrs[[i]]))
+                attributes(x[[i]]) <- modifyList(col.attrs[[i]], attributes(x[[i]]))
     }
     if (length(old.attrs))
         attributes(x) <- modifyList(old.attrs, attributes(x))

@@ -46,8 +46,6 @@ test_that("RemoveRowsAndOrColumns perserves attriubtes",
     expect_equal(attr(out, "statistic"), attr(dat, "statistic"))
 })
 
-test_that("RemoveRowsAndOrColumns keeps data.frame col. attrs",
-{
         dat <- structure(list(Q6_A = structure(c(3L, 5L, 5L, 6L, 4L, 1L, 3L,
     6L, 5L, 6L, 6L, 5L, 5L, 4L, 3L, 6L, 6L, 5L, 5L, 4L), .Label = c("Don t Know",
     "Hate", "Dislike", "Neither like nor dislike", "Like", "Love"
@@ -76,10 +74,35 @@ test_that("RemoveRowsAndOrColumns keeps data.frame col. attrs",
                                                            ), class = "data.frame")
     attr(dat, "statistic") <- "means"
 
+test_that("RemoveRowsAndOrColumns keeps data.frame col. attrs",
+{
     out <- RemoveRowsAndOrColumns(dat, column.names.to.remove = "Q6_A", row.names.to.remove = "3")
     expect_equal(flipFormat::Labels(out), flipFormat::Labels(dat)[-1])
     expect_equal(dim(out), dim(dat) - c(1, 1))
     expect_equal(attr(out, "statistic"), attr(dat, "statistic"))
 })
+
+test_that("RemoveRowsAndOrColumns keeps data.frame col. attrs, only one col remains",
+{
+    out <- RemoveRowsAndOrColumns(dat, column.names.to.remove = c("Q6_B", "Q6_F", "Q6_C", "Q6_D", "Q6_A"))
+    expect_equal(flipFormat::Labels(out), flipFormat::Labels(dat)[5])
+    expect_equal(dim(out), c(nrow(dat), 1L))
+    expect_equal(attr(out, "statistic"), attr(dat, "statistic"))
+})
+
+test_that("RemoveRowsAndOrColumns data.frame no col. attrs",
+{
+    dat <- data.frame(x = 1:5, y = 1:5, z = as.factor(c(1,2,1,2,0)))
+    attr(dat, "statistic") <- "SUM"
+    out <- RemoveRowsAndOrColumns(dat, column.names.to.remove = "x", row.names.to.remove = "2")
+    expect_equal(dim(out), dim(dat) - c(1, 1))
+    expect_equal(colnames(out), colnames(dat)[-1])
+    expect_equal(attr(out, "statistic"), attr(dat, "statistic"))
+
+    out <- RemoveRowsAndOrColumns(dat, column.names.to.remove = c("x", "z"))
+    expect_equal(dim(out), dim(dat) - c(0, 2))
+    expect_is(out, "data.frame")
+})
+
 
 
