@@ -253,7 +253,8 @@ ProcessQVariables <- function(x)
     .processQVariable <- function(v)
     {
         if ("QDate" %in% class(v))
-            CopyAttributes(attr(v, "QDate"), v)
+            CopyAttributes(attr(v, "QDate"), v, c("dimnames", "names",
+                                                "dim", "class", "QDate"))
         else
             v
     }

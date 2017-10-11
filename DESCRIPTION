@@ -13,7 +13,7 @@ Suggests:
 Imports:
     flipFormat,
     flipTime,
-    flipU,
+    flipU (>= 1.0.0),
     stats,
     utils,
     data.table

@@ -7,7 +7,7 @@
 #' @param split Delimiter to split string on.
 #' @details Trailing spaces are removed and lower/upper case is ignored.
 #' @importFrom flipFormat ConvertCommaSeparatedStringToVector
-#' @importFrom utils modifyList
+#' @importFrom flipU CopyAttributes
 #' @export
 RemoveRowsAndOrColumns <- function(x,
                                    row.names.to.remove = c("NET", "Total", "SUM"),
@@ -30,7 +30,7 @@ RemoveRowsAndOrColumns <- function(x,
                                                     "names", "class")]
 
     ## copy column attributes
-    if (is.data.frame(x) )
+    if (is.data.frame(x))
     {
         col.attrs <- vector("list", length(ind[[2]]))
         cidx <- ind[[2]]
@@ -45,23 +45,7 @@ RemoveRowsAndOrColumns <- function(x,
         }
     }
 
-    x <- x[ind[[1]], ind[[2]], drop = FALSE]
-    if (is.data.frame(x) && length(col.attrs) && !is.null(unlist(col.attrs)))
-    {
-        for (i in seq_along(cidx))
-            if (length(col.attrs[[i]]))
-            {  # modifyList fails if either list is NULL
-                attx <- attributes(x[[i]])
-                if (length(attx))
-                    attributes(x[[i]]) <- modifyList(col.attrs[[i]], attx)
-                else
-                    attributes(x[[i]]) <- col.attrs[[i]]
-            }
-
-    }
-    if (length(old.attrs))
-        attributes(x) <- modifyList(old.attrs, attributes(x))
-    x
+    CopyAttributes(x[ind[[1]], ind[[2]], drop = FALSE], x)
 }
 
 #' \code{RetainedRowsAndOrColumns}
