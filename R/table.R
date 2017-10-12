@@ -23,28 +23,6 @@ RemoveRowsAndOrColumns <- function(x,
     if (length(ind[[1]]) == 0 || length(ind[[2]]) == 0)
         stop ("Removing rows/columns gives empty input matrix\n")
 
-    ## careful to preserve attributes when extracting (both of x and x's columns in data.frame case)
-    ## allows more attributes than flipU::CopyAttributes
-    old.attrs <- attributes(x)
-    old.attrs <- old.attrs[!names(old.attrs) %in% c("dimnames", "dim", "row.names",
-                                                    "names", "class")]
-
-    ## copy column attributes
-    if (is.data.frame(x))
-    {
-        col.attrs <- vector("list", length(ind[[2]]))
-        cidx <- ind[[2]]
-        for (i in seq_along(cidx))
-        {
-            idx <- cidx[i]
-            tatts <- attributes(x[[idx]])
-            tatts <- tatts[!names(tatts) %in% c("dimnames", "dim", "row.names",
-                                                "names", "class", "levels")]
-            if (length(tatts))  # assigning NULL would delete element/chg length
-                col.attrs[[i]] <- tatts
-        }
-    }
-
     CopyAttributes(x[ind[[1]], ind[[2]], drop = FALSE], x)
 }
 
