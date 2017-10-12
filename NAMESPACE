@@ -2,6 +2,7 @@
 
 S3method(AsNumeric,data.frame)
 S3method(AsNumeric,default)
+S3method(AsNumeric,list)
 export(AdjustDataToReflectWeights)
 export(AsNumeric)
 export(CreatingBinaryDependentVariableIfNecessary)

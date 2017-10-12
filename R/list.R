@@ -11,6 +11,8 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
     result <- NULL
     unclassed <- list()
     nms <- names(list.of.variables)
+    if (is.null(nms))
+        stop("Every element in the list needs to have a name.")
     for (counter in seq(along = list.of.variables))
     {
         variable <- list.of.variables[[counter]]
@@ -37,9 +39,12 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
             result <- cbind(result, as.data.frame(variable))
         }
 
-        if (is.null(ncol(variable)))
+        if (is.null(ncol(variable))) # Numeric variables (i.e., not exploded factors).
         {
-            colnames(result)[ncol(result)] <- names(list.of.variables)[counter]#variable.name
+            variable.name <- names(list.of.variables)[counter]
+            if (is.null(variable.name))
+                stop("Every element in the list needs to have a name.")
+            colnames(result)[ncol(result)] <- variable.name#variable.name
         }
     }
     if (length(unclassed) > 0)
