@@ -47,9 +47,9 @@ test_that("AsNumeric",
               expect_equal(suppressWarnings(AsNumeric(dm, binary=F)), 1:7)
 
               # list - checking for variable names
-              expect_error(AsNumeric(list(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE), "Every element")
-              flipU::ExpectWarning(AsNumeric(list(A = Q2, B = Q3, C = Q4),  binary = FALSE, remove.first = TRUE), "structure")
-              expect_error(AsNumeric(list(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE))
+              expect_error(suppressWarnings(AsNumeric(list(A = Q2, B = Q3, C = Q4),  binary = FALSE, remove.first = TRUE)), NA)
+              expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE)), NA)
+              expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE)), NA)
           })
 
 df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)

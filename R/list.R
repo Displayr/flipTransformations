@@ -1,21 +1,25 @@
-#' \code{ListToDataFrame}
-#' @description Coerce a list of numeric or factor variables into a data frame.
-#' @param list.of.variables A list containing the variables to combine. The
+#' \code{AsNumericList}
+#' @description Coerce a list of numeric or factor variables into a list where the elements of the list are numeric.
+#' @param x A list containing the variables to combine. The
 #'   elements of the list should be of class numeric, factor, or ordered factor.
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
 #' @param remove.first Remove the first binary variable.
-#' @export
-ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FALSE)
+#' @param return.data.frame Returns as a \code{\link{data.frame}}.
+#' @return A \code{\link{data.frame}} or \code{\link{list}}.
+asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.frame = TRUE)
 {
     result <- NULL
     unclassed <- list()
-    nms <- names(list.of.variables)
-    if (is.null(nms))
-        stop("Every element in the list needs to have a name.")
-    for (counter in seq(along = list.of.variables))
+    nms <- names(x)
+    if (!return.data.frame)
     {
-        variable <- list.of.variables[[counter]]
+        result <- vector("list", length(x))
+        names(result) <- names(x)
+    }
+    for (counter in seq(along = x))
+    {
+        variable <- x[[counter]]
         if (is.null(attr(variable, "name")))
             attr(variable, "name") <- nms[counter]
         attr(variable, "InLoop") <- TRUE
@@ -30,21 +34,25 @@ ListToDataFrame <- function(list.of.variables, binary = TRUE, remove.first = FAL
             }
         }
         attr(variable, "InLoop") <- NULL
-        if (is.null(result))
+        if (return.data.frame)
         {
-            result <- as.data.frame(variable)
+            if (is.null(result))
+            {
+                result <- as.data.frame(variable)
+            }
+            else
+            {
+                result <- cbind(result, as.data.frame(variable))
+            }
+
+            if (is.null(ncol(variable))) # Numeric variables (i.e., not exploded factors).
+            {
+                colnames(result)[ncol(result)] <- names(x)[counter]
+            }
         }
         else
         {
-            result <- cbind(result, as.data.frame(variable))
-        }
-
-        if (is.null(ncol(variable))) # Numeric variables (i.e., not exploded factors).
-        {
-            variable.name <- names(list.of.variables)[counter]
-            if (is.null(variable.name))
-                stop("Every element in the list needs to have a name.")
-            colnames(result)[ncol(result)] <- variable.name#variable.name
+            result[[counter]] <- variable
         }
     }
     if (length(unclassed) > 0)
