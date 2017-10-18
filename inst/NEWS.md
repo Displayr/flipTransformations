@@ -1,3 +1,14 @@
+Changes in Version 1.1.3 (2017-10-18)
+--------------------------------------------------------
+
+NEW FEATURES
+
+* Added function `asNumericList`, which replaces ListToDataFrame and generalizes it
+    to permit it to return lists (if the input is a list).
+* Added `AsNumeric` method for lists
+* Replaced usage of `flipTime::ParseDateTime` with `flipTime::AsDateTime`
+
+
 Changes in Version 1.1.0 (2017-10-12)
 --------------------------------------------------------
 
