@@ -5,7 +5,7 @@
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
 #' @param name Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
-#' ignored if x is a \code{\link{data.frame}}.
+#' ignored if x is a \code{\link{data.frame}} or  \code{\link{list}}.
 #' @param remove.first Remove the first binary variable.
 #' @details Characters are treated as factors.
 #' @importFrom flipFormat RemoveParentName
@@ -45,11 +45,18 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
 #' @export
 AsNumeric.data.frame <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
-    new.x = ListToDataFrame(x, binary = binary, remove.first = remove.first)
+    new.x = asNumericList(x, binary = binary, remove.first = remove.first, return.data.frame = TRUE)
     row.names(new.x) = row.names(x)
     new.x
 }
 
+#' @export
+AsNumeric.list <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
+{
+    if (!is.null(name))
+        warning("'name' parameter is not used when 'x' is a list.")
+    asNumericList(x, binary = binary, remove.first = remove.first, return.data.frame = FALSE)
+}
 
 #' \code{OneHot}
 #'

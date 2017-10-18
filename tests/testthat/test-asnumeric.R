@@ -10,7 +10,7 @@ X <- data.frame("a" = LETTERS[1:20],
 
 test_that("AsNumeric",
           {
-
+              # Data frame
               Q2 <- factor(bank$Overall)
               Q3 <- factor(bank$Fees)
               Q4 <- factor(bank$Fees)
@@ -45,6 +45,11 @@ test_that("AsNumeric",
               expect_equal(range(AsNumeric(dd, binary=F)), c(946684800, 947462400))
               expect_equal(range(AsNumeric(ds, binary=F)), c(946684800, 947462400))
               expect_equal(suppressWarnings(AsNumeric(dm, binary=F)), 1:7)
+
+              # list - checking for variable names
+              expect_error(suppressWarnings(AsNumeric(list(A = Q2, B = Q3, C = Q4),  binary = FALSE, remove.first = TRUE)), NA)
+              expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE)), NA)
+              expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE)), NA)
           })
 
 df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)

@@ -13,7 +13,7 @@ AsNumeric(x, binary = TRUE, name = NULL, remove.first = FALSE)
 Otherwise, they are represented as sequential integers.}
 
 \item{name}{Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
-ignored if x is a \code{\link{data.frame}}.}
+ignored if x is a \code{\link{data.frame}} or  \code{\link{list}}.}
 
 \item{remove.first}{Remove the first binary variable.}
 }
