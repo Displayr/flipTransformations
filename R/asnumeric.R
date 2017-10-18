@@ -16,7 +16,7 @@ AsNumeric <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 }
 
 #' @importFrom flipFormat RemoveParentName Names
-#' @importFrom flipTime ParseDateTime
+#' @importFrom flipTime AsDateTime
 #' @export
 AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {
@@ -25,7 +25,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
 
     if (is.character(x))
     {
-        x.tmp <- ParseDateTime(x)
+        x.tmp <- AsDateTime(x)
         if (!any(is.na(x.tmp)))
             x <- x.tmp
     }
