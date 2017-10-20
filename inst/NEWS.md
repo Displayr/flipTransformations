@@ -1,3 +1,11 @@
+Changes in Version 1.2.0 (2017-10-20)
+--------------------------------------------------------
+
+* The functions `RemoveByName`, `RemoveRowsAndOrColumns`,
+and `RetainedRowsAndOrColumns` have been moved to 
+flipTables v2.1.0 (DS-1471)
+
+
 Changes in Version 1.1.3 (2017-10-18)
 --------------------------------------------------------
 
