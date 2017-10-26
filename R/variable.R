@@ -192,10 +192,12 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = Re
 }
 
 
-#' \code{CreatingFactorDependentVariableIfNecessary}
-#' @description Turns a numeric outcome variable into a factor outcome variable in a data.frame if not already a factor.
+
+#' Turn the outcome variable from a formula into a factor
+#'
+#'   if not already a factor.
 #' @param formula A formula.
-#' @param data A data.frame
+#' @param data A data.frame containing the variable.
 #' @importFrom flipU OutcomeName
 #' @export
 CreatingFactorDependentVariableIfNecessary <- function(formula, data)
