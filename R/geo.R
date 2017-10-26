@@ -1,5 +1,5 @@
-#' \code{tidyGeography}
-#' @description Uses Google's geocoding API to return geocoded data from a vector of locations.
+#' Use Google's geocoding API to return geocoded data from a vector of locations.
+#'
 #' @param x A vector of locations.
 #' @param api.key Google geocoding API key.
 #' @details This fuction iterates through a character vector of locations and returns
