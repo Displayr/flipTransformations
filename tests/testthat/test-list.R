@@ -18,3 +18,13 @@ test_that("QuestionListToDataFrame works as expected",
     tdf <- data.frame("A" = c(0,0,0), "B" = c(1,0,0), "C" = c(0,1,0), "q2" = q2)
     expect_equal(QuestionListToDataFrame(q.list), tdf)
 })
+
+
+test_that("SplitVectorToList",
+{
+    y <- 1:4
+    gr <- c("A", "B", "A", "A")
+    expect_equal(SplitVectorToList(y, gr), list(A = c(1,3,4), B = 2))
+})
+
+
