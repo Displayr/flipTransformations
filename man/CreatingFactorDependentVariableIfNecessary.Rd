@@ -2,15 +2,15 @@
 % Please edit documentation in R/variable.R
 \name{CreatingFactorDependentVariableIfNecessary}
 \alias{CreatingFactorDependentVariableIfNecessary}
-\title{\code{CreatingFactorDependentVariableIfNecessary}}
+\title{Turn the outcome variable from a formula into a factor}
 \usage{
 CreatingFactorDependentVariableIfNecessary(formula, data)
 }
 \arguments{
 \item{formula}{A formula.}
 
-\item{data}{A data.frame}
+\item{data}{A data.frame containing the variable.}
 }
 \description{
-Turns a numeric outcome variable into a factor outcome variable in a data.frame if not already a factor.
+if not already a factor.
 }

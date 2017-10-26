@@ -24,7 +24,7 @@ test_that("SplitVectorToList",
 {
     y <- 1:4
     gr <- c("A", "B", "A", "A")
-    expect_equal(SplitVectorToList(y, gr), list(A = c(1,3,4), B = 2))
+    expect_equal(SplitVectorToList(y, gr), as.array(list(A = c(1,3,4), B = 2)))
 })
 
 

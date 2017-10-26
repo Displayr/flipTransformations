@@ -2,7 +2,7 @@
 % Please edit documentation in R/geo.R
 \name{tidyGeography}
 \alias{tidyGeography}
-\title{\code{tidyGeography}}
+\title{Use Google's geocoding API to return geocoded data from a vector of locations.}
 \usage{
 tidyGeography(x, api.key)
 }
@@ -12,7 +12,7 @@ tidyGeography(x, api.key)
 \item{api.key}{Google geocoding API key.}
 }
 \description{
-Uses Google's geocoding API to return geocoded data from a vector of locations.
+Use Google's geocoding API to return geocoded data from a vector of locations.
 }
 \details{
 This fuction iterates through a character vector of locations and returns
