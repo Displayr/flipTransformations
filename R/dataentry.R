@@ -86,7 +86,7 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #' @param want.col.names Whether to interpret the first row as column names in a data frame.
 #' @param want.row.names Whether to interpret the first col as row names in a data frame.
 #' @param us.format Whether to use the US convention when parsing dates in a data frame.
-#' @importFrom flipTime ParseDateTime
+#' @importFrom flipTime AsDateTime
 #' @export
 ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
                              us.format = TRUE)
@@ -133,7 +133,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
             df[[i]] <- asNumericWithPercent(v) # numeric
         else
         {
-            parsed.dates <- ParseDateTime(v, us.format)
+            parsed.dates <- AsDateTime(v, us.format)
             if (!any(is.na(parsed.dates)))
                 df[[i]] <- parsed.dates # date
             else if (want.factors)
