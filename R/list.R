@@ -90,3 +90,15 @@ QuestionListToDataFrame <- function(list.of.questions, names.to.remove = c("NET"
     }
     result
 }
+
+
+#' \code{SplitVectorToList}
+#' @description Splits a vector \code{values} by unique values of another vector, \code{groups}.
+#' @param values A \code{\link{vector}} to be split.
+#' @param groups A \code{\link{vector}} which determines how \code{vakuees} is split.
+#' @return A \code{\link{list}}.
+#' @export
+SplitVectorToList <- function(values, groups)
+{
+    tapply(values, groups, c)
+}
