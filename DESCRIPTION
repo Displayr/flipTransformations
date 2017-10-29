@@ -13,14 +13,15 @@ Suggests:
     flipExampleData,
     testthat
 Imports:
+    data.table,
     flipFormat,
     flipTime,
     flipU (>= 1.0.0),
     stats,
-    utils,
-    data.table
+    utils
 Remotes:
-    Displayr/flipU,
+    Displayr/flipExampleData,
+    Displayr/flipFormat,
     Displayr/flipTime,
-    Displayr/flipFormat
+    Displayr/flipU
 RoxygenNote: 6.0.1
