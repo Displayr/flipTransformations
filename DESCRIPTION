@@ -15,7 +15,7 @@ Suggests:
 Imports:
     data.table,
     flipFormat,
-    flipTime (>= 1.1.0),
+    flipTime (>= 1.2.2),
     flipU (>= 1.0.0),
     stats,
     utils

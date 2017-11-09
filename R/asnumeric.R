@@ -25,7 +25,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
 
     if (is.character(x))
     {
-        x.tmp <- AsDateTime(x)
+        x.tmp <- AsDateTime(x, on.parse.failure = "silent")
         if (!any(is.na(x.tmp)))
             x <- x.tmp
     }

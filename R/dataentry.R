@@ -78,8 +78,10 @@ removeEmptyRowsAndColumns <- function(m, drop)
     m[start.row:nrow(m), start.col:ncol(m), drop = drop]
 }
 
-#' \code{ParseEnteredData}
-#' @description Takes a data.frame and performs extra parsing, for example with dates and percentages.
+#' Parse a Character Matrix To a Data Frame
+#'
+#' Takes a data.frame and performs extra parsing, for example with
+#' dates and percentages.
 #' @param m Data frame which requires parsing.
 #' @param warn Whether to show warnings.
 #' @param want.factors Whether a text variable should be converted to a factor in a data frame.
@@ -88,8 +90,8 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #' @param us.format Whether to use the US convention when parsing dates in a data frame.
 #' @importFrom flipTime AsDateTime
 #' @export
-ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE, want.row.names = FALSE,
-                             us.format = TRUE)
+ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE,
+                             want.row.names = FALSE, us.format = TRUE)
 {
     n.row <- nrow(m)
     n.col <- ncol(m)
@@ -133,7 +135,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
             df[[i]] <- asNumericWithPercent(v) # numeric
         else
         {
-            parsed.dates <- AsDateTime(v, us.format)
+            parsed.dates <- AsDateTime(v, us.format, on.parse.failure = "silent")
             if (!any(is.na(parsed.dates)))
                 df[[i]] <- parsed.dates # date
             else if (want.factors)
