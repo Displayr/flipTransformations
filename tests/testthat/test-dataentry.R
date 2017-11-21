@@ -96,7 +96,9 @@ test_that("data frame", {
                               "9-Feb-16", "10-Feb-16", "11-Feb-16", "12-Feb-16", "13-Feb-16",
                               "14-Feb-16", "15-Feb-16", "char", "a", "b", "b", "a", "f", "f",
                               "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 3L))
-    expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE),
+    expect_warning(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE),
+                   "^Supplied date formats are ambiguous")
+    expect_equal(out,
                  structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
                                 date = structure(c(1454284800, 1454371200, 1454457600,
                                                    1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
@@ -109,10 +111,10 @@ test_that("data frame", {
 
 test_that("data frame no factors", {
     raw.matrix <- structure(c("num", "1", "2", "", "4", "2", "", "5", "", "23",
-                              "", "2", "3.14", "5", "", "6", "date", "1-Feb-16", "2-Feb-16",
-                              "3-Feb-16", "4-Feb-16", "5-Feb-16", "6-Feb-16", "7-Feb-16", "8-Feb-16",
-                              "9-Feb-16", "10-Feb-16", "11-Feb-16", "12-Feb-16", "13-Feb-16",
-                              "14-Feb-16", "15-Feb-16", "char", "a", "b", "b", "a", "f", "f",
+                              "", "2", "3.14", "5", "", "6", "date", "1-Feb-2016", "2-Feb-2016",
+                              "3-Feb-2016", "4-Feb-2016", "5-Feb-2016", "6-Feb-2016", "7-Feb-2016", "8-Feb-2016",
+                              "9-Feb-2016", "10-Feb-2016", "11-Feb-2016", "12-Feb-2016", "13-Feb-2016",
+                              "14-Feb-2016", "15-Feb-2016", "char", "a", "b", "b", "a", "f", "f",
                               "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 3L))
     expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE, want.factors = FALSE),
                  structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
@@ -128,10 +130,10 @@ test_that("data frame row names", {
     raw.matrix <- structure(c("", "row 1", "row 2", "row 3", "row 4", "row 5",
                               "row 6", "row 7", "row 8", "row 9", "row 10", "row 11", "row 12",
                               "row 13", "row 14", "row 15", "num", "1", "2", "", "4", "2",
-                              "", "5", "", "23", "", "2", "3.14", "5", "", "6", "date", "1-Feb-16",
-                              "2-Feb-16", "3-Feb-16", "4-Feb-16", "5-Feb-16", "6-Feb-16", "7-Feb-16",
-                              "8-Feb-16", "9-Feb-16", "10-Feb-16", "11-Feb-16", "12-Feb-16",
-                              "13-Feb-16", "14-Feb-16", "15-Feb-16", "char", "a", "b", "b",
+                              "", "5", "", "23", "", "2", "3.14", "5", "", "6", "date", "1-Feb-2016",
+                              "2-Feb-2016", "3-Feb-2016", "4-Feb-2016", "5-Feb-2016", "6-Feb-2016", "7-Feb-2016",
+                              "8-Feb-2016", "9-Feb-2016", "10-Feb-2016", "11-Feb-2016", "12-Feb-2016",
+                              "13-Feb-2016", "14-Feb-2016", "15-Feb-2016", "char", "a", "b", "b",
                               "a", "f", "f", "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 4L))
     expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE, want.row.names = TRUE),
                  structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
@@ -154,7 +156,10 @@ test_that("data frame no names", {
                 "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16", "15-Feb-16",
                 "a", "b", "b", "a", "f", "f", "c", "f", "c", "c", "c", "f", "f",
                 "f", "c"), .Dim = c(15L, 3L))
-    expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE, want.col.names = FALSE),
+    expect_warning(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE,
+                                           want.col.names = FALSE),
+                   "^Supplied date formats are ambiguous")
+    expect_equal(out,
                  structure(list(X1 = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
                                 X2 = structure(c(1454284800, 1454371200, 1454457600,
                                                1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
