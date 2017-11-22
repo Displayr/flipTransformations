@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataentry.R
 \name{ParseAsDataFrame}
 \alias{ParseAsDataFrame}
-\title{\code{ParseEnteredData}}
+\title{Parse a Character Matrix To a Data Frame}
 \usage{
 ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
   want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE)
@@ -21,5 +21,6 @@ ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
 \item{us.format}{Whether to use the US convention when parsing dates in a data frame.}
 }
 \description{
-Takes a data.frame and performs extra parsing, for example with dates and percentages.
+Takes a data.frame and performs extra parsing, for example with
+dates and percentages.
 }

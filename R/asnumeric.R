@@ -34,7 +34,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
     if (is.null(name))
         name <- RemoveParentName(Names(x))
     if (is.character(x))
-        x <- Factor(x)
+        x <- Factor(x, levels = unique(x))
     else if (!is.vector(x) & !is.factor(x))
         stop("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
     if (!is.factor(x))
