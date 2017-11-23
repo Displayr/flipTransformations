@@ -50,6 +50,10 @@ test_that("AsNumeric",
               expect_error(suppressWarnings(AsNumeric(list(A = Q2, B = Q3, C = Q4),  binary = FALSE, remove.first = TRUE)), NA)
               expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = TRUE, remove.first = TRUE)), NA)
               expect_error(suppressWarnings(AsNumeric(list(Q2, Q3, Q4),  binary = FALSE, remove.first = TRUE)), NA)
+
+              # character vector - check order
+              cc <- sprintf("Row %d", c(1:100, 1:3))
+              expect_equal(suppressWarnings(AsNumeric(cc, binary = FALSE)), c(1:100, 1:3))
           })
 
 df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)
