@@ -6,7 +6,7 @@
 \usage{
 ParseEnteredData(raw.matrix, warn = TRUE, want.data.frame = FALSE,
   want.factors = TRUE, want.col.names = TRUE, want.row.names = FALSE,
-  us.format = TRUE)
+  us.format = NULL)
 }
 \arguments{
 \item{raw.matrix}{Character matrix}

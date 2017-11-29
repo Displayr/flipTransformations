@@ -15,7 +15,7 @@
 #' Ignored if \code{want.data.frame} is \code{FALSE}
 #' @export
 ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, want.factors = TRUE,
-                             want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE)
+                             want.col.names = TRUE, want.row.names = FALSE, us.format = NULL)
 {
     if (all(raw.matrix == ""))
         stop("No data has been entered.")
@@ -36,7 +36,8 @@ isNumericMatrixWithLabelsAndTitles <- function(m)
 {
     n.row <- nrow(m)
     n.col <- ncol(m)
-    result <- n.row >= 3 && n.col >= 3 && m[3, 1] != "" && m[1, 3] != "" && all(m[1:2, 1:2] == "") && isTextNumeric(m[3:n.row, 3:n.col])
+    result <- n.row >= 3 && n.col >= 3 && m[3, 1] != "" && m[1, 3] != "" &&
+        all(m[1:2, 1:2] == "") && isTextNumeric(m[3:n.row, 3:n.col])
     if (n.row > 3)
         result <- result && m[4:n.row, 1] == ""
     if (n.col > 3)
@@ -91,7 +92,7 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #' @importFrom flipTime AsDateTime
 #' @export
 ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE,
-                             want.row.names = FALSE, us.format = TRUE)
+                             want.row.names = FALSE, us.format = NULL)
 {
     n.row <- nrow(m)
     n.col <- ncol(m)

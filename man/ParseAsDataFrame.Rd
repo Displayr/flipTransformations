@@ -5,7 +5,7 @@
 \title{Parse a Character Matrix To a Data Frame}
 \usage{
 ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
-  want.col.names = TRUE, want.row.names = FALSE, us.format = TRUE)
+  want.col.names = TRUE, want.row.names = FALSE, us.format = NULL)
 }
 \arguments{
 \item{m}{Data frame which requires parsing.}

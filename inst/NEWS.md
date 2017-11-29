@@ -1,3 +1,11 @@
+Changes in Version 1.5.0 (2017-11-29)
+--------------------------------------------------------
+
+* `ParseUserEnteredTable` and `ParseAsDataFrame` now default using a 
+value of `NULL` (i.e. unknown if date strings are in U.S. or
+international format) for the`us.format` argument (DS-1685)
+
+
 Changes in Version 1.2.0 (2017-10-20)
 --------------------------------------------------------
 
