@@ -3,7 +3,8 @@ context("dataentry")
 test_that("numeric matrix without names", {
     raw.matrix <- structure(c("", "", "", "", "", "", "", "", "1", "", "999", "-111",
                               "", "", "3", "2", "3.14", "", "", "", "", "6", "", "7"), .Dim = c(6L, 4L))
-    expect_equal(ParseEnteredData(raw.matrix), structure(c(1, NA, 999, -111, 3, 2, 3.14, NA, NA, 6, NA, 7), .Dim = c(4L, 3L)))
+    expect_equal(ParseEnteredData(raw.matrix),
+                 structure(c(1, NA, 999, -111, 3, 2, 3.14, NA, NA, 6, NA, 7), .Dim = c(4L, 3L)))
 })
 
 test_that("numeric vector without names", {
@@ -15,7 +16,8 @@ test_that("numeric vector without names", {
 test_that("numeric vector with names", {
     raw.matrix <- structure(c("one", "two", "three", "", "five", "six", "1",
                               "2", "3", "", "5", "6"), .Dim = c(6L, 2L))
-    expect_equal(ParseEnteredData(raw.matrix), structure(c(1, 2, 3, NA, 5, 6), .Names = c("one", "two", "three",
+    expect_equal(ParseEnteredData(raw.matrix), structure(c(1, 2, 3, NA, 5, 6),
+                                                         .Names = c("one", "two", "three",
                                                                                          "", "five", "six")))
 })
 
@@ -41,8 +43,9 @@ test_that("numeric matrix with names", {
     raw.matrix <- structure(c("", "", "", "", "", "Height", "Weight", "Strength",
                 "Australia", "8", "8", "7", "USA", "7", "10", "10", "Denmark",
                 "10", "4", "2"), .Dim = 4:5)
-    expect_equal(ParseEnteredData(raw.matrix), structure(c(8, 8, 7, 7, 10, 10, 10, 4, 2), .Dim = c(3L, 3L), .Dimnames = list(
-        c("Height", "Weight", "Strength"), c("Australia", "USA", "Denmark"))))
+    expect_equal(ParseEnteredData(raw.matrix), structure(c(8, 8, 7, 7, 10, 10, 10, 4, 2), .Dim = c(3L, 3L),
+                                                         .Dimnames = list(c("Height", "Weight", "Strength"),
+                                                                          c("Australia", "USA", "Denmark"))))
 })
 
 test_that("numeric matrix with names and titles", {
@@ -85,7 +88,8 @@ test_that("numeric matrix with names and titles", {
                             0.908256881, 0.788990826, 0.951070336, 0.868501529, 0.574923547, 1),
                            .Dim = c(8L, 10L),
                            .Dimnames = list(c("Coke", "Diet Coke", "Coke Zero", "Pepsi", "Diet Pepsi", "Pepsi Max", "None of these",
-                                            "NET"), c("Feminine", "Health-conscious", "Innocent", "Older", "Open to new experiences", "Rebellious", "Sleepy", "Traditional", "Weight-conscious", "NET")),
+                                              "NET"), c("Feminine", "Health-conscious", "Innocent", "Older", "Open to new experiences",
+                                                        "Rebellious", "Sleepy", "Traditional", "Weight-conscious", "NET")),
                            row.column.names = c("Product", "Attribute")))
 })
 
@@ -206,11 +210,13 @@ test_that("ParseAsDataFrame", {
                         "Pre-dinner", "Post-dinner"), class = c("tbl_df", "tbl", "data.frame"
                         ), row.names = c(NA, -10L))
 
-    expect_warning(res1 <- ParseAsDataFrame(raw.matrix), "Some variables have been assigned blank names")
+    expect_warning(res1 <- ParseAsDataFrame(raw.matrix),
+                   "Some variables have been assigned blank names")
     expect_equal(nrow(res1), 9)
     res2 <- ParseAsDataFrame(raw.matrix, want.col.names = FALSE)
     expect_equal(nrow(res2), 10)
-    expect_equal(colnames(res2), c("X__1","Pre.breakfast", "Post.breakfast", "Pre.lunch", "Post.lunch", "Pre.dinner", "Post.dinner"))
+    expect_equal(colnames(res2), c("X__1","Pre.breakfast", "Post.breakfast",
+                                   "Pre.lunch", "Post.lunch", "Pre.dinner", "Post.dinner"))
     expect_equal("POSIXct" %in% class(res2[,1]), TRUE)
     m2 <- as.matrix(res2)
     expect_equal(is.numeric(m2), FALSE)
@@ -244,4 +250,11 @@ test_that("TextAsVector", {
         res4 <- suppressWarnings(TextAsVector(s4))
         expect_equal(res1, res4)
     }
+})
+
+test_that("Warnings can be toggled on/off",
+{
+    x <- cbind(letters[1:3], LETTERS[1:3])
+    expect_warning(ParseUserEnteredTable(x, warn = TRUE), "data could not be interpreted")
+    expect_silent(ParseUserEnteredTable(x, warn = FALSE))
 })
