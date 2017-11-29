@@ -148,6 +148,6 @@ parseAsVectorOrMatrix <- function(m, warn)
         attr(out, "row.column.names") <- titles
 
     if (warn && is.character(out))
-        warning("the entered data could not be interpreted")
+        warning("The entered data could not be interpreted.")
     out
 }
