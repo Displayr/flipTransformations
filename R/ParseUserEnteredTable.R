@@ -41,9 +41,12 @@ ParseUserEnteredTable <- function(raw.matrix, warn = TRUE, want.data.frame = FAL
 #'
 #' Tries to convert character data to numeric including
 #' converting entries with a '%%' sign to numeric format.
+#' @param nrow Optional dimensions of matrix to return if \code{drop} is false.
+#' @param ncol Optional dimnsions of matrix to return if \code{drop} is false.
+#' @param drop If true (default), a vector will always be returned
 #' @note The main diffence with \code{asNumericWithPercent}
 #' @noRd
-asNumeric <- function(t)
+asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE)
 {
     v <- as.vector(t)
     missing.idx <- v == ""
@@ -54,12 +57,18 @@ asNumeric <- function(t)
 
     ## deal with possible use of percentages
     ind <- is.na(out.non.miss) & grepl("%$", v.non.miss)
-    out.non.miss[ind] <- suppressWarnings(as.numeric(sub("%$", "", v.non.miss[ind]))) / 100
+    out.non.miss[ind] <- suppressWarnings(as.numeric(sub("%$", "", v.non.miss[ind])))
 
     if (any(is.na(out.non.miss)))  # couldn't all be converted to numeric or missing/NA
+    {
+        if (!drop)
+            v <- matrix(v, nrow, ncol)
         return(v)
+    }
     # out[missing.idx] <- NA
     out[!missing.idx] <- out.non.miss
+    if (!drop)
+        out <- matrix(out, nrow, ncol)
     if (all(ind))
         attr(out, "statistic") <- "%"
     out
@@ -129,31 +138,30 @@ parseAsVectorOrMatrix <- function(m, warn)
         (row.names.given && !first.entry.chars) ||
         (col.names.given && !first.entry.chars))
     {
-        tmp.m <- asNumeric(m[2:n.row, 2:n.col])
-        out <- matrix(tmp.m, nrow = n.row - 1)
-        attr(out, "statistic") <- attr(tmp.m, "statistic")
+        out <- asNumeric(m[2:n.row, 2:n.col], n.row - 1, n.col - 1, drop = FALSE)
         if (first.entry.chars)
-        {
             attr(out, "statistic") <- m[1, 1]
-            if (attr(out, "statistic") == "%")
-                out <- out/100
-        }
         rownames(out) <- m[-1, 1]
         colnames(out) <- m[1, -1]
+
     }else if (row.names.given)
-    {  # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
-        out <- matrix(asNumeric(m[, 2:n.col]), nrow = n.row, ncol = n.col - 1)
+    {
+        # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
+        out <- asNumeric(m[, 2:n.col], n.row, n.col - 1, drop = FALSE)
         rownames(out) <- m[, 1]
         out <- drop(out)
     }else if (col.names.given)
-    {  # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column
-        out <- matrix(asNumeric(m[2:n.row, ]), nrow = n.row - 1, ncol = n.col)
+    {
+        # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column
+        out <- asNumeric(m[2:n.row, ], n.row - 1, n.col, drop = FALSE)
         colnames(out) <- m[1, ]
         out <- drop(out)
     }
     else
         out <- matrix(asNumeric(m), nrow = n.row, ncol = n.col)
 
+    if (!is.null(attr(out, "statistic")) && attr(out, "statistic") == "%")
+        out <- out/100
     if (length(titles))
         attr(out, "row.column.names") <- titles
 
