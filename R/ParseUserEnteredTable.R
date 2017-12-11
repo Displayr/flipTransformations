@@ -49,6 +49,7 @@ asNumeric <- function(t)
     missing.idx <- v == ""
     out <- NA*numeric(length(v))
     v.non.miss <- v[!missing.idx]
+    v.non.miss <- gsub(",", "", v.non.miss)  # remove commas, e.g. '1,000'
     out.non.miss <- suppressWarnings(as.numeric(v.non.miss))
 
     ## deal with possible use of percentages
@@ -59,12 +60,15 @@ asNumeric <- function(t)
         return(v)
     # out[missing.idx] <- NA
     out[!missing.idx] <- out.non.miss
+    if (all(ind))
+        attr(out, "statistic") <- "%"
     out
 }
 
 isNumericOrPercent <- function(t)
 {
     v <- as.vector(t)
+    v <- gsub(",", "", v)
     all(v == "" | !is.na(suppressWarnings(as.numeric(sub("%$", "", v)))))
 }
 
@@ -125,9 +129,15 @@ parseAsVectorOrMatrix <- function(m, warn)
         (row.names.given && !first.entry.chars) ||
         (col.names.given && !first.entry.chars))
     {
-        out <- matrix(asNumeric(m[2:n.row, 2:n.col]), nrow = n.row - 1)
+        tmp.m <- asNumeric(m[2:n.row, 2:n.col])
+        out <- matrix(tmp.m, nrow = n.row - 1)
+        attr(out, "statistic") <- attr(tmp.m, "statistic")
         if (first.entry.chars)
+        {
             attr(out, "statistic") <- m[1, 1]
+            if (attr(out, "statistic") == "%")
+                out <- out/100
+        }
         rownames(out) <- m[-1, 1]
         colnames(out) <- m[1, -1]
     }else if (row.names.given)

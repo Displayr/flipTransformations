@@ -93,6 +93,52 @@ test_that("numeric matrix with names and titles", {
                            row.column.names = c("Product", "Attribute")))
 })
 
+test_that("numeric matrix with percentages", {
+
+    datW1 <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "",
+    "%", "Coke", "Diet Coke", "Coke Zero", "Pepsi", "Diet Pepsi",
+    "Pepsi Max", "None of these", "NET", "", "", "Feminine", "6.13",
+    "57.13", "22.38", "8.88", "61.5", "9.38", "9.25", "100", "",
+    "", "Health-conscious", "2", "57.75", "53.5", "2.5", "57.88",
+    "30.63", "17.38", "100", "", "", "Innocent", "10.5", "21.63",
+    "11.38", "10", "44.63", "6.88", "29.88", "100", "", "", "Older",
+    "64.63", "22.5", "5.38", "39", "9.88", "6.75", "7.25", "100",
+    "", "", "Open to new experiences", "22.38", "8.88", "50.63",
+    "16.75", "16.63", "49.25", "12.88", "100", "", "", "Rebellious",
+    "25.5", "4.75", "64", "17.75", "3.75", "44.75", "15.25", "100",
+    "", "", "Sleepy", "9.5", "23.25", "9.75", "13.5", "29.75", "5.5",
+    "38.88", "100", "", "", "Traditional", "91.25", "14.63", "3",
+    "54.75", "3.75", "4.38", "2.5", "100", "", "", "Weight-conscious",
+    "0.5", "76.13", "63.88", "0", "76.63", "40.38", "5.75", "100",
+    "", "", "NET", "98", "91.5", "94.88", "79.63", "94.75", "86.38",
+    "57.5", "100"), .Dim = 11:12)
+
+    datW2 <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "Cleanliness", "Health", "Safety", "Cost", "Food", "Not being understood",
+    "Friendliness of the people", "Boredom", "", "", "Mexico", "52%",
+    "51%", "79%", "9%", "23%", "17%", "11%", "3%", "", "", "France",
+    "9%", "7%", "15%", "60%", "7%", "43%", "40%", "5%", "", "", "Great Britain",
+    "6%", "6%", "10%", "51%", "11%", "5%", "8%", "5%", "", "", "Egypt",
+    "36%", "39%", "78%", "44%", "28%", "48%", "34%", "4%", "", "",
+    "Australia", "4%", "5%", "11%", "57%", "6%", "3%", "6%", "1%",
+    "", "", "China", "37%", "45%", "46%", "52%", "30%", "60%", "25%",
+    "5%"), .Dim = c(11L, 8L))
+
+    expect_error(res1 <- ParseEnteredData(datW1), NA)
+    expect_error(res2 <- ParseEnteredData(datW2), NA)
+    expect_equal(attr(res1, "statistic"), "%")
+    expect_equal(res2[1,1], 0.52)
+})
+
+test_that("numeric matrix with commas", {
+    raw.matrix <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "",
+"", "", "A", "B", "C", "", "", "", "1,000", "2,000", "3,000"), .Dim = c(6L,
+4L))
+    expect_error(out <- ParseEnteredData(raw.matrix), NA)
+    expect_equal(sum(out), 6000)
+})
+
+
 test_that("data frame", {
     raw.matrix <- structure(c("num", "1", "2", "", "4", "2", "", "5", "", "23",
                               "", "2", "3.14", "5", "", "6", "date", "1-Feb-16", "2-Feb-16",
