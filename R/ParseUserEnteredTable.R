@@ -167,5 +167,9 @@ parseAsVectorOrMatrix <- function(m, warn)
 
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
+
+    # Vectors cannot be printed with attributes until core bug resolved
+    if (is.null(dim(out)) || length(dim(out)) == 1)
+        attr(out, "statistic") <- NULL
     out
 }
