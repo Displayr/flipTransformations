@@ -158,7 +158,7 @@ parseAsVectorOrMatrix <- function(m, warn)
         out <- drop(out)
     }
     else
-        out <- matrix(asNumeric(m), nrow = n.row, ncol = n.col)
+        out <- asNumeric(m, n.row, n.col, drop = FALSE)
 
     if (!is.null(attr(out, "statistic")) && attr(out, "statistic") == "%")
         out <- out/100
