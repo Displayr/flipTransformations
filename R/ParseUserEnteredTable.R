@@ -40,17 +40,16 @@ ParseUserEnteredTable <- function(raw.matrix, warn = TRUE, want.data.frame = FAL
 #' Convert user pasted data to numeric
 #'
 #' Tries to convert character data to numeric including
-#' converting entries with a '%%' sign to numeric format.
+#' converting entries with a '%' sign to numeric format.
 #' @param nrow Optional dimensions of matrix to return if \code{drop} is false.
 #' @param ncol Optional dimnsions of matrix to return if \code{drop} is false.
 #' @param drop If true (default), a vector will always be returned
-#' @note The main diffence with \code{asNumericWithPercent}
 #' @noRd
 asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE)
 {
     v <- as.vector(t)
-    missing.idx <- v == ""
-    out <- NA*numeric(length(v))
+    missing.idx <- v == "" | isMissing(v)
+    out <- NA * numeric(length(v))
     v.non.miss <- v[!missing.idx]
     v.non.miss <- gsub(",", "", v.non.miss)  # remove commas, e.g. '1,000'
     out.non.miss <- suppressWarnings(as.numeric(v.non.miss))
@@ -78,7 +77,12 @@ isNumericOrPercent <- function(t)
 {
     v <- as.vector(t)
     v <- gsub(",", "", v)
-    all(v == "" | !is.na(suppressWarnings(as.numeric(sub("%$", "", v)))))
+    all(v == "" | isMissing(v) | !is.na(suppressWarnings(as.numeric(sub("%$", "", v)))))
+}
+
+isMissing <- function(t)
+{
+    return(grepl("^*(|-|\\.|N/A|NA|NaN|[M|m]issing|[I|i]nvalid)*$", t))
 }
 
 
