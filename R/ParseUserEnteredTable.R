@@ -160,7 +160,7 @@ parseAsVectorOrMatrix <- function(m, warn)
     else
         out <- asNumeric(m, n.row, n.col, drop = FALSE)
 
-    if (!is.null(attr(out, "statistic")) && attr(out, "statistic") == "%")
+    if (!is.null(attr(out, "statistic")) && grepl("%$", attr(out, "statistic")))
         out <- out/100
     if (length(titles))
         attr(out, "row.column.names") <- titles

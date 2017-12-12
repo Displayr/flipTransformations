@@ -122,7 +122,7 @@ test_that("numeric matrix with percentages", {
         "5%"), .Dim = c(11L, 8L))
 
     datW3 <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "",
-        "%", "Cleanliness", "Health", "Safety", "Cost", "Food", "Not being understood",
+        "Total %", "Cleanliness", "Health", "Safety", "Cost", "Food", "Not being understood",
         "Friendliness of the people", "Boredom", "", "", "Mexico", "52%",
         "51%", "79%", "9%", "23%", "17%", "11%", "3%", "", "", "France",
         "9%", "7%", "15%", "60%", "7%", "43%", "40%", "5%", "", "", "Great Britain",
