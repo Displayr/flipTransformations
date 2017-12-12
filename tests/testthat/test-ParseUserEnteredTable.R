@@ -116,16 +116,23 @@ test_that("2 x 3",
     n.row <- 2
     n.col <- 3
     m <- matrix(as.character(seq_len(n.row*n.col)), n.row, n.col)
-    # m[1, 1] <- ""
     m[1:nrow(m), 1] <- LETTERS[1:nrow(m)]
     m[1, 2:ncol(m)] <- letters[2:ncol(m)]
     m <- t(m)
-    #m[2:3, 1] <- letters[1:2]
     out <- ParseUserEnteredTable(m)
     expect_equal(attr(out, "statistic"), m[1, 1])
     expect_equal(colnames(out), m[1, -1])
 })
 
+test_that("Missing data",
+          {
+              n.row <- 3
+              n.col <- 4
+              m <- matrix(as.character(seq_len(n.row * n.col)), n.row, n.col)
+              m[2, ] <- c("invalid", "NA", "NaN", "-")
+              out <- ParseUserEnteredTable(m)
+              expect_equal(sum(out, na.rm = TRUE), 52)
+          })
 
 ## start old tests for flipTransformations/R/dataentry.R
 ## taken from flipTransformations/tests/testthat/test-ParseUserEnteredTable.R
