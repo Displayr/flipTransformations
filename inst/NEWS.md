@@ -1,10 +1,24 @@
+Changes in Version 1.6.0 (2017-12-13)
+--------------------------------------------------------
+
+NEW FEATURES
+
+* `ParseUserEnteredTable` supports more ways to supply missing
+  values, including "Missing", "-", ".", "N/A", "NA", "NaN", "invalid".
+
+BUG FIXES
+
+* `SplitVectorToList`will now always return an object of class list.
+* When a `factor` is supplied for the `values` argument of
+  `SplitVectorToList`, it will no longer be converted to `integer`in
+  the outputted `list`.
+
 Changes in Version 1.5.0 (2017-11-29)
 --------------------------------------------------------
 
 * `ParseUserEnteredTable` and `ParseAsDataFrame` now default using a 
 value of `NULL` (i.e. unknown if date strings are in U.S. or
 international format) for the`us.format` argument (DS-1685)
-
 
 Changes in Version 1.2.0 (2017-10-20)
 --------------------------------------------------------

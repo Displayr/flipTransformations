@@ -20,11 +20,38 @@ test_that("QuestionListToDataFrame works as expected",
 })
 
 
-test_that("SplitVectorToList",
+test_that("SplitVectorToList numeric values",
 {
     y <- 1:4
     gr <- c("A", "B", "A", "A")
-    expect_equal(SplitVectorToList(y, gr), as.array(list(A = c(1,3,4), B = 2)))
+    out <- SplitVectorToList(y, gr)
+    expect_is(out, "list")
+    expect_equal(out, list(A = c(1,3,4), B = 2))
 })
 
+test_that("SplitVectorToList error if groups wrong length",
+{
+    expect_error(SplitVectorToList(1:2, 1), "must have the same length.$")
+})
+
+test_that("SplitVectorToList NAs in groups",
+{
+    y <- 1:4
+    gr <- c("A", NA, "A", NA)
+    out <- SplitVectorToList(y, gr)
+    expect_is(out, "list")
+    expect_equal(names(out), levels(as.factor(gr)))
+    expect_equal(out[[1]], which(!is.na(gr)))
+})
+
+test_that("SplitVectorToList factor values",
+{
+    y <- as.factor(c("dog", "sheep", "cat", "dog", "sheep"))
+    gr <- c(0, 1, 1, 1, 0)
+    out <- SplitVectorToList(y, gr)
+    expect_is(out, "list")
+    expect_equal(names(out), levels(as.factor(gr)))
+    expect_is(out[[1]], "factor")
+    expect_equal(levels(out[[2]]), levels(y))
+})
 

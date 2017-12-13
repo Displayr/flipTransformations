@@ -92,13 +92,30 @@ QuestionListToDataFrame <- function(list.of.questions, names.to.remove = c("NET"
 }
 
 
-#' \code{SplitVectorToList}
-#' @description Splits a vector \code{values} by unique values of another vector, \code{groups}.
+#' Split vector by unique values of a factor
+#'
+#'  Splits a vector \code{values} by unique values of another vector,
+#'     \code{groups}.
 #' @param values A \code{\link{vector}} to be split.
-#' @param groups A \code{\link{vector}} which determines how \code{vakuees} is split.
+#' @param groups A \code{\link{vector}} which determines how
+#'     \code{values} is split; must have same length as \code{values} and
+#'     will be coerced to \code{\link{factor}} using
+#'     \code{\link{as.factor}}.
 #' @return A \code{\link{list}}.
 #' @export
 SplitVectorToList <- function(values, groups)
 {
-    tapply(values, groups, c)
+    ## avoid tapply since it returns a ragged array: object of class
+    ## array with non-NULL "dim" attribute
+    ## tapply(values, groups, c)
+    if (length(groups) != length(values))
+        stop(gettextf("%s and %s must have the same length.", shQuote("values"),
+                      shQuote("groups")), domain = NA)
+    groups <- as.factor(groups)
+    ## groups <- addNA(groups, ifany = FALSE)
+    gnames <- levels(groups)
+    non.na.g <- !is.na(groups)
+    out <- lapply(levels(groups), function(l) values[non.na.g & groups == l])
+    names(out) <- gnames
+    out
 }
