@@ -82,7 +82,7 @@ isNumericOrPercent <- function(t)
 
 isMissing <- function(t)
 {
-    return(grepl("^*(|-|\\.|N/A|NA|NaN|[M|m]issing|[I|i]nvalid)*$", t))
+    return(grepl("^[[:blank:]]*(|-|\\.|N/A|NA|NaN|[M|m]issing|[I|i]nvalid)?[[:blank:]]*$", t))
 }
 
 
