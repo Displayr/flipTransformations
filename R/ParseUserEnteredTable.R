@@ -30,7 +30,7 @@ ParseUserEnteredTable <- function(raw.matrix, warn = TRUE, want.data.frame = FAL
     if (all(raw.matrix == ""))
         stop("no data has been entered")
 
-    m <- removeEmptyRowsAndColumns(raw.matrix, TRUE)
+    m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
     if (want.data.frame)
         ParseAsDataFrame(m, warn, ...)
     else
