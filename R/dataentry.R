@@ -107,7 +107,8 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     start.row <- if (want.col.names) 2 else 1
     start.col <- if (want.row.names) 2 else 1
 
-    df <- data.frame(m[start.row:n.row, start.col:n.col], stringsAsFactors = FALSE)
+    df <- data.frame(m[start.row:n.row, start.col:n.col, drop = FALSE],
+                     stringsAsFactors = FALSE)
     if (want.col.names)
     {
         tmp.colnames <- unlist(m[1, start.col:n.col])

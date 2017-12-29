@@ -308,9 +308,32 @@ test_that("TextAsVector", {
     }
 })
 
-test_that("Warnings can be toggled on/off",
+test_that("ParseAsDataFrame, one row of data",
 {
-    x <- cbind(letters[1:3], LETTERS[1:3])
-    expect_warning(ParseUserEnteredTable(x, warn = TRUE), "data could not be interpreted")
-    expect_silent(ParseUserEnteredTable(x, warn = FALSE))
+    x <- matrix(as.character(1:10), nrow = 1)
+    expect_error(ParseAsDataFrame(x), "There is no data to display")
+    out <- ParseAsDataFrame(x, want.row.name = FALSE,
+                                 want.col.names = FALSE)
+    expect_is(out, "data.frame")
+    expect_equal(dim(out), dim(x))
+    expect_is(out[[1]], "numeric")
+
+    x <- matrix(c("Date times", "22/06/2007 5:29:41 PM", "22/06/2007 6:09:10 PM",
+                  "22/06/2007 5:36:35 PM", "22/06/2007 5:30:29 PM", "22/06/2007 5:40:53 PM",
+                  "22/06/2007 5:32:22 PM", "22/06/2007 5:39:32 PM", "22/06/2007 5:39:14 PM",
+                  "22/06/2007 5:40:11 PM", "22/06/2007 5:54:34 PM"), nrow = 1)
+    expect_error(ParseAsDataFrame(x), "There is no data to display")
+    out <- ParseAsDataFrame(x, want.row.name = TRUE,
+                                 want.col.names = FALSE)
+    expect_is(out, "data.frame")
+    expect_equal(dim(out), dim(x) - c(0, 1))
+    expect_is(out[[1]], "POSIXct")
+
+    cnx <- rbind(c("", LETTERS[1:10]), x)
+    out <- ParseAsDataFrame(cnx, want.row.name = TRUE,
+                                 want.col.names = TRUE)
+    expect_is(out, "data.frame")
+    expect_equal(dim(out), dim(cnx) - c(1, 1))
+    expect_is(out[[1]], "POSIXct")
+    expect_equal(colnames(out), LETTERS[1:10])
 })

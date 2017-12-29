@@ -1,3 +1,15 @@
+Changes in Version 1.6.2 (2017-12-29)
+--------------------------------------------------------
+
+BUG FIXES
+
+* Fix for `ParseUserEnteredTable` when the input data is a single
+  column and data frame output is requested
+* Fix for `ParseAsDataFrame` in the cases when there is a single row
+  of data or two rows of data and column names are requested (this
+  also corrects `ParseUserEnteredTable` in these situations when a
+  data frame is requested).  
+
 Changes in Version 1.6.0 (2017-12-13)
 --------------------------------------------------------
 
