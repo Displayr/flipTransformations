@@ -1,4 +1,4 @@
-Changes in Version 1.6.2 (2017-12-29)
+Changes in Version 1.6.3 (2017-12-29)
 --------------------------------------------------------
 
 BUG FIXES
@@ -9,6 +9,9 @@ BUG FIXES
   of data or two rows of data and column names are requested (this
   also corrects `ParseUserEnteredTable` in these situations when a
   data frame is requested).  
+* `ParseUserEnteredTable` now warns correctly if for single row or
+  column inputs when `warn` is `TRUE` and `want.data.frame` is `FALSE`
+  
 
 Changes in Version 1.6.0 (2017-12-13)
 --------------------------------------------------------

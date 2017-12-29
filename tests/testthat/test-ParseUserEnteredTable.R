@@ -273,6 +273,19 @@ test_that("ParseUserEnteredTable: input is vector and want data.frame",
     expect_is(out[[1]], "POSIXct")
 })
 
+test_that("ParseUserEnteredTable: input is vector and don't want' data.frame",
+{
+    x <- matrix(c("Date times", "22/06/2007 5:29:41 PM", "22/06/2007 6:09:10 PM",
+                  "22/06/2007 5:36:35 PM", "22/06/2007 5:30:29 PM", "22/06/2007 5:40:53 PM",
+                  "22/06/2007 5:32:22 PM", "22/06/2007 5:39:32 PM", "22/06/2007 5:39:14 PM",
+                  "22/06/2007 5:40:11 PM", "22/06/2007 5:54:34 PM"), ncol = 1)
+    expect_warning(out <- ParseUserEnteredTable(x, want.data.frame = FALSE, warn = TRUE),
+                   "The entered data could not be interpreted.")
+    expect_is(out, "character")
+    expect_equal(out[1], "Date times")
+})
+
+
 test_that("Warnings can be toggled on/off",
 {
     x <- cbind(letters[1:3], LETTERS[1:3])

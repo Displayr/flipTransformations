@@ -45,7 +45,7 @@ ParseUserEnteredTable <- function(raw.matrix, warn = TRUE, want.data.frame = FAL
 #' @param ncol Optional dimnsions of matrix to return if \code{drop} is false.
 #' @param drop If true (default), a vector will always be returned
 #' @noRd
-asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE)
+asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE, warn = FALSE)
 {
     v <- as.vector(t)
     missing.idx <- v == "" | isMissing(v)
@@ -62,6 +62,9 @@ asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE)
     {
         if (!drop)
             v <- matrix(v, nrow, ncol)
+        if (warn)
+            warning("The entered data could not be interpreted.", call. = FALSE)
+
         return(v)
     }
     # out[missing.idx] <- NA
@@ -115,13 +118,13 @@ getTableTitles <- function(m)
 #' that the data is raw data
 #' @noRd
 #' @keywords internal
-parseAsVectorOrMatrix <- function(m, warn)
+parseAsVectorOrMatrix <- function(m, warn = FALSE)
 {
     n.row <- NROW(m)
     n.col <- NCOL(m)
 
     if (n.row == 1 || n.col == 1)  # unnamed row or column vector
-        return(asNumeric(m))
+        return(asNumeric(m, warn = warn))
 
     ## check for titles; if found, extract, and process submatrix
     if (length(titles <- getTableTitles(m))){
