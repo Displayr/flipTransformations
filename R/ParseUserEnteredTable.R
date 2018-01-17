@@ -175,8 +175,14 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
 
-    # Vectors cannot be printed with attributes until core bug resolved
-    if (is.null(dim(out)) || length(dim(out)) == 1)
-        attr(out, "statistic") <- NULL
+    # Vectors with attributes cannot be printed because of RS-3402
+    # This is now fixed in Q 5.2.7+, but we retain support for older versions
+    # by converting to a matrix if necessary
+    if (!is.null(attr(out, "statistic")) && (is.null(dim(out)) || length(dim(out)) == 1))
+    {
+        tmp <- attr(out, "statistic")
+        out <- as.matrix(out)
+        attr(out, "statistic") <- tmp
+    }
     out
 }
