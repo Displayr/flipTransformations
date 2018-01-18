@@ -2,18 +2,22 @@
 % Please edit documentation in R/list.R
 \name{SplitVectorToList}
 \alias{SplitVectorToList}
-\title{\code{SplitVectorToList}}
+\title{Split vector by unique values of a factor}
 \usage{
 SplitVectorToList(values, groups)
 }
 \arguments{
 \item{values}{A \code{\link{vector}} to be split.}
 
-\item{groups}{A \code{\link{vector}} which determines how \code{vakuees} is split.}
+\item{groups}{A \code{\link{vector}} which determines how
+\code{values} is split; must have same length as \code{values} and
+will be coerced to \code{\link{factor}} using
+\code{\link{as.factor}}.}
 }
 \value{
 A \code{\link{list}}.
 }
 \description{
-Splits a vector \code{values} by unique values of another vector, \code{groups}.
+Splits a vector \code{values} by unique values of another vector,
+    \code{groups}.
 }
