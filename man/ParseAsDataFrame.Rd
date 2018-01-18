@@ -8,7 +8,7 @@ ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
   want.col.names = TRUE, want.row.names = FALSE, us.format = NULL)
 }
 \arguments{
-\item{m}{Data frame which requires parsing.}
+\item{m}{A character matrix to be converted to \code{data.frame}}
 
 \item{warn}{Whether to show warnings.}
 

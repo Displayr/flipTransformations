@@ -83,7 +83,7 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #'
 #' Takes a data.frame and performs extra parsing, for example with
 #' dates and percentages.
-#' @param m Data frame which requires parsing.
+#' @param m A character matrix to be converted to \code{data.frame}
 #' @param warn Whether to show warnings.
 #' @param want.factors Whether a text variable should be converted to a factor in a data frame.
 #' @param want.col.names Whether to interpret the first row as column names in a data frame.
@@ -108,7 +108,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     start.col <- if (want.row.names) 2 else 1
 
     df <- data.frame(m[start.row:n.row, start.col:n.col, drop = FALSE],
-                     stringsAsFactors = FALSE)
+                     stringsAsFactors = FALSE, fix.empty.names = FALSE)
     if (want.col.names)
     {
         tmp.colnames <- unlist(m[1, start.col:n.col])
@@ -119,8 +119,10 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
         else if (warn && length(unique(tmp.colnames)) < length(tmp.colnames))
             warning("Some variables share the same name.")
     }
-    else if (is.null(colnames(df)))
+    else if (is.null(colnames(df)) || all(colnames(df) == ""))
+    {
         colnames(df) <- paste0("X", 1:(n.col - start.col + 1))
+    }
     if (want.row.names)
     {
         tmp.rownames <- unlist(m[,1])

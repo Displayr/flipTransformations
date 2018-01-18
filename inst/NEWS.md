@@ -1,3 +1,11 @@
+Changes in Version 1.6.4 (2018-01-18)
+--------------------------------------------------------
+
+BUG FIXES
+
+* `ParseAsDataFrame` assigns column names X1, X2, ... in the case
+when `want.col.names` is `FALSE` (DS-1779)
+
 Changes in Version 1.6.3 (2017-12-29)
 --------------------------------------------------------
 

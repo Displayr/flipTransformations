@@ -283,6 +283,13 @@ test_that("ParseAsDataFrame", {
     expect_equal(is.numeric(m3), TRUE)
 })
 
+test_that("ParseAsDataFrame assigns colnames if none provided; DS-1779",
+{
+    m <- cbind(letters[1:3], 1:3, 2:4)
+    out <- ParseAsDataFrame(m, want.row.names = TRUE, want.col.names = FALSE)
+    expect_equal(colnames(out), paste0("X", 1:(ncol(m) - 1L)))
+})
+
 
 test_that("TextAsVector", {
     res1 <- TextAsVector("What,     is, this")
