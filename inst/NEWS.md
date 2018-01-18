@@ -1,5 +1,10 @@
-Changes in Version 1.6.4 (2018-01-18)
+Changes in Version 1.6.5 (2018-01-18)
 --------------------------------------------------------
+
+NEW FEATURES
+
+* `ParseAsDataFrame` assigns an attribute "statistic" to the output
+  with value "%" if the input data is all percentages (DS-1780)
 
 BUG FIXES
 

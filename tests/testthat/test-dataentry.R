@@ -290,6 +290,12 @@ test_that("ParseAsDataFrame assigns colnames if none provided; DS-1779",
     expect_equal(colnames(out), paste0("X", 1:(ncol(m) - 1L)))
 })
 
+test_that("ParseAsDataFrame adds statistic attr. if input has %s; DS-1780",
+{
+    m <- rbind(letters[1:3], paste0(1:3, "%"))
+    out <- ParseAsDataFrame(m)
+    expect_equal(attr(out, "statistic"), "%")
+})
 
 test_that("TextAsVector", {
     res1 <- TextAsVector("What,     is, this")
