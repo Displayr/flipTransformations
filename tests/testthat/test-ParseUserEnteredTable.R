@@ -292,3 +292,20 @@ test_that("Warnings can be toggled on/off",
     expect_warning(ParseUserEnteredTable(x, warn = TRUE), "data could not be interpreted")
     expect_silent(ParseUserEnteredTable(x, warn = FALSE))
 })
+
+test_that("ParseUserEnteredTable: named row vector",
+{
+    rv <- t(as.matrix(c("b", "1")))
+    out <- ParseUserEnteredTable(rv)
+    expect_equal(out, 1, check.attributes = FALSE)
+    expect_equal(attr(out, "name"), "b")
+
+})
+
+test_that("ParseUserEnteredTable: named column vector; DS-1782",
+{
+    cv <- as.matrix(c("a", 1:3))
+    out <- ParseUserEnteredTable(cv)
+    expect_equal(out, 1:3, check.attributes = FALSE)
+    expect_equal(attr(out, "name"), "a")
+})

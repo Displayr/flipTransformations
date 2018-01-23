@@ -1,3 +1,11 @@
+Changes in Version 1.6.6 (2018-01-23)
+--------------------------------------------------------
+
+BUG FIXES
+
+* Fix for `ParseUserEnteredTable` will now corrrectly parse a row or
+  column vector with a name in the first entry of the input (DS-1782)
+
 Changes in Version 1.6.5 (2018-01-18)
 --------------------------------------------------------
 

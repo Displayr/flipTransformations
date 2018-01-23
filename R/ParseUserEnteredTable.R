@@ -123,8 +123,21 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     n.row <- NROW(m)
     n.col <- NCOL(m)
 
-    if (n.row == 1 || n.col == 1)  # unnamed row or column vector
-        return(asNumeric(m, warn = warn))
+    if (n.row == 1 || n.col == 1)
+    {
+        vm <- drop(m)
+        first.entry.chars <- !isNumericOrPercent(vm[1])
+        if (!first.entry.chars || n.row == n.col)  ## unnamed row or column vector
+            return(asNumeric(m, warn = warn))
+
+        out <- asNumeric(vm[-1], warn = warn)
+        if (is.numeric(out))
+        {
+            attr(out, "name") <- vm[1]
+            return(out)
+        }else
+            return(m)
+    }
 
     ## check for titles; if found, extract, and process submatrix
     if (length(titles <- getTableTitles(m))){
