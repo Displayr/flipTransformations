@@ -1,3 +1,13 @@
+Changes in Version 1.6.7 (2018-02-07)
+--------------------------------------------------------
+
+NEW FEATURES
+
+* `ParseUserEnteredTable` will now add any value in the 1,1 entry of
+  the input matrix to an attribute named "statistic" if row names and
+  column names are provided (DS-1780)
+
+
 Changes in Version 1.6.6 (2018-01-23)
 --------------------------------------------------------
 

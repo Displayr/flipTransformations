@@ -350,3 +350,17 @@ test_that("ParseAsDataFrame, one row of data",
     expect_is(out[[1]], "POSIXct")
     expect_equal(colnames(out), LETTERS[1:10])
 })
+
+test_that("ParseAsDataFrame, statistic in 1,1 entry DS-1780 CSC comment",
+{
+    x <- rbind(c("column %", "score"),
+               cbind(letters[1:3], 1:3))
+    out <- ParseAsDataFrame(x, want.row.name = TRUE,
+                            want.col.names = TRUE)
+    expect_is(out, "data.frame")
+    expect_equal(attr(out, "statistic"), x[1, 1])
+    expect_equal(dim(out), dim(x) - c(1, 1))
+    expect_equal(rownames(out), x[-1, 1])
+    expect_equal(colnames(out), x[1, 2])
+})
+
