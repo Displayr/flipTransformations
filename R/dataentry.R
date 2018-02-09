@@ -47,7 +47,7 @@ isNumericMatrixWithLabelsAndTitles <- function(m)
 
 asNumericWithPercent <- function(t)
 {
-    v <- as.vector(t)
+    v <- gsub(",", "", as.vector(t))
     result <- suppressWarnings(as.numeric(v))
     ind <- is.na(result) & grepl("%$", v)
     result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100

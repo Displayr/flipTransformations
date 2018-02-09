@@ -374,6 +374,7 @@ test_that("ParseAsDataFrame determines column names",
     out.unnamed <- ParseAsDataFrame(df.unnamed)
     expect_equal(dim(out.cnames), c(4, 3))
     expect_equal(dim(out.unnamed), c(4, 3))
+    expect_equal(colSums(out.unnamed), c(X1=6000, X2=26000, X3=42000))
 })
 
 

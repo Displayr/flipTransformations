@@ -14,7 +14,8 @@ ParseAsDataFrame(m, warn = TRUE, want.factors = FALSE,
 
 \item{want.factors}{Whether a text variable should be converted to a factor in a data frame.}
 
-\item{want.col.names}{Whether to interpret the first row as column names in a data frame.}
+\item{want.col.names}{Whether to interpret the first row as column names in a data frame.
+If this is not set, then any non-numeric value in the first row will be used as column names.}
 
 \item{want.row.names}{Whether to interpret the first col as row names in a data frame.}
 
