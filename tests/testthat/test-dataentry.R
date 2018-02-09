@@ -324,7 +324,7 @@ test_that("TextAsVector", {
 test_that("ParseAsDataFrame, one row of data",
 {
     x <- matrix(as.character(1:10), nrow = 1)
-    expect_error(ParseAsDataFrame(x), "There is no data to display")
+    expect_error(ParseAsDataFrame(x, want.col.names = TRUE), "There is no data to display")
     out <- ParseAsDataFrame(x, want.row.name = FALSE,
                                  want.col.names = FALSE)
     expect_is(out, "data.frame")
@@ -363,4 +363,18 @@ test_that("ParseAsDataFrame, statistic in 1,1 entry DS-1780 CSC comment",
     expect_equal(rownames(out), x[-1, 1])
     expect_equal(colnames(out), x[1, 2])
 })
+
+test_that("ParseAsDataFrame determines column names",
+{
+    df.cnames <- structure(c("A", "0", "1", "2", "3", "B", "5", "6", "7", "8",
+"C", "9", "10", "11", "12"), .Dim = c(5L, 3L))
+    df.unnamed <- structure(c("0", "1,000", "2,000", "3,000", "5,000", "6,000", "7,000",
+"8,000", "9,000", "10,000", "11,000", "12,000"), .Dim = c(4L, 3L))
+    out.cnames <- ParseAsDataFrame(df.cnames)
+    out.unnamed <- ParseAsDataFrame(df.unnamed)
+    expect_equal(dim(out.cnames), c(4, 3))
+    expect_equal(dim(out.unnamed), c(4, 3))
+})
+
+
 

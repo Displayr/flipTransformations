@@ -87,15 +87,22 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #' @param warn Whether to show warnings.
 #' @param want.factors Whether a text variable should be converted to a factor in a data frame.
 #' @param want.col.names Whether to interpret the first row as column names in a data frame.
+#'   If this is not set, then any non-numeric value in the first row will be used as column names.
 #' @param want.row.names Whether to interpret the first col as row names in a data frame.
 #' @param us.format Whether to use the US convention when parsing dates in a data frame.
 #' @importFrom flipTime AsDateTime
 #' @export
-ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = TRUE,
+ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = NULL,
                              want.row.names = FALSE, us.format = NULL)
 {
     n.row <- nrow(m)
     n.col <- ncol(m)
+
+    if (is.null(want.col.names))
+    {
+        .not.numeric <- function(x){nchar(x) > 0 & suppressWarnings(is.na(as.numeric(x)))}
+        want.col.names <- any(.not.numeric(gsub("[,%]", "", m[1,])))
+    }
 
     if (want.col.names && n.row == 1)
         stop("There is no data to display as there is only one row in the entered data,
