@@ -353,7 +353,7 @@ test_that("ParseAsDataFrame, one row of data",
 
 test_that("ParseAsDataFrame, statistic in 1,1 entry DS-1780 CSC comment",
 {
-    x <- rbind(c("column %", "score"),
+    x <- rbind(c("Column %", "Score"),
                cbind(letters[1:3], 1:3))
     out <- ParseAsDataFrame(x, want.row.name = TRUE,
                             want.col.names = TRUE)
