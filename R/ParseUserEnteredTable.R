@@ -190,6 +190,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
             attr(out, "statistic") <- m[1, 1]
         rownames(out) <- m[-1, 1]
         colnames(out) <- m[1, -1]
+        row.names.given <- TRUE # needed in case of numeric row names (but still blank 1-1 entry)
 
     } else if (row.names.given)
     {

@@ -48,6 +48,23 @@ test_that("numeric matrix with names", {
                                                                           c("Australia", "USA", "Denmark"))))
 })
 
+test_that("character matrix with numeric rownames", {
+    raw.matrix <- structure(c("", "", "2017", "2018", "2019", "2020", "2021",
+                    "", "March Equinox in Sydney (UTC+11)", "March 20 2017, 21:28",
+                    "March 21 2018, 03:15", "March 21 2019, 08:58", "March 20 2020, 14:49",
+                    "March 20 2021, 20:37", "", "March Equinox in New York (UTC-4)",
+                    "March 20 2017, 06:28", "March 20 2018, 12:15", "March 20 2019, 17:58",
+                    "March 19 2020, 23:49", "March 20 2021, 05:37"), .Dim = c(7L, 3L))
+    expect_equal(ParseEnteredData(raw.matrix), structure(
+        list(`March Equinox in Sydney (UTC+11)` = structure(c(1490045280,
+        1521602100, 1553158680, 1584715740, 1616272620), class = c("POSIXct",
+        "POSIXt"), tzone = "UTC"), `March Equinox in New York (UTC-4)` = structure(c(1489991280,
+        1521548100, 1553104680, 1584661740, 1616218620), class = c("POSIXct",
+        "POSIXt"), tzone = "UTC")), .Names = c("March Equinox in Sydney (UTC+11)",
+        "March Equinox in New York (UTC-4)"), row.names = c("2017", "2018",
+        "2019", "2020", "2021"), class = "data.frame"))
+    })
+
 test_that("numeric matrix with names and titles", {
     raw.matrix <- structure(c("", "", "Product", "", "", "", "", "", "", "", "",
                               "", "Coke", "Diet Coke", "Coke Zero", "Pepsi", "Diet Pepsi",

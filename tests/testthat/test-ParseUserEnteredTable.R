@@ -288,8 +288,8 @@ test_that("ParseUserEnteredTable: input is vector and don't want' data.frame",
 
 test_that("Warnings can be toggled on/off",
 {
-    x <- cbind(letters[1:3], LETTERS[1:3])
-    #expect_warning(ParseUserEnteredTable(x, warn = TRUE), "data could not be interpreted")
+    x <- matrix(c("", "r1", "r2", "c1", "a", "b", "c1", "c", "d"), 3, 3)
+    expect_warning(ParseUserEnteredTable(x, warn = TRUE), "Some variables share the same name")
     expect_silent(ParseUserEnteredTable(x, warn = FALSE))
 })
 
