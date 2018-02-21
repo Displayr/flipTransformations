@@ -17,14 +17,8 @@
 ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, want.factors = TRUE,
                              want.col.names = TRUE, want.row.names = FALSE, us.format = NULL)
 {
-    if (all(raw.matrix == ""))
-        stop("No data has been entered.")
-
-    m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
-    if (want.data.frame)
-        ParseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
-    else
-        parseAsVectorOrMatrix(m, warn)
+    return(ParseUserEnteredTable(raw.matrix, warn, want.data.frame, want.factors,
+                          want.col.names, want.row.names, us.format))
 }
 
 isTextNumeric <- function(t)

@@ -6,8 +6,16 @@
 #' @param raw.matrix Character matrix
 #' @param warn Whether to show warnings
 #' @param want.data.frame logical; should a \code{data.frame} be returned instead
-#' of a matrix or vector?
-#' @param ... additional arguments passed to \code{\link[flipTransformations]{ParseAsDataFrame}}
+#' of a matrix or vector? If the input matrix returns a text matrix, this converted
+#' to a dataframe
+#' @param want.factors logical; should a text variable be converted to a factor?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param want.col.names logical; should the first row be interpretted as column names?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param want.row.names logical; should the first colulm be interpretted as row names?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @param us.format logical; should the U.S. convention be used when parsing dates?
+#' Ignored if \code{want.data.frame} is \code{FALSE}
 #' @return if \code{want.data.frame == FALSE}, numeric vector or matrix, possibly
 #' with an attribute \code{"statistic"} if row and column names are present; otherwise,
 #' a \code{data.frame}
@@ -25,16 +33,35 @@
 #' matrix will have row names, but no column names.
 #'     to extract both row and column names from the resulting matrix
 #' @export
-ParseUserEnteredTable <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, ...)
+ParseUserEnteredTable <- function(raw.matrix,
+                                  warn = TRUE,
+                                  want.data.frame = FALSE,
+                                  want.factors = TRUE,
+                                  want.col.names = TRUE,
+                                  want.row.names = FALSE,
+                                  us.format = NULL)
 {
     if (all(raw.matrix == ""))
         stop("no data has been entered")
 
     m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
-    if (want.data.frame)
-        ParseAsDataFrame(m, warn, ...)
-    else
-        parseAsVectorOrMatrix(m, warn)
+    res <- NULL
+    if (!isTRUE(want.data.frame)) # including NULL
+        res <- parseAsVectorOrMatrix(m, warn && length(dim(m)) != 2)
+
+    # Try parsing as dataframe if output was a character matrix
+    if (isTRUE(want.data.frame) || (is.character(res) && length(dim(m)) == 2))
+    {
+        if (!is.null(res))
+        {
+            want.col.names <- attr(res, "col.names.given")
+            want.row.names <- attr(res, "row.names.given")
+        }
+        res <- ParseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
+    }
+    attr(res, "row.names.given") <- NULL
+    attr(res, "col.names.given") <- NULL
+    return(res)
 }
 
 #' Convert user pasted data to numeric
@@ -135,7 +162,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         {
             attr(out, "name") <- vm[1]
             return(out)
-        }else
+        } else
             return(m)
     }
 
@@ -164,13 +191,13 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         rownames(out) <- m[-1, 1]
         colnames(out) <- m[1, -1]
 
-    }else if (row.names.given)
+    } else if (row.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
         out <- asNumeric(m[, 2:n.col], n.row, n.col - 1, drop = FALSE)
         rownames(out) <- m[, 1]
         out <- drop(out)
-    }else if (col.names.given)
+    } else if (col.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column
         out <- asNumeric(m[2:n.row, ], n.row - 1, n.col, drop = FALSE)
@@ -187,6 +214,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
 
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
+
+    # Save state of row/column names for ParseUserEnteredData
+    attr(out, "row.names.given") <- row.names.given
+    attr(out, "col.names.given") <- col.names.given
 
     # Vectors with attributes cannot be printed because of RS-3402
     # This is now fixed in Q 5.2.7+, but we retain support for older versions

@@ -4,7 +4,9 @@
 \alias{ParseUserEnteredTable}
 \title{Parse data from dataEntry R GUI control}
 \usage{
-ParseUserEnteredTable(raw.matrix, warn = TRUE, want.data.frame = FALSE, ...)
+ParseUserEnteredTable(raw.matrix, warn = TRUE, want.data.frame = FALSE,
+  want.factors = TRUE, want.col.names = TRUE, want.row.names = FALSE,
+  us.format = NULL)
 }
 \arguments{
 \item{raw.matrix}{Character matrix}
@@ -12,9 +14,20 @@ ParseUserEnteredTable(raw.matrix, warn = TRUE, want.data.frame = FALSE, ...)
 \item{warn}{Whether to show warnings}
 
 \item{want.data.frame}{logical; should a \code{data.frame} be returned instead
-of a matrix or vector?}
+of a matrix or vector? If the input matrix returns a text matrix, this converted
+to a dataframe}
 
-\item{...}{additional arguments passed to \code{\link[flipTransformations]{ParseAsDataFrame}}}
+\item{want.factors}{logical; should a text variable be converted to a factor?
+Ignored if \code{want.data.frame} is \code{FALSE}}
+
+\item{want.col.names}{logical; should the first row be interpretted as column names?
+Ignored if \code{want.data.frame} is \code{FALSE}}
+
+\item{want.row.names}{logical; should the first colulm be interpretted as row names?
+Ignored if \code{want.data.frame} is \code{FALSE}}
+
+\item{us.format}{logical; should the U.S. convention be used when parsing dates?
+Ignored if \code{want.data.frame} is \code{FALSE}}
 }
 \value{
 if \code{want.data.frame == FALSE}, numeric vector or matrix, possibly
