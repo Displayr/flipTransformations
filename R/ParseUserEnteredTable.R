@@ -166,9 +166,9 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         out <- asNumeric(vm[-1], warn = warn)
         if (!is.numeric(out))
         {
-            out <- AsNumeric(vm[-1])
-            first <- AsNumeric(vm[1])
-            if (is.numeric(out) == is.numeric(first))
+            vals.is.date <- !any(is.na(AsDateTime(vm[-1], on.parse.failure = "silent")))
+            head.is.date <- !any(is.na(AsDateTime(vm[1], on.parse.failure = "silent")))
+            if (vals.is.date == head.is.date)
                 return(m)
             else
             {

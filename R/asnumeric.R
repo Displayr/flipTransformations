@@ -37,8 +37,10 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
         x <- Factor(x, levels = unique(x))
     else if (!is.vector(x) & !is.factor(x))
         stop("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
-    if (!is.factor(x) || length(x) == 1)
+    if (!is.factor(x))
         return(x)
+    if (length(x) == 1) # avoid errors with factor of length 1
+        return(1)
     FactorToNumeric(x, binary & !is.ordered(x), name = name, remove.first = remove.first)
 }
 
