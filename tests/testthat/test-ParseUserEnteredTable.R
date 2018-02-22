@@ -267,10 +267,19 @@ test_that("ParseUserEnteredTable: input is non-numeric vector",
                   "22/06/2007 5:36:35 PM", "22/06/2007 5:30:29 PM", "22/06/2007 5:40:53 PM",
                   "22/06/2007 5:32:22 PM", "22/06/2007 5:39:32 PM", "22/06/2007 5:39:14 PM",
                   "22/06/2007 5:40:11 PM", "22/06/2007 5:54:34 PM"), ncol = 1)
-    out <- ParseUserEnteredTable(x, want.data.frame = FALSE)
+    out <- ParseUserEnteredTable(x, want.data.frame = TRUE)
     expect_is(out, "data.frame")
     expect_equal(dim(out), dim(x) - c(1, 0))
     expect_is(out[[1]], "POSIXct")
+
+    out <- ParseUserEnteredTable(x, want.data.frame = FALSE)
+    expect_is(out, "character")
+    expect_equal(length(out), 10)
+
+    unnamed.char <- matrix(c("dog", "dog", "cat", "cat", "cat"), ncol = 1)
+    out <- ParseUserEnteredTable(unnamed.char, want.data.frame = FALSE)
+    expect_is(out, "character")
+    expect_equal(length(out), 5)
 })
 
 

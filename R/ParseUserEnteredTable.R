@@ -50,7 +50,7 @@ ParseUserEnteredTable <- function(raw.matrix,
         res <- parseAsVectorOrMatrix(m, FALSE)
 
     # Try parsing as dataframe if output was a character matrix
-    if (isTRUE(want.data.frame) || is.character(res))
+    if (isTRUE(want.data.frame) || is.character(res) && NCOL(res) > 1)
     {
         if (!is.null(res))
         {
@@ -145,6 +145,7 @@ getTableTitles <- function(m)
 #' that the data is raw data
 #' @noRd
 #' @keywords internal
+#' @importFrom flipTime AsDateTime
 parseAsVectorOrMatrix <- function(m, warn = FALSE)
 {
     n.row <- NROW(m)
@@ -152,14 +153,34 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
 
     if (n.row == 1 || n.col == 1)
     {
+        dim.given <- if (n.row == 1) "row.names.given"
+                     else            "col.names.given"
+
         vm <- drop(m)
         first.entry.chars <- !isNumericOrPercent(vm[1])
         if (!first.entry.chars || n.row == n.col)  ## unnamed row or column vector
             return(asNumeric(m, warn = warn))
 
+        # Check if entries are dates - note we retain them as characters
+        # But we want to know if there is a column heading
         out <- asNumeric(vm[-1], warn = warn)
+        if (!is.numeric(out))
+        {
+            out <- AsNumeric(vm[-1])
+            first <- AsNumeric(vm[1])
+            if (is.numeric(out) == is.numeric(first))
+                return(m)
+            else
+            {
+                out <- vm[-1]
+                attr(out, "name") <- vm[1]
+                attr(out, dim.given) <- TRUE
+                return(out)
+            }
+        }
+
         attr(out, "name") <- vm[1]
-        attr(out, "col.names.given") <- TRUE
+        attr(out, dim.given) <- TRUE
         return(out)
     }
 
