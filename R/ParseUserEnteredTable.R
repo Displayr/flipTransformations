@@ -47,17 +47,17 @@ ParseUserEnteredTable <- function(raw.matrix,
     m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
     res <- NULL
     if (!isTRUE(want.data.frame)) # including NULL
-        res <- parseAsVectorOrMatrix(m, warn && length(dim(m)) != 2)
+        res <- parseAsVectorOrMatrix(m, FALSE)
 
     # Try parsing as dataframe if output was a character matrix
-    if (isTRUE(want.data.frame) || (is.character(res) && length(dim(m)) == 2))
+    if (isTRUE(want.data.frame) || is.character(res))
     {
         if (!is.null(res))
         {
-            want.col.names <- attr(res, "col.names.given")
-            want.row.names <- attr(res, "row.names.given")
+            want.col.names <- isTRUE(attr(res, "col.names.given"))
+            want.row.names <- isTRUE(attr(res, "row.names.given"))
         }
-        res <- ParseAsDataFrame(m, warn, want.factors, want.col.names, want.row.names, us.format)
+        res <- ParseAsDataFrame(as.matrix(m), warn, want.factors, want.col.names, want.row.names, us.format)
     }
     attr(res, "row.names.given") <- NULL
     attr(res, "col.names.given") <- NULL
@@ -158,12 +158,9 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
             return(asNumeric(m, warn = warn))
 
         out <- asNumeric(vm[-1], warn = warn)
-        if (is.numeric(out))
-        {
-            attr(out, "name") <- vm[1]
-            return(out)
-        } else
-            return(m)
+        attr(out, "name") <- vm[1]
+        attr(out, "col.names.given") <- TRUE
+        return(out)
     }
 
     ## check for titles; if found, extract, and process submatrix
