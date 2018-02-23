@@ -145,7 +145,7 @@ getTableTitles <- function(m)
 #' that the data is raw data
 #' @noRd
 #' @keywords internal
-#' @importFrom flipTime AsDateTime
+#' @importFrom flipTime IsDateTime
 parseAsVectorOrMatrix <- function(m, warn = FALSE)
 {
     n.row <- NROW(m)
@@ -166,9 +166,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         out <- asNumeric(vm[-1], warn = warn)
         if (!is.numeric(out))
         {
-            vals.is.date <- !any(is.na(AsDateTime(vm[-1], on.parse.failure = "silent")))
-            head.is.date <- !any(is.na(AsDateTime(vm[1], on.parse.failure = "silent")))
-            if (vals.is.date == head.is.date)
+            if (IsDateTime(vm[1]) == IsDateTime(vm[-1]))
                 return(m)
             else
             {
@@ -178,7 +176,6 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
                 return(out)
             }
         }
-
         attr(out, "name") <- vm[1]
         attr(out, dim.given) <- TRUE
         return(out)
@@ -194,10 +191,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     first.entry.chars <- !isNumericOrPercent(m[1, 1])
     idx <- if (first.entry.chars) -1
            else seq_len(n.row)
-    row.names.given <- !isNumericOrPercent(m[idx, 1])
+    row.names.given <- !isNumericOrPercent(m[idx, 1]) || IsDateTime(m[idx, 1])
     idx <- if (first.entry.chars) -1
            else seq_len(n.col)
-    col.names.given <- !isNumericOrPercent(m[1, idx])
+    col.names.given <- !isNumericOrPercent(m[1, idx]) || IsDateTime(m[1, idx])
 
     if ((row.names.given && col.names.given) ||
         (row.names.given && !first.entry.chars) ||
