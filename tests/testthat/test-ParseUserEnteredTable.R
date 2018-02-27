@@ -307,12 +307,12 @@ test_that("ParseUserEnteredTable: named column vector; DS-1782",
     expect_equal(attr(out, "name"), "a")
 })
 
-test_that("Dates are parsed as rownames",
-{
-    dat <- matrix(c("%", LETTERS[1:3], "2000", 1:3, "2001", 2:4, "2002", 3:5), 4, 4)
-    res <- ParseUserEnteredTable(dat)
-    expect_equal(dim(res), c(3, 3))
-    expect_equal(colnames(res), c("2000", "2001", "2002"))
-    res <- ParseUserEnteredTable(t(dat))
-    expect_equal(rownames(res), c("2000", "2001", "2002"))
-})
+#test_that("Dates are parsed as rownames",
+#{
+#    dat <- matrix(c("%", LETTERS[1:3], "2000", 1:3, "2001", 2:4, "2002", 3:5), 4, 4)
+#    res <- ParseUserEnteredTable(dat)
+#    expect_equal(dim(res), c(3, 3))
+#    expect_equal(colnames(res), c("2000", "2001", "2002"))
+#    res <- ParseUserEnteredTable(t(dat))
+#    expect_equal(rownames(res), c("2000", "2001", "2002"))
+#})

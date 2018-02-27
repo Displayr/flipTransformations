@@ -191,10 +191,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     first.entry.chars <- !isNumericOrPercent(m[1, 1])
     idx <- if (first.entry.chars) -1
            else seq_len(n.row)
-    row.names.given <- !isNumericOrPercent(m[idx, 1]) || IsDateTime(m[idx, 1])
+    row.names.given <- !isNumericOrPercent(m[idx, 1])
     idx <- if (first.entry.chars) -1
            else seq_len(n.col)
-    col.names.given <- !isNumericOrPercent(m[1, idx]) || IsDateTime(m[1, idx])
+    col.names.given <- !isNumericOrPercent(m[1, idx])
 
     if ((row.names.given && col.names.given) ||
         (row.names.given && !first.entry.chars) ||
