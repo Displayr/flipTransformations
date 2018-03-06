@@ -133,9 +133,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     if (want.row.names)
     {
         tmp.rownames <- unlist(m[,1])
-        if (any(duplicated(tmp.rownames[start.row:n.row])))
-            warning("Rows with duplicated names have been assigned arbitary names.")
-        rownames(df) <- make.unique(tmp.rownames[start.row:n.row], sep="X.")
+        rownames(df) <- tmp.rownames[start.row:n.row]
     }
 
     n.var <- ncol(df)
