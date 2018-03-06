@@ -173,8 +173,7 @@ test_that("data frame", {
                               "9-Feb-16", "10-Feb-16", "11-Feb-16", "12-Feb-16", "13-Feb-16",
                               "14-Feb-16", "15-Feb-16", "char", "a", "b", "b", "a", "f", "f",
                               "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 3L))
-    expect_warning(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE),
-                   "^Supplied date formats are ambiguous")
+    expect_silent(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE))
     expect_equal(out,
                  structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
                                 date = structure(c(1454284800, 1454371200, 1454457600,
@@ -233,9 +232,8 @@ test_that("data frame no names", {
                 "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16", "15-Feb-16",
                 "a", "b", "b", "a", "f", "f", "c", "f", "c", "c", "c", "f", "f",
                 "f", "c"), .Dim = c(15L, 3L))
-    expect_warning(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE,
-                                           want.col.names = FALSE),
-                   "^Supplied date formats are ambiguous")
+    expect_silent(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE,
+                                           want.col.names = FALSE))
     expect_equal(out,
                  structure(list(X1 = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
                                 X2 = structure(c(1454284800, 1454371200, 1454457600,
