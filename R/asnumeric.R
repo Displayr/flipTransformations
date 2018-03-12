@@ -5,7 +5,7 @@
 #' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
 #' Otherwise, they are represented as sequential integers.
 #' @param name Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
-#' ignored if x is a \code{\link{data.frame}} or  \code{\link{list}}.
+#' ignored if x is a \code{\link{data.frame}} or a \code{\link{list}}.
 #' @param remove.first Remove the first binary variable.
 #' @details Characters are treated as factors.
 #' @importFrom flipFormat RemoveParentName
@@ -32,7 +32,10 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
     if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXt"))
         return(as.numeric(x))
     if (is.null(name))
-        name <- RemoveParentName(Names(x))
+    {
+        names <- Names(x)
+        name <- RemoveParentName(names)
+    }
     if (is.character(x))
         x <- Factor(x, levels = unique(x))
     else if (!is.vector(x) & !is.factor(x))
