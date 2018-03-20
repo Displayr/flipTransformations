@@ -132,8 +132,13 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     }
     if (want.row.names)
     {
-        tmp.rownames <- unlist(m[,1])
-        rownames(df) <- tmp.rownames[start.row:n.row]
+        tmp.rownames <- unlist(m[,1])[start.row:n.row]
+        if (any(duplicated(tmp.rownames)))
+        {
+            warning("Duplicated row names have been renamed.")
+            tmp.rownames <- make.unique(tmp.rownames)
+        }
+        rownames(df) <- tmp.rownames
     }
 
     n.var <- ncol(df)
