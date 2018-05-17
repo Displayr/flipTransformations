@@ -13,7 +13,7 @@
 #' proportional to the probability of selection. When creating the bootstrap
 #' sample, the sample size is whichever is greatest of the rounded sum and 1.
 #'# Inspired by Zelig, 13-11-15.
-
+#' @importFrom flipU CopyAttributes
 #' @export
 AdjustDataToReflectWeights <- function(data, weights, seed = 123, silent = FALSE)
 {
@@ -35,8 +35,8 @@ AdjustDataToReflectWeights <- function(data, weights, seed = 123, silent = FALSE
         replicants <- sample.int(n, size = sum.weights,
             replace = TRUE, prob = weights / sum.weights)
     }
-
-    return(data[replicants, ])
+    adjusted <- data[replicants, ]
+    return(CopyAttributes(adjusted, data))
 }
 
 
