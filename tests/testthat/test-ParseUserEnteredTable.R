@@ -316,3 +316,23 @@ test_that("ParseUserEnteredTable: named column vector; DS-1782",
 #    res <- ParseUserEnteredTable(t(dat))
 #    expect_equal(rownames(res), c("2000", "2001", "2002"))
 #})
+
+test_that("Numeric names with statistic",
+{
+    txt <- structure(c("%", "1", "2", "3", "2012", "1", "5", "3", "2013",
+        "4", "7", "5", "2014", "6", "8", "7"), .Dim = c(4L, 4L))
+    res <- ParseUserEnteredTable(txt)
+    expect_equal(dim(res), c(3, 3))
+})
+
+test_that("1-d statistic",
+{
+    txt <- structure(c("Average", "Variance", "Minimum", "Maximum",
+        "5", "2.5", "0.02", "6.7"), .Dim = c(4L, 2L))
+    res <- ParseUserEnteredTable(txt)
+    expect_equal(length(res), 4)
+
+    txt <- structure(c("Average", "5", "Variance", "2.5", "Minimum", "0.02",
+        "Maximum", "6.7"), .Dim = c(2L, 4L))
+    expect_equal(length(res), 4)
+})
