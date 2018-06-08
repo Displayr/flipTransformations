@@ -334,5 +334,11 @@ test_that("1-d statistic",
 
     txt <- structure(c("Average", "5", "Variance", "2.5", "Minimum", "0.02",
         "Maximum", "6.7"), .Dim = c(2L, 4L))
+    res <- ParseUserEnteredTable(txt)
     expect_equal(length(res), 4)
+
+    txt <- structure(c("%", "Cat", "Dog", "Pigeon", "Score", "20", "30",
+        "50"), .Dim = c(4L, 2L))
+    res <- ParseUserEnteredTable(txt)
+    expect_equal(dim(res), c(3, 1))
 })

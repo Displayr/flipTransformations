@@ -188,7 +188,9 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         n.col <- n.col - 1
     }
 
-    statistic.list <- c("%", "Column %", "Row %", "n", "Average", "Standard Error", "Population")
+    statistic.list <- c("%", "Column %", "Row %")
+    # These are not used be cause they can plausibly be row/column labels
+    #   "n", "Average", "Standard Error", "Population")
     first.entry.chars <- !isNumericOrPercent(m[1, 1])
     idx <- if (first.entry.chars) -1
            else seq_len(n.row)
@@ -198,8 +200,8 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     col.names.given <- !isNumericOrPercent(m[1, idx])
     if (m[1,1] %in% statistic.list)
     {
-        row.names.given <- nrow(m) > 2
-        col.names.given <- (ncol(m) - row.names.given) > 2
+        row.names.given <- nrow(m) >= 2
+        col.names.given <- (ncol(m) - row.names.given) >= 1
     }
     if ((row.names.given && col.names.given) ||
         (row.names.given && !first.entry.chars) ||
