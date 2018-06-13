@@ -3,11 +3,11 @@ context("ParseUserEnteredTable")
 test_that("label in 1x1 cell",
 {
     m <- matrix("1", 3, 3)
-    m[1, ] <- LETTERS[1:3]
+    m[1, ] <- c("%", LETTERS[1:2])
     m[2:3, 1] <- letters[1:2]
     out <- ParseUserEnteredTable(m)
     expect_equal(dim(out), c(2, 2))
-    expect_equal(attr(out, "statistic"), "A")
+    expect_equal(attr(out, "statistic"), "%")
     expect_equal(rownames(out), letters[1:2])
     expect_equal(colnames(out), LETTERS[2:3])
 })
@@ -120,8 +120,7 @@ test_that("2 x 3",
     m[1, 2:ncol(m)] <- letters[2:ncol(m)]
     m <- t(m)
     out <- ParseUserEnteredTable(m)
-    expect_equal(attr(out, "statistic"), m[1, 1])
-    expect_equal(colnames(out), m[1, -1])
+    expect_equal(colnames(out), m[1,])
 })
 
 test_that("Missing data",
