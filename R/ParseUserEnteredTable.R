@@ -79,6 +79,8 @@ asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE, warn = FALSE)
     out <- NA * numeric(length(v))
     v.non.miss <- v[!missing.idx]
     v.non.miss <- gsub(",", "", v.non.miss)  # remove commas, e.g. '1,000'
+    v.non.miss <- gsub("^[[:space:]]+", "", v.non.miss)
+    v.non.miss <- gsub("[[:space:]]+$", "", v.non.miss)
     out.non.miss <- suppressWarnings(as.numeric(v.non.miss))
 
     ## deal with possible use of percentages
@@ -107,6 +109,8 @@ isNumericOrPercent <- function(t)
 {
     v <- as.vector(t)
     v <- gsub(",", "", v)
+    v <- gsub("^[[:space:]]+", "", v)
+    v <- gsub("[[:space:]]+$", "", v)
     all(v == "" | isMissing(v) | !is.na(suppressWarnings(as.numeric(sub("%$", "", v)))))
 }
 

@@ -341,3 +341,12 @@ test_that("1-d statistic",
     res <- ParseUserEnteredTable(txt)
     expect_equal(dim(res), c(3, 1))
 })
+
+test_that("Percentages with trailing space",
+{
+    txt <- structure(c("McDonalds ", "KFC ", "Pizza Hut ", "Dominos ", "Oporto ",
+        "40% ", "20% ", "18% ", "15% ", "7% "), .Dim = c(5L, 2L))
+    res <- ParseUserEnteredTable(txt)
+    expect_equal(is.numeric(res), TRUE)
+    expect_equal(length(res), 5)
+})
