@@ -349,4 +349,9 @@ test_that("Percentages with trailing space",
     res <- ParseUserEnteredTable(txt)
     expect_equal(is.numeric(res), TRUE)
     expect_equal(length(res), 5)
+
+    res <- ParseUserEnteredTable(txt, want.data.frame = TRUE, want.col.names = FALSE,
+                                 want.row.names = TRUE)
+    expect_equal(is.numeric(res[[1]]), TRUE)
+    expect_equal(dim(res), c(5, 1))
 })
