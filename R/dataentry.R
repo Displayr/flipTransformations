@@ -153,10 +153,10 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
             df[[i]] <- asNumericWithPercent(v) # numeric
         else
         {
-            parsed.dates <- AsDateTime(v, us.format, on.parse.failure = "silent")
-            if (!any(is.na(parsed.dates)))
-                df[[i]] <- parsed.dates # date
-            else if (want.factors)
+            #parsed.dates <- AsDateTime(v, us.format, on.parse.failure = "silent")
+            #if (!any(is.na(parsed.dates)))
+            #    df[[i]] <- parsed.dates # date
+            if (want.factors)
                 df[[i]] <- as.factor(v) # factor
             else
                 df[[i]] <- v # character

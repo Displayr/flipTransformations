@@ -269,7 +269,6 @@ test_that("ParseUserEnteredTable: input is non-numeric vector",
     out <- ParseUserEnteredTable(x, want.data.frame = TRUE)
     expect_is(out, "data.frame")
     expect_equal(dim(out), dim(x) - c(1, 0))
-    expect_is(out[[1]], "POSIXct")
 
     out <- ParseUserEnteredTable(x, want.data.frame = FALSE)
     expect_is(out, "character")
