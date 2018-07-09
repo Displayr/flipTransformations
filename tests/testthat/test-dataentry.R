@@ -55,16 +55,14 @@ test_that("character matrix with numeric rownames", {
                     "March 20 2021, 20:37", "", "March Equinox in New York (UTC-4)",
                     "March 20 2017, 06:28", "March 20 2018, 12:15", "March 20 2019, 17:58",
                     "March 19 2020, 23:49", "March 20 2021, 05:37"), .Dim = c(7L, 3L))
-    expect_equal(ParseEnteredData(raw.matrix),
-                 structure(list(`March Equinox in Sydney (UTC+11)` = structure(c(1L,
-                    4L, 5L, 2L, 3L), .Label = c("March 20 2017, 21:28", "March 20 2020, 14:49",
-                    "March 20 2021, 20:37", "March 21 2018, 03:15", "March 21 2019, 08:58"
-                    ), class = "factor"), `March Equinox in New York (UTC-4)` = structure(c(2L,
-                    3L, 4L, 1L, 5L), .Label = c("March 19 2020, 23:49", "March 20 2017, 06:28",
-                    "March 20 2018, 12:15", "March 20 2019, 17:58", "March 20 2021, 05:37"
-                    ), class = "factor")), .Names = c("March Equinox in Sydney (UTC+11)",
-                    "March Equinox in New York (UTC-4)"), row.names = c("2017", "2018",
-                    "2019", "2020", "2021"), class = "data.frame"))
+    expect_equal(ParseEnteredData(raw.matrix), structure(
+        list(`March Equinox in Sydney (UTC+11)` = structure(c(1490045280,
+        1521602100, 1553158680, 1584715740, 1616272620), class = c("POSIXct",
+        "POSIXt"), tzone = "UTC"), `March Equinox in New York (UTC-4)` = structure(c(1489991280,
+        1521548100, 1553104680, 1584661740, 1616218620), class = c("POSIXct",
+        "POSIXt"), tzone = "UTC")), .Names = c("March Equinox in Sydney (UTC+11)",
+        "March Equinox in New York (UTC-4)"), row.names = c("2017", "2018",
+        "2019", "2020", "2021"), class = "data.frame"))
     })
 
 test_that("numeric matrix with names and titles", {
@@ -177,16 +175,14 @@ test_that("data frame", {
                               "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 3L))
     expect_silent(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE))
     expect_equal(out,
-                    structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2,
-                    3.14, 5, NA, 6), date = structure(c(1L, 8L, 9L, 10L, 11L, 12L,
-                    13L, 14L, 15L, 2L, 3L, 4L, 5L, 6L, 7L), .Label = c("1-Feb-16",
-                    "10-Feb-16", "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16",
-                    "15-Feb-16", "2-Feb-16", "3-Feb-16", "4-Feb-16", "5-Feb-16",
-                    "6-Feb-16", "7-Feb-16", "8-Feb-16", "9-Feb-16"), class = "factor"),
-                        char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L,
-                        3L, 4L, 4L, 4L, 3L), .Label = c("a", "b", "c", "f"),
-                        class = "factor")), .Names = c("num", "date", "char"),
-                    row.names = c(NA, -15L), class = "data.frame"))
+                 structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
+                                date = structure(c(1454284800, 1454371200, 1454457600,
+                                                   1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
+                                                   1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400),
+                                                 class = c("POSIXct", "POSIXt"), tzone = "UTC"),
+                                char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
+                                                 .Label = c("a","b", "c", "f"), class = "factor")),
+                           .Names = c("num", "date", "char"), row.names = c(NA, -15L), class = "data.frame"))
 })
 
 test_that("data frame no factors", {
@@ -197,14 +193,13 @@ test_that("data frame no factors", {
                               "14-Feb-2016", "15-Feb-2016", "char", "a", "b", "b", "a", "f", "f",
                               "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 3L))
     expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE, want.factors = FALSE),
-                 structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2,
-                 3.14, 5, NA, 6), date = c("1-Feb-2016", "2-Feb-2016", "3-Feb-2016",
-                 "4-Feb-2016", "5-Feb-2016", "6-Feb-2016", "7-Feb-2016", "8-Feb-2016",
-                 "9-Feb-2016", "10-Feb-2016", "11-Feb-2016", "12-Feb-2016", "13-Feb-2016",
-                 "14-Feb-2016", "15-Feb-2016"), char = c("a", "b", "b", "a", "f",
-                 "f", "c", "f", "c", "c", "c", "f", "f", "f", "c")), .Names = c("num",
-                 "date", "char"), row.names = c(NA, -15L), class = "data.frame"))
-
+                 structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
+                                date = structure(c(1454284800, 1454371200, 1454457600,
+                                                1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
+                                                1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400),
+                                                class = c("POSIXct", "POSIXt"), tzone = "UTC"),
+                                char = c("a", "b", "b", "a", "f", "f", "c", "f", "c", "c", "c", "f", "f", "f", "c")),
+                           .Names = c("num", "date", "char"), row.names = c(NA, -15L), class = "data.frame"))
 })
 
 test_that("data frame row names", {
@@ -217,18 +212,17 @@ test_that("data frame row names", {
                               "13-Feb-2016", "14-Feb-2016", "15-Feb-2016", "char", "a", "b", "b",
                               "a", "f", "f", "c", "f", "c", "c", "c", "f", "f", "f", "c"), .Dim = c(16L, 4L))
     expect_equal(ParseEnteredData(raw.matrix, want.data.frame = TRUE, want.row.names = TRUE),
-                    structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2,
-                    3.14, 5, NA, 6), date = structure(c(1L, 8L, 9L, 10L, 11L, 12L,
-                    13L, 14L, 15L, 2L, 3L, 4L, 5L, 6L, 7L), .Label = c("1-Feb-2016",
-                    "10-Feb-2016", "11-Feb-2016", "12-Feb-2016", "13-Feb-2016", "14-Feb-2016",
-                    "15-Feb-2016", "2-Feb-2016", "3-Feb-2016", "4-Feb-2016", "5-Feb-2016",
-                    "6-Feb-2016", "7-Feb-2016", "8-Feb-2016", "9-Feb-2016"), class = "factor"),
-                        char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L,
-                        3L, 4L, 4L, 4L, 3L), .Label = c("a", "b", "c", "f"),
-                        class = "factor")), .Names = c("num",
-                    "date", "char"), row.names = c("row 1", "row 2", "row 3", "row 4",
-                    "row 5", "row 6", "row 7", "row 8", "row 9", "row 10", "row 11",
-                    "row 12", "row 13", "row 14", "row 15"), class = "data.frame"))
+                 structure(list(num = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
+                                date = structure(c(1454284800, 1454371200, 1454457600,
+                                                1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
+                                                1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400),
+                                                class = c("POSIXct", "POSIXt"), tzone = "UTC"),
+                                char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
+                                                 .Label = c("a", "b", "c", "f"), class = "factor")),
+                           .Names = c("num", "date", "char"),
+                           row.names = c("row 1", "row 2", "row 3", "row 4", "row 5", "row 6", "row 7", "row 8",
+                                         "row 9", "row 10", "row 11", "row 12", "row 13", "row 14", "row 15"),
+                           class = "data.frame"))
 })
 
 test_that("data frame no names", {
@@ -241,15 +235,14 @@ test_that("data frame no names", {
     expect_silent(out <- ParseEnteredData(raw.matrix, want.data.frame = TRUE,
                                            want.col.names = FALSE))
     expect_equal(out,
-                 structure(list(X1 = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14,
-                    5, NA, 6), X2 = structure(c(1L, 8L, 9L, 10L, 11L, 12L, 13L, 14L,
-                    15L, 2L, 3L, 4L, 5L, 6L, 7L), .Label = c("1-Feb-16", "10-Feb-16",
-                    "11-Feb-16", "12-Feb-16", "13-Feb-16", "14-Feb-16", "15-Feb-16",
-                    "2-Feb-16", "3-Feb-16", "4-Feb-16", "5-Feb-16", "6-Feb-16", "7-Feb-16",
-                    "8-Feb-16", "9-Feb-16"), class = "factor"), X3 = structure(c(1L,
-                    2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L), .Label = c("a",
-                    "b", "c", "f"), class = "factor")), .Names = c("X1", "X2", "X3"
-                    ), row.names = c(NA, -15L), class = "data.frame"))
+                 structure(list(X1 = c(1, 2, NA, 4, 2, NA, 5, NA, 23, NA, 2, 3.14, 5, NA, 6),
+                                X2 = structure(c(1454284800, 1454371200, 1454457600,
+                                               1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
+                                               1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400
+                                       ), class = c("POSIXct", "POSIXt"), tzone = "UTC"),
+                                X3 = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
+                                               .Label = c("a", "b", "c", "f"), class = "factor")),
+                           .Names = c("X1", "X2", "X3"), row.names = c(NA, -15L), class = "data.frame"))
 })
 
 test_that("data frame blank names", {
@@ -295,6 +288,7 @@ test_that("ParseAsDataFrame", {
     expect_equal(nrow(res2), 10)
     expect_equal(colnames(res2), c("X__1","Pre.breakfast", "Post.breakfast",
                                    "Pre.lunch", "Post.lunch", "Pre.dinner", "Post.dinner"))
+    expect_equal("POSIXct" %in% class(res2[,1]), TRUE)
     m2 <- as.matrix(res2)
     expect_equal(is.numeric(m2), FALSE)
     res3 <- ParseAsDataFrame(raw.matrix, want.col.names = FALSE, want.row.names = TRUE)
@@ -361,13 +355,20 @@ test_that("ParseAsDataFrame, one row of data",
                                  want.col.names = FALSE)
     expect_is(out, "data.frame")
     expect_equal(dim(out), dim(x) - c(0, 1))
+    expect_is(out[[1]], "POSIXct")
 
     cnx <- rbind(c("", LETTERS[1:10]), x)
     out <- ParseAsDataFrame(cnx, want.row.name = TRUE,
                                  want.col.names = TRUE)
     expect_is(out, "data.frame")
     expect_equal(dim(out), dim(cnx) - c(1, 1))
+    expect_is(out[[1]], "POSIXct")
     expect_equal(colnames(out), LETTERS[1:10])
+
+    out <- ParseAsDataFrame(x, want.row.name = TRUE,
+                                 want.col.names = FALSE, us.format = "No dates")
+    expect_is(out, "data.frame")
+    expect_is(out[[1]], "character")
 })
 
 test_that("ParseAsDataFrame, statistic in 1,1 entry DS-1780 CSC comment",
@@ -395,6 +396,8 @@ test_that("ParseAsDataFrame determines column names",
     expect_equal(dim(out.unnamed), c(4, 3))
     expect_equal(colSums(out.unnamed), c(X1=6000, X2=26000, X3=42000))
 })
+
+
 
 
 
