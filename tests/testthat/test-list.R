@@ -7,6 +7,14 @@ test_that("asNumericList works as expected",
     row.names(tdf) <- as.character(row.names(tdf))
     tdf1 <- asNumericList(list("A" = c(1,2,3), "B" = as.factor(c("a","b","c"))), binary = TRUE)
     expect_equal(names(tdf1), names(tdf))
+
+    df.mixed <- structure(list(Name = c("Dragonfruit", "Beans", "Carrot", "Apple"
+        ), Date = structure(c(954547200, 962409600, 966297600, 973036800
+        ), class = c("POSIXct", "POSIXt"), tzone = "UTC"), Score = c(5,
+        7, 3.3, 10)), .Names = c("Name", "Date", "Score"), row.names = c("B",
+        "D", "C", "A"), class = "data.frame")
+    expect_warning(res <- asNumericList(df.mixed, binary = FALSE))
+    expect_equal(sapply(res, class), c(Name = "integer", Date = "numeric", Score = "numeric"))
 })
 
 test_that("QuestionListToDataFrame works as expected",

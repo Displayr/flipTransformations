@@ -23,7 +23,7 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         if (is.null(attr(variable, "name")))
             attr(variable, "name") <- nms[counter]
         attr(variable, "InLoop") <- TRUE
-        if (is.factor(variable) | is.character(variable))
+        if (any(class(variable) %in% c("factor", "character", "POSIXct", "POSIXt", "Date")))
         {
             variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"), remove.first = remove.first)
             uc <- attr(variable, "Unclassed")

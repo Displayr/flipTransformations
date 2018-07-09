@@ -86,7 +86,7 @@ UnclassIfNecessary <- function(x, warn = TRUE)
 
 asNumericWarning <- function(variables)
 {
-    paste("Data has been automatically been converted to being numeric. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure): ",
+    paste("Data has been automatically converted to numeric. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure): ",
     paste0(variables, collapse = ", "))
 }
 
