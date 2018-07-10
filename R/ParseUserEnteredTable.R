@@ -45,6 +45,10 @@ ParseUserEnteredTable <- function(raw.matrix,
         stop("no data has been entered")
 
     m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
+    m <- extractTableTitle(m)
+    m.title <- attr(m, "title")
+    if (!is.null(m.title))
+        m <- removeEmptyRowsAndColumns(m, !want.data.frame)
     res <- NULL
     if (!isTRUE(want.data.frame)) # including NULL
         res <- parseAsVectorOrMatrix(m, FALSE)
@@ -61,7 +65,26 @@ ParseUserEnteredTable <- function(raw.matrix,
     }
     attr(res, "row.names.given") <- NULL
     attr(res, "col.names.given") <- NULL
+    attr(res, "title") <- m.title
     return(res)
+}
+
+extractTableTitle <- function(x)
+{
+    if (NCOL(x) == 1)
+        return(x)
+
+    # We require that titles are in the first cell of the first row which is otherwise empty
+    # Note that entries in the 1-2 position are assumed to be column titles
+    entries.in.first.row <- which(nchar(x[1,]) > 0)
+    if (length(entries.in.first.row) == 1 && entries.in.first.row == 1)
+    {
+        title <- x[1,entries.in.first.row]
+        x <- x[-1,]
+        attr(x, "title") <- title
+        return(x)
+    }
+    return(x)
 }
 
 #' Convert user pasted data to numeric

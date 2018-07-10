@@ -204,7 +204,8 @@ test_that("numeric matrix with names and titles", {
                               "0.055045872", "1", "", "NET", "0.981651376", "0.923547401",
                               "0.908256881", "0.788990826", "0.951070336", "0.868501529", "0.574923547",
                               "1"), .Dim = c(10L, 12L))
-    expect_equal(ParseUserEnteredTable(raw.matrix),
+    res <- ParseUserEnteredTable(raw.matrix)
+    expect_equal(res,
                  structure(c(0.064220183, 0.574923547, 0.22324159, 0.085626911,
                             0.605504587, 0.100917431, 0.097859327, 1, 0.018348624, 0.587155963,
                             0.550458716, 0.021406728, 0.577981651, 0.308868502, 0.174311927,
@@ -225,6 +226,12 @@ test_that("numeric matrix with names and titles", {
                                             c("Feminine", "Health-conscious", "Innocent", "Older", "Open to new experiences",
                                               "Rebellious", "Sleepy", "Traditional", "Weight-conscious", "NET")),
                            row.column.names = c("Product", "Attribute")))
+
+    r2 <- rbind(matrix("", 3, 12), raw.matrix)
+    r2[2,1] <- "Main title"
+    res2 <- ParseUserEnteredTable(r2)
+    expect_equal(dim(res), dim(res2))
+    expect_equal(attr(res2, "title"), r2[2,1])
 })
 
 
