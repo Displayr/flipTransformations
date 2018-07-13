@@ -135,9 +135,11 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     if (want.row.names)
     {
         tmp.rownames <- unlist(m[,1])[start.row:n.row]
-        if (any(duplicated(tmp.rownames)))
+        ind.dup <- which(duplicated(tmp.rownames))
+        if (length(ind.dup) > 0)
         {
-            warning("Duplicated row names have been renamed.")
+            warning("Row names must be unique. Numbers have been appended to rows with duplicated names: \"",
+                    paste(tmp.rownames[ind.dup], collapse = "\", "), "\".")
             tmp.rownames <- make.unique(tmp.rownames)
         }
         rownames(df) <- tmp.rownames
