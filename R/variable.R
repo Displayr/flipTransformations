@@ -90,13 +90,18 @@ asNumericWarning <- function(variables)
     paste0(variables, collapse = ", "))
 }
 
-#' \code{OrderedToNumeric}
-#' @description Convert an ordered factor to a numeric vector.
+#' Convert an ordered factor to a numeric vector.
+#'
 #' @param x An ordered factor.
+#' @details If all levels are numeric they are converted to the same numbers.
+#'   Else they are converted to 1, 2, 3, . as per the ordering of the factors.
 #' @importFrom stats model.matrix
 #' @export
 OrderedToNumeric <- function(x)
 {
+    ints <- suppressWarnings(as.numeric(as.character(x)))
+    if (!any(is.na(ints)))
+        return(ints)
     return(Unclass(x))
 }
 

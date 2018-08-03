@@ -2,7 +2,7 @@
 % Please edit documentation in R/variable.R
 \name{OrderedToNumeric}
 \alias{OrderedToNumeric}
-\title{\code{OrderedToNumeric}}
+\title{Convert an ordered factor to a numeric vector.}
 \usage{
 OrderedToNumeric(x)
 }
@@ -11,4 +11,8 @@ OrderedToNumeric(x)
 }
 \description{
 Convert an ordered factor to a numeric vector.
+}
+\details{
+If all levels are numeric they are converted to the same numbers.
+  Else they are converted to 1, 2, 3, . as per the ordering of the factors.
 }
