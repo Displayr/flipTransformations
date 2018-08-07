@@ -49,6 +49,8 @@ ParseUserEnteredTable <- function(raw.matrix,
     m.title <- attr(m, "title")
     if (!is.null(m.title))
         m <- removeEmptyRowsAndColumns(m, !want.data.frame)
+    m <- extractRowColumnTitles(m)
+    row.col.title <- attr(m, "row.column.names")
     res <- NULL
     if (!isTRUE(want.data.frame)) # including NULL
         res <- parseAsVectorOrMatrix(m, FALSE)
@@ -65,6 +67,7 @@ ParseUserEnteredTable <- function(raw.matrix,
     }
     attr(res, "row.names.given") <- NULL
     attr(res, "col.names.given") <- NULL
+    attr(res, "row.column.names") <- row.col.title
     attr(res, "title") <- m.title
     return(res)
 }
@@ -148,22 +151,25 @@ isMissing <- function(t)
 #' Searches the first row and column
 #' in a character matrix to see if they each have a single
 #' non-empty entry, and if so returns them in a vector
-#' @return NULL if no titles found; otherwise, a length-2
-#' vector containing the titles
+#' @return matrix with row and column title (if found) moved
+#'   into the "row.column.names" attribute
 #' @noRd
 #' @keywords internal
-getTableTitles <- function(m)
+extractRowColumnTitles <- function(m)
 {
     if (NROW(m) <= 2 || NCOL(m) <= 2 || m[1, 1] != "")
-        return(NULL)
+        return(m)
 
     row.idx <- m[, 1] != ""
-    if (sum(row.idx) != 1L)
-        return(NULL)
     col.idx <- m[1, ] != ""
-    if (sum(row.idx) != 1L)
-        return(NULL)
-    c(m[row.idx, 1L], m[1L, col.idx])
+    if (sum(row.idx) != 1L && sum(col.idx) != 1L)
+        return(m)
+
+    row.title <- if (sum(row.idx) == 1L) m[row.idx, 1L] else ""
+    col.title <- if (sum(col.idx) == 1L) m[1L, col.idx] else ""
+    m <- m[(1+(sum(col.idx)==1L)):nrow(m), (1+(sum(row.idx)==1L)):ncol(m)]
+    attr(m, "row.column.names") <- c(row.title, col.title)
+    return(m)
 }
 
 #' Convert a user-entered/pasted table to a Numeric Matrix
@@ -206,13 +212,6 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         attr(out, "name") <- vm[1]
         attr(out, dim.given) <- TRUE
         return(out)
-    }
-
-    ## check for titles; if found, extract, and process submatrix
-    if (length(titles <- getTableTitles(m))){
-        m <- m[-1, -1]
-        n.row <- n.row - 1
-        n.col <- n.col - 1
     }
 
     statistic.list <- c("", "%", "Column %", "Row %", "Total %")
@@ -262,13 +261,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
 
     if (!is.null(attr(out, "statistic")) && grepl("%$", attr(out, "statistic")))
         out <- out/100
-    if (length(titles))
-        attr(out, "row.column.names") <- titles
-
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
 
-    # Save state of row/column names for ParseUserEnteredData
+    # Save state of row/column names for ParseAsDataFrame
     attr(out, "row.names.given") <- row.names.given
     attr(out, "col.names.given") <- col.names.given
 
