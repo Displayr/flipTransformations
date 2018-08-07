@@ -60,14 +60,25 @@ Ordered <- function(x, ...)
 #' @export
 Unclass <- function(x, warn = TRUE)
 {
-    result <- unclass(x)
-    attr(result, "levels") <- NULL # As some functions get confused by levels and use as a proxy for factor.
     in.loop <- !is.null(attr(x, "InLoop"))
     labels <- Labels(x, show.name = TRUE)
-    if (in.loop)
+    ints <- suppressWarnings(as.numeric(as.character(x)))
+
+    if (!any(is.na(ints)))
+    {
+        to.factor.levels <- TRUE # Factor level labels have been used as values
+        result <- ints
+    }
+    else
+    {
+        to.factor.levels <- FALSE # Levels converted to 1, 2, 3 ... ignoring the level labels
+        result <- unclass(x)
+        attr(result, "levels") <- NULL # As some functions get confused by levels and use as a proxy for factor.
+    }
+    if (in.loop && !to.factor.levels)
         attr(result, "Unclassed") <- labels
     else if (warn)
-        warning(asNumericWarning(labels))
+        warning(asNumericWarning(labels, to.factor.levels = to.factor.levels))
     result
 }
 
@@ -84,10 +95,14 @@ UnclassIfNecessary <- function(x, warn = TRUE)
     return(x);
 }
 
-asNumericWarning <- function(variables)
+asNumericWarning <- function(variables, to.factor.levels = FALSE)
 {
-    paste("Data has been automatically converted to numeric. Values are assigned in the order of the categories: 1, 2, 3...  To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure): ",
-    paste0(variables, collapse = ", "))
+    message <- if (to.factor.levels)
+        "Values are assigned according to the labels of the categories."
+    else
+        "Values are assigned in the order of the categories: 1, 2, 3... "
+    paste("Data has been automatically converted to numeric.", message, "To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure): ",
+          paste0(variables, collapse = ", "))
 }
 
 #' Convert an ordered factor to a numeric vector.
@@ -99,9 +114,6 @@ asNumericWarning <- function(variables)
 #' @export
 OrderedToNumeric <- function(x)
 {
-    ints <- suppressWarnings(as.numeric(as.character(x)))
-    if (!any(is.na(ints)))
-        return(ints)
     return(Unclass(x))
 }
 
