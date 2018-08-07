@@ -152,18 +152,18 @@ isMissing <- function(t)
 #' vector containing the titles
 #' @noRd
 #' @keywords internal
-getTableTitles <- function(m)
+getRowColumnTitles <- function(m)
 {
     if (NROW(m) <= 2 || NCOL(m) <= 2 || m[1, 1] != "")
         return(NULL)
 
     row.idx <- m[, 1] != ""
-    if (sum(row.idx) != 1L)
-        return(NULL)
     col.idx <- m[1, ] != ""
-    if (sum(row.idx) != 1L)
+    if (sum(row.idx) != 1L && sum(col.idx) != 1L)
         return(NULL)
-    c(m[row.idx, 1L], m[1L, col.idx])
+    row.title <- if (sum(row.idx) == 1L) m[row.idx, 1L] else ""
+    col.title <- if (sum(col.idx) == 1L) m[1L, col.idx] else ""
+    return(c(row.title, col.title))
 }
 
 #' Convert a user-entered/pasted table to a Numeric Matrix
@@ -209,10 +209,13 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     }
 
     ## check for titles; if found, extract, and process submatrix
-    if (length(titles <- getTableTitles(m))){
-        m <- m[-1, -1]
-        n.row <- n.row - 1
-        n.col <- n.col - 1
+    if (length(row.col.titles <- getRowColumnTitles(m)))
+    {
+        r.ind <- if (nchar(row.col.titles[2]) > 0) 2:n.row else 1:n.row
+        c.ind <- if (nchar(row.col.titles[1]) > 0) 2:n.col else 1:n.col
+        m <- m[r.ind,c.ind]
+        n.row <- length(r.ind)
+        n.col <- length(c.ind)
     }
 
     statistic.list <- c("", "%", "Column %", "Row %", "Total %")
@@ -262,8 +265,8 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
 
     if (!is.null(attr(out, "statistic")) && grepl("%$", attr(out, "statistic")))
         out <- out/100
-    if (length(titles))
-        attr(out, "row.column.names") <- titles
+    if (length(row.col.titles))
+        attr(out, "row.column.names") <- row.col.titles
 
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")

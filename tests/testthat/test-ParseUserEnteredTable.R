@@ -361,3 +361,22 @@ test_that("Percentages with trailing space",
     expect_equal(is.numeric(res[[1]]), TRUE)
     expect_equal(dim(res), c(5, 1))
 })
+
+test_that("Row and Column titles",
+{
+    # Has both row and column titles
+    raw2 <- structure(c("", "", "animals", "", "", "", "", "cat", "dog",
+                "mouse", "attributes", "age", "2", "3", "4", "", "weight", "5",
+                "4", "6"), .Dim = c(5L, 4L))
+    # Only column titles
+    raw1 <- structure(c("", "", "", "", "", "", "", "cat", "dog", "mouse",
+                "attributes", "age", "2", "3", "4", "", "weight", "5", "4", "6"
+                ), .Dim = c(5L, 4L))
+
+    expect_error(res1 <- ParseUserEnteredTable(raw1), NA)
+    expect_error(res2 <- ParseUserEnteredTable(raw2), NA)
+    expect_equal(dim(res1), c(3,2))
+    expect_equal(dim(res2), c(3,2))
+    expect_equal(attr(res2, "row.column.names"), c("animals", "attributes"))
+    expect_equal(attr(res1, "row.column.names"), c("", "attributes"))
+})

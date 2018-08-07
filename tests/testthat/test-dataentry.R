@@ -366,7 +366,7 @@ test_that("ParseAsDataFrame, one row of data",
     expect_equal(colnames(out), LETTERS[1:10])
 
     out <- ParseAsDataFrame(x, want.row.name = TRUE,
-                                 want.col.names = FALSE, us.format = "No dates")
+                                 want.col.names = FALSE, us.format = "No date formatting")
     expect_is(out, "data.frame")
     expect_is(out[[1]], "character")
 })
