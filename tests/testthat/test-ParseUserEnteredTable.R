@@ -375,8 +375,10 @@ test_that("Row and Column titles",
 
     expect_error(res1 <- ParseUserEnteredTable(raw1), NA)
     expect_error(res2 <- ParseUserEnteredTable(raw2), NA)
+    expect_error(res2b <- ParseUserEnteredTable(raw2, want.data.frame = TRUE, want.row.names = TRUE), NA)
     expect_equal(dim(res1), c(3,2))
     expect_equal(dim(res2), c(3,2))
+    expect_equal(dim(res2b), c(3,2))
     expect_equal(attr(res2, "row.column.names"), c("animals", "attributes"))
     expect_equal(attr(res1, "row.column.names"), c("", "attributes"))
 })
