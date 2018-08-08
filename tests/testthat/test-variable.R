@@ -24,8 +24,8 @@ test_that("OrderedToNumeric",
           {
               expect_warning(OrderedToNumeric(factor(c("A", "D", "B", "A", "D"), ordered = TRUE)),
                              "Data has been automatically converted to numeric.")
-              expect_equal(OrderedToNumeric(factor(c(3,6,8,2,5,3,6,2), ordered = TRUE)),
-                           c(3,6,8,2,5,3,6,2))
+              expect_warning(OrderedToNumeric(factor(c(3,6,8,2,5,3,6,2), ordered = TRUE)),
+                             "Data has been automatically converted to numeric.")
           })
 
 

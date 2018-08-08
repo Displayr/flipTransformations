@@ -51,20 +51,22 @@ Ordered <- function(x, ...)
     return(CopyAttributes(result, x))
 }
 
-#' \code{Unclass}
-#' @description Unclasses, and removes the levels attribute.
-#' @param x An ordered factor.
-#' @importFrom stats model.matrix
+#' Unclasses and removes the levels of a factor.
+#'
+#' @param x A factor.
 #' @param warn Show warning.
+#' @param use.numeric.levels If \code{TRUE}, numeric factor levels are used as the values of the output,
+#'    else levels are output as 1, 2, 3, ...
+#' @importFrom stats model.matrix
 #' @importFrom flipFormat Labels
 #' @export
-Unclass <- function(x, warn = TRUE)
+Unclass <- function(x, warn = TRUE, use.numeric.levels = TRUE)
 {
     in.loop <- !is.null(attr(x, "InLoop"))
     labels <- Labels(x, show.name = TRUE)
     ints <- suppressWarnings(as.numeric(as.character(x)))
 
-    if (!any(is.na(ints)))
+    if (use.numeric.levels && !any(is.na(ints)))
     {
         to.factor.levels <- TRUE # Factor level labels have been used as values
         result <- ints
@@ -101,7 +103,7 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
         "Values are assigned according to the labels of the categories."
     else
         "Values are assigned in the order of the categories: 1, 2, 3... "
-    paste("Data has been automatically converted to numeric.", message, "To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure): ",
+    paste("Data has been automatically converted to numeric.", message, "To use alternative numeric values you should instead transform the data prior including it in this analysis (e.g., by changing its structure).",
           paste0(variables, collapse = ", "))
 }
 
@@ -109,7 +111,7 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #'
 #' @param x An ordered factor.
 #' @details If all levels are numeric they are converted to the same numbers.
-#'   Else they are converted to 1, 2, 3, . as per the ordering of the factors.
+#'   Else they are converted to 1, 2, 3, ... as per the ordering of the factors.
 #' @importFrom stats model.matrix
 #' @export
 OrderedToNumeric <- function(x)
@@ -178,15 +180,16 @@ FactorToIndicators <- function(variable, name = NULL)
     result
 }
 
-#' \code{DichotomizeFactor} Converts a list of variable or data frames into a
-#' data.frame.
+#' Converts a list of variable or data frames into a data.frame.
+#'
 #' @param variable A variable in a DataSet or data.frame.
 #' @param cutoff The cutoff point to split the variable into.
 #' @param warning If TRUE, raise a warning showing the new levels.
 #' @param name An alternate name to show instead of the deparsed variable name.
 #' @importFrom flipFormat RemoveParentName
 #' @export
-DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = RemoveParentName(deparse(substitute(variable)))) {
+DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE,
+                              name = RemoveParentName(deparse(substitute(variable)))) {
     label <- attr(variable, "label")
     if (is.null(label))
         label <- name
@@ -200,7 +203,7 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE, name = Re
     cut.point <- match(TRUE, cumulative.probs > cutoff)
     if (cut.point == 1)
         stop(paste(name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
-    new.factor <- factor(suppressWarnings(Unclass(variable)) >= cut.point)
+    new.factor <- factor(suppressWarnings(Unclass(variable, use.numeric.levels = FALSE)) >= cut.point)
     levels(new.factor) <- paste(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
         warning(paste(name, "has been dichotimized into", paste(levels(new.factor), collapse = " & ")))
