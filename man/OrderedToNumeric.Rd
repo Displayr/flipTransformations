@@ -14,5 +14,5 @@ Convert an ordered factor to a numeric vector.
 }
 \details{
 If all levels are numeric they are converted to the same numbers.
-  Else they are converted to 1, 2, 3, . as per the ordering of the factors.
+  Else they are converted to 1, 2, 3, ... as per the ordering of the factors.
 }

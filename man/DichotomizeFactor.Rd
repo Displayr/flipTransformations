@@ -2,8 +2,7 @@
 % Please edit documentation in R/variable.R
 \name{DichotomizeFactor}
 \alias{DichotomizeFactor}
-\title{\code{DichotomizeFactor} Converts a list of variable or data frames into a
-data.frame.}
+\title{Converts a list of variable or data frames into a data.frame.}
 \usage{
 DichotomizeFactor(variable, cutoff = 0.5, warning = FALSE,
   name = RemoveParentName(deparse(substitute(variable))))
@@ -18,6 +17,5 @@ DichotomizeFactor(variable, cutoff = 0.5, warning = FALSE,
 \item{name}{An alternate name to show instead of the deparsed variable name.}
 }
 \description{
-\code{DichotomizeFactor} Converts a list of variable or data frames into a
-data.frame.
+Converts a list of variable or data frames into a data.frame.
 }

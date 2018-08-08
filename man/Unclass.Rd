@@ -2,15 +2,18 @@
 % Please edit documentation in R/variable.R
 \name{Unclass}
 \alias{Unclass}
-\title{\code{Unclass}}
+\title{Unclasses and removes the levels of a factor.}
 \usage{
-Unclass(x, warn = TRUE)
+Unclass(x, warn = TRUE, use.numeric.levels = TRUE)
 }
 \arguments{
-\item{x}{An ordered factor.}
+\item{x}{A factor.}
 
 \item{warn}{Show warning.}
+
+\item{use.numeric.levels}{If \code{TRUE}, numeric factor levels are used as the values of the output,
+else levels are output as 1, 2, 3, ...}
 }
 \description{
-Unclasses, and removes the levels attribute.
+Unclasses and removes the levels of a factor.
 }
