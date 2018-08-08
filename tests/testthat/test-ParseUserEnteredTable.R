@@ -78,7 +78,7 @@ test_that("row vector",
     n.col <- 10
     m <- matrix(rep("1", n.row*n.col), n.row, n.col)
     out <- ParseUserEnteredTable(m)
-    expect_equal(out, rep.int(1, n.col))
+    expect_equal(out, matrix(1, ncol = n.col))
 })
 
 test_that("named row vector",
@@ -87,8 +87,8 @@ test_that("named row vector",
     m <- rbind(letters[1:n.col], rep("1", n.col))
 
     out <- ParseUserEnteredTable(m)
-    expect_equal(names(out), m[1, ])
-    expect_equal(out, as.numeric(m[2, ]), check.attributes = FALSE)
+    expect_equal(colnames(out), m[1, ])
+    expect_equal(unname(out), as.numeric(m[2, ]), check.attributes = FALSE)
 })
 
 test_that("column vector",
@@ -97,7 +97,7 @@ test_that("column vector",
     n.col <- 1
     m <- matrix(rep("1", n.row*n.col), n.row, n.col)
     out <- ParseUserEnteredTable(m)
-    expect_equal(out, rep.int(1, n.row))
+    expect_equal(out, matrix(1, 10, 1))
     expect_null(names(out))
 })
 
@@ -107,7 +107,7 @@ test_that("named column vector",
     m <- cbind(letters[1:n.col], rep("1", n.col))
 
     out <- ParseUserEnteredTable(m)
-    expect_equal(names(out), m[, 1])
+    expect_equal(rownames(out), m[, 1])
     expect_equal(drop(out), as.numeric(m[, 2]), check.attributes = FALSE)
 })
 
@@ -145,14 +145,15 @@ test_that("numeric matrix without names", {
 test_that("numeric vector without names", {
     raw.matrix <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "1",
                               "2", "3", "", "5", "6"), .Dim = c(9L, 2L))
-    expect_equal(ParseUserEnteredTable(raw.matrix), c(1, 2, 3, NA, 5, 6))
+    expect_equal(as.numeric(ParseUserEnteredTable(raw.matrix)), c(1, 2, 3, NA, 5, 6))
 })
 
 test_that("numeric vector with names", {
     raw.matrix <- structure(c("one", "two", "three", "", "five", "six", "1",
                               "2", "3", "", "5", "6"), .Dim = c(6L, 2L))
-    expect_equal(ParseUserEnteredTable(raw.matrix), structure(c(1, 2, 3, NA, 5, 6),
-                                                         .Names = c("one", "two", "three", "", "five", "six")))
+    expect_error(out <- ParseUserEnteredTable(raw.matrix), NA)
+    expect_true(is.numeric(out))
+    expect_equal(rownames(out), c("one", "two", "three", "", "five", "six"))
 })
 
 test_that("numeric matrix with row names", {
@@ -283,7 +284,7 @@ test_that("ParseUserEnteredTable: input is non-numeric vector",
 
     unnamed.char <- matrix(c("dog", "dog", "cat", "cat", "cat"), ncol = 1)
     out <- ParseUserEnteredTable(unnamed.char, want.data.frame = FALSE)
-    expect_is(out, "character")
+    expect_true(is.character(out))
     expect_equal(length(out), 5)
 })
 

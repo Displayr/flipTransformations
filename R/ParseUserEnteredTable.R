@@ -44,7 +44,7 @@ ParseUserEnteredTable <- function(raw.matrix,
     if (all(raw.matrix == ""))
         stop("no data has been entered")
 
-    m <- removeEmptyRowsAndColumns(raw.matrix, !want.data.frame)
+    m <- removeEmptyRowsAndColumns(raw.matrix, drop = FALSE)
     m <- extractTableTitle(m)
     m.title <- attr(m, "title")
     if (!is.null(m.title))
@@ -83,7 +83,7 @@ extractTableTitle <- function(x)
     if (length(entries.in.first.row) == 1 && entries.in.first.row == 1)
     {
         title <- x[1,entries.in.first.row]
-        x <- x[-1,]
+        x <- x[-1, , drop = FALSE]
         attr(x, "title") <- title
         return(x)
     }
@@ -98,7 +98,7 @@ extractTableTitle <- function(x)
 #' @param ncol Optional dimnsions of matrix to return if \code{drop} is false.
 #' @param drop If true (default), a vector will always be returned
 #' @noRd
-asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE, warn = FALSE)
+asNumeric <- function(t, nrow = 1, ncol = 1, drop = FALSE, warn = FALSE)
 {
     v <- as.vector(t)
     missing.idx <- v == "" | isMissing(v)
@@ -119,7 +119,6 @@ asNumeric <- function(t, nrow = 1, ncol = 1, drop = TRUE, warn = FALSE)
             v <- matrix(v, nrow, ncol)
         if (warn)
             warning("The entered data could not be interpreted.", call. = FALSE)
-
         return(v)
     }
     # out[missing.idx] <- NA
@@ -167,7 +166,7 @@ extractRowColumnTitles <- function(m)
 
     row.title <- if (sum(row.idx) == 1L) m[row.idx, 1L] else ""
     col.title <- if (sum(col.idx) == 1L) m[1L, col.idx] else ""
-    m <- m[(1+(sum(col.idx)==1L)):nrow(m), (1+(sum(row.idx)==1L)):ncol(m)]
+    m <- m[(1+(sum(col.idx)==1L)):nrow(m), (1+(sum(row.idx)==1L)):ncol(m), drop = FALSE]
     attr(m, "row.column.names") <- c(row.title, col.title)
     return(m)
 }
@@ -192,11 +191,11 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         vm <- drop(m)
         first.entry.chars <- !isNumericOrPercent(vm[1])
         if (!first.entry.chars || n.row == n.col)  ## unnamed row or column vector
-            return(asNumeric(m, warn = warn))
+            return(asNumeric(m, warn = warn, NROW(m), NCOL(m)))
 
         # Check if entries are dates - note we retain them as characters
         # But we want to know if there is a column heading
-        out <- asNumeric(vm[-1], warn = warn)
+        out <- asNumeric(vm[-1], drop = TRUE, warn = warn)
         if (!is.numeric(out))
         {
             if (IsDateTime(vm[1]) == IsDateTime(vm[-1]))
@@ -209,6 +208,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
                 return(out)
             }
         }
+        
         attr(out, "name") <- vm[1]
         attr(out, dim.given) <- TRUE
         return(out)
@@ -236,7 +236,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         (row.names.given && !first.entry.chars) ||
         (col.names.given && !first.entry.chars))
     {
-        out <- asNumeric(m[2:n.row, 2:n.col], n.row - 1, n.col - 1, drop = FALSE)
+        out <- asNumeric(m[2:n.row, 2:n.col, drop = FALSE], n.row-1, n.col-1)
         if (first.entry.chars)
             attr(out, "statistic") <- m[1, 1]
         rownames(out) <- m[-1, 1]
@@ -246,18 +246,16 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     } else if (row.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
-        out <- asNumeric(m[, 2:n.col], n.row, n.col - 1, drop = FALSE)
+        out <- asNumeric(m[, 2:n.col, drop = FALSE], n.row, n.col - 1)
         rownames(out) <- m[, 1]
-        out <- drop(out)
     } else if (col.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column
-        out <- asNumeric(m[2:n.row, ], n.row - 1, n.col, drop = FALSE)
+        out <- asNumeric(m[2:n.row, , drop = FALSE], n.row - 1, n.col)
         colnames(out) <- m[1, ]
-        out <- drop(out)
     }
     else
-        out <- asNumeric(m, n.row, n.col, drop = FALSE)
+        out <- asNumeric(m, n.row, n.col)
 
     if (!is.null(attr(out, "statistic")) && grepl("%$", attr(out, "statistic")))
         out <- out/100

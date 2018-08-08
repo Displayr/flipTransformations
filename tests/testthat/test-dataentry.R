@@ -10,15 +10,17 @@ test_that("numeric matrix without names", {
 test_that("numeric vector without names", {
     raw.matrix <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "1",
                               "2", "3", "", "5", "6"), .Dim = c(9L, 2L))
-    expect_equal(ParseEnteredData(raw.matrix), c(1, 2, 3, NA, 5, 6))
+    expect_error(res <- ParseEnteredData(raw.matrix), NA)
+    expect_equal(as.numeric(res), c(1, 2, 3, NA, 5, 6))
+    expect_equal(nrow(res), 6)
 })
 
 test_that("numeric vector with names", {
     raw.matrix <- structure(c("one", "two", "three", "", "five", "six", "1",
                               "2", "3", "", "5", "6"), .Dim = c(6L, 2L))
-    expect_equal(ParseEnteredData(raw.matrix), structure(c(1, 2, 3, NA, 5, 6),
-                                                         .Names = c("one", "two", "three",
-                                                                                         "", "five", "six")))
+    expect_equal(ParseEnteredData(raw.matrix),
+                 structure(c(1, 2, 3, NA, 5, 6), .Dim = c(6L, 1L),
+                           .Dimnames = list(c("one", "two", "three", "", "five", "six"), NULL)))
 })
 
 test_that("numeric matrix with row names", {
