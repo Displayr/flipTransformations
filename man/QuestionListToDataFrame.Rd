@@ -4,8 +4,8 @@
 \alias{QuestionListToDataFrame}
 \title{\code{QuestionListToDataFrame}}
 \usage{
-QuestionListToDataFrame(list.of.questions, names.to.remove = c("NET", "Total",
-  "SUM"))
+QuestionListToDataFrame(list.of.questions, names.to.remove = c("NET",
+  "Total", "SUM"))
 }
 \arguments{
 \item{list.of.questions}{A list containing the questions to combine.}

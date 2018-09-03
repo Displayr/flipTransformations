@@ -72,3 +72,12 @@ test_that("Standardization", {
 
 })
 
+dat <- data.frame(x = 0:10, y = -5:5)
+dat[1, 1] <- dat[2, 2] <- NA
+test_that("Standardization with missing data", {
+    for (method in c("z-scores", "Mean centered", "Range [-1,1]", "Range [0,1]", "Standard deviation of 1"))
+        expect_error(StandardizeData(dat, method), NA)
+})
+
+
+

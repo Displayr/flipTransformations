@@ -82,7 +82,7 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
                          method == "Standard deviation of 1"
     if (require.variation)
     {
-        sd.0 <- apply(data, 2, sd) == 0
+        sd.0 <- apply(data, 2, sd, na.rm = TRUE) == 0
         if (no.variation != "ignore" && any(sd.0))
         {
             vars <- paste("There is no variation in the values of", collapseNames(colnames(data)[sd.0]))

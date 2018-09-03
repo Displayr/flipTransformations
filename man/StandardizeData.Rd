@@ -4,8 +4,8 @@
 \alias{StandardizeData}
 \title{StandardizeData}
 \usage{
-StandardizeData(data, method, no.variation = "warn", no.variation.value = 0,
-  mean.zero = "warn")
+StandardizeData(data, method, no.variation = "warn",
+  no.variation.value = 0, mean.zero = "warn")
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix}.}
