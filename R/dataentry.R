@@ -21,11 +21,6 @@ ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, w
                           want.col.names, want.row.names, us.format))
 }
 
-isTextNumeric <- function(t)
-{
-    all(!is.na(suppressWarnings(asNumericWithPercent(t))) | t == "")
-}
-
 isNumericMatrixWithLabelsAndTitles <- function(m)
 {
     n.row <- nrow(m)
@@ -39,16 +34,6 @@ isNumericMatrixWithLabelsAndTitles <- function(m)
     result
 }
 
-asNumericWithPercent <- function(t)
-{
-    v <- gsub(",", "", as.vector(t))
-    v <- gsub("^[^\x21-\x7E]+", "", v)
-    v <- gsub("[^\x21-\x7E]+$", "", v)
-    result <- suppressWarnings(as.numeric(v))
-    ind <- is.na(result) & grepl("%$", v)
-    result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100
-    result
-}
 
 #' Remove first few rows and columns if they are empty
 #'
@@ -114,8 +99,6 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
                      stringsAsFactors = FALSE, fix.empty.names = FALSE)
     is.percentages <- all(grepl("%$", m[start.row:n.row, start.col:n.col, drop = FALSE]))
     if (want.col.names && want.row.names && nchar(m[1,1]) > 0)
-        #m[1, 1] %in% c("%", "Column %", "Row %", "n", "Average", "Standard Error", "Population") &&
-        #all(unlist(lapply(df, isNumericOrPercent))))
         attr(df, "statistic") <- m[1, 1]
 
     if (want.col.names)
@@ -152,7 +135,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
         if (is.numeric(v)) # do nothing if already converted
             next
         else if (isTextNumeric(v))
-            df[[i]] <- asNumericWithPercent(v) # numeric
+            df[[i]] <- asNumericVector(v) # numeric
         else
         {
             parsed.dates <- AsDateTime(v, us.format, on.parse.failure = "silent")

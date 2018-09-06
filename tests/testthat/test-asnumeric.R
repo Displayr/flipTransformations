@@ -66,3 +66,10 @@ test_that("OneHot",
               expect_equal(ncol(OneHot(df, "b")$X), 2)
               expect_equal(ncol(OneHot(df, "c")$X), 4)
 })
+
+test_that("asNumericVector",
+          {
+              text <- c("abc", "$124", "($5)", "(.5)", "($.99)", "(123", "23%", "(50.1%)")
+              expect_error(parsed <- asNumericVector(text), NA)
+              expect_equal(parsed, c(NA, 124, -5, -0.5, -0.99, NA, 0.23, -0.501))
+          })

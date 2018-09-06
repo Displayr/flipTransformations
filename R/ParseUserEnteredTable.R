@@ -90,61 +90,6 @@ extractTableTitle <- function(x)
     return(x)
 }
 
-#' Convert user pasted data to numeric
-#'
-#' Tries to convert character data to numeric including
-#' converting entries with a '%' sign to numeric format.
-#' @param nrow Optional dimensions of matrix to return if \code{drop} is false.
-#' @param ncol Optional dimnsions of matrix to return if \code{drop} is false.
-#' @param drop If true (default), a vector will always be returned
-#' @noRd
-asNumeric <- function(t, nrow = 1, ncol = 1, drop = FALSE, warn = FALSE)
-{
-    v <- as.vector(t)
-    missing.idx <- v == "" | isMissing(v)
-    out <- NA * numeric(length(v))
-    v.non.miss <- v[!missing.idx]
-    v.non.miss <- gsub(",", "", v.non.miss)  # remove commas, e.g. '1,000'
-    v.non.miss <- gsub("^[^\x21-\x7E]+", "", v.non.miss)
-    v.non.miss <- gsub("[^\x21-\x7E]+$", "", v.non.miss)
-    out.non.miss <- suppressWarnings(as.numeric(v.non.miss))
-
-    ## deal with possible use of percentages
-    ind <- is.na(out.non.miss) & grepl("%$", v.non.miss)
-    out.non.miss[ind] <- suppressWarnings(as.numeric(sub("%$", "", v.non.miss[ind])))
-
-    if (any(is.na(out.non.miss)))  # couldn't all be converted to numeric or missing/NA
-    {
-        if (!drop)
-            v <- matrix(v, nrow, ncol)
-        if (warn)
-            warning("The entered data could not be interpreted.", call. = FALSE)
-        return(v)
-    }
-    # out[missing.idx] <- NA
-    out[!missing.idx] <- out.non.miss
-    if (!drop)
-        out <- matrix(out, nrow, ncol)
-    if (all(ind))
-        attr(out, "statistic") <- "%"
-    out
-}
-
-isNumericOrPercent <- function(t)
-{
-    v <- as.vector(t)
-    v <- gsub(",", "", v)
-    v <- gsub("^[^\x21-\x7E]+", "", v) # space and non-ascii
-    v <- gsub("[^\x21-\x7E]+$", "", v)
-    all(v == "" | isMissing(v) | !is.na(suppressWarnings(as.numeric(sub("%$", "", v)))))
-}
-
-isMissing <- function(t)
-{
-    return(grepl("^[[:blank:]]*(|-|\\.|N/A|NA|NaN|[M|m]issing|[I|i]nvalid)?[[:blank:]]*$", t))
-}
-
-
 #' Check For Titles in a User-Entered Table
 #'
 #' Searches the first row and column
@@ -189,7 +134,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
                      else            "col.names.given"
 
         vm <- drop(m)
-        first.entry.chars <- !isNumericOrPercent(vm[1])
+        first.entry.chars <- !isTextNumeric(vm[1], allow.missing = TRUE)
         if (!first.entry.chars || n.row == n.col)  ## unnamed row or column vector
             return(asNumeric(m, warn = warn, NROW(m), NCOL(m)))
 
@@ -217,16 +162,16 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     statistic.list <- c("", "%", "Column %", "Row %", "Total %")
     # These are not used be cause they can plausibly be row/column labels
     #   "n", "Average", "Standard Error", "Population")
-    first.entry.chars <- !isNumericOrPercent(m[1, 1])
+    first.entry.chars <- !isTextNumeric(m[1, 1], allow.missing = TRUE)
     idx <- if (first.entry.chars) -1
            else seq_len(n.col)
-    col.names.given <- !isNumericOrPercent(m[1, idx])
+    col.names.given <- !isTextNumeric(m[1, idx], allow.missing = TRUE)
     idx <- if (first.entry.chars) -1
            else seq_len(n.row)
     if (col.names.given)
         row.names.given <- m[1,1] %in% statistic.list
     else
-        row.names.given <- !isNumericOrPercent(m[idx, 1])
+        row.names.given <- !isTextNumeric(m[idx, 1], allow.missing = TRUE)
     if (m[1,1] %in% statistic.list)
     {
         row.names.given <- nrow(m) >= 2
@@ -257,8 +202,6 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
-    if (!is.null(attr(out, "statistic")) && grepl("%$", attr(out, "statistic")))
-        out <- out/100
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
 
