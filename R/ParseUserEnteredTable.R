@@ -202,6 +202,8 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
+    if (first.entry.chars && m[1,1] == "%")
+        out <- out/100
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
 

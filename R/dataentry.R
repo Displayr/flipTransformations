@@ -98,9 +98,12 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     df <- data.frame(m[start.row:n.row, start.col:n.col, drop = FALSE],
                      stringsAsFactors = FALSE, fix.empty.names = FALSE)
     is.percentages <- all(grepl("%$", m[start.row:n.row, start.col:n.col, drop = FALSE]))
+    divide.by.100 <- FALSE
     if (want.col.names && want.row.names && nchar(m[1,1]) > 0)
+    {
         attr(df, "statistic") <- m[1, 1]
-
+        divide.by.100 <- m[1, 1] == "%"
+    }
     if (want.col.names)
     {
         tmp.colnames <- unlist(m[1, start.col:n.col])
@@ -147,7 +150,9 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
                 df[[i]] <- v # character
         }
     }
-    if (is.percentages)
+    if (divide.by.100)
+        df <- df / 100
+    if (is.percentages || divide.by.100)
         attr(df, "statistic") <- "%"
     df
 }

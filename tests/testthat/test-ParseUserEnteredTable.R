@@ -329,6 +329,18 @@ test_that("Numeric names with statistic",
         "4", "7", "5", "2014", "6", "8", "7"), .Dim = c(4L, 4L))
     res <- ParseUserEnteredTable(txt)
     expect_equal(dim(res), c(3, 3))
+
+    raw <- structure(c("", "", "", "", "", "", "%", "Cat", "Dog", "Pigeon",
+            "", "Score", "20", "30", "50"), .Dim = c(5L, 3L))
+
+    expect_error(res <- ParseUserEnteredTable(raw), NA)
+    expect_equal(res[1:3], c(0.2, 0.3, 0.5))
+    expect_equal(attr(res, "statistic"), "%")
+
+    expect_error(resDF <- ParseUserEnteredTable(raw, want.data.frame = TRUE,
+                            want.col.names = TRUE, want.row.names = TRUE), NA)
+    expect_equal(resDF[1:3,1], c(0.2, 0.3, 0.5))
+    expect_equal(attr(resDF, "statistic"), "%")
 })
 
 test_that("1-d statistic",
