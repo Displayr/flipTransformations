@@ -341,6 +341,17 @@ test_that("Numeric names with statistic",
                             want.col.names = TRUE, want.row.names = TRUE), NA)
     expect_equal(resDF[1:3,1], c(0.2, 0.3, 0.5))
     expect_equal(attr(resDF, "statistic"), "%")
+
+    # check for redundancies
+    raw2 <- structure(c("", "", "", "", "", "", "", "", "", "", "", "", "",
+        "", "", "", "", "", "", "", "", "", "", "", "", "", "%", "south america",
+        "north america", "europe", "oceania", "asia", "", "", "VAL",
+        "12%", "19%", "", "-10%", "40%"), .Dim = c(8L, 5L))
+    res2a <- ParseUserEnteredTable(raw2)
+    expect_equal(res2a[1:5], c(0.12, 0.19, NA, -0.10, 0.40))
+    res2b <- ParseUserEnteredTable(raw2, want.data.frame = TRUE)
+    expect_equal(res2b[1:5,2], c(0.12, 0.19, NA, -0.10, 0.40))
+
 })
 
 test_that("1-d statistic",

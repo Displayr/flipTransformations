@@ -163,6 +163,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     # These are not used be cause they can plausibly be row/column labels
     #   "n", "Average", "Standard Error", "Population")
     first.entry.chars <- !isTextNumeric(m[1, 1], allow.missing = TRUE)
+    data.attribute <- NULL
     idx <- if (first.entry.chars) -1
            else seq_len(n.col)
     col.names.given <- !isTextNumeric(m[1, idx], allow.missing = TRUE)
@@ -183,7 +184,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     {
         out <- asNumeric(m[2:n.row, 2:n.col, drop = FALSE], n.row-1, n.col-1)
         if (first.entry.chars)
-            attr(out, "statistic") <- m[1, 1]
+            data.attribute <- m[1, 1] 
         rownames(out) <- m[-1, 1]
         colnames(out) <- m[1, -1]
         row.names.given <- TRUE # needed in case of numeric row names (but still blank 1-1 entry)
@@ -202,8 +203,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
-    if (first.entry.chars && m[1,1] == "%")
+    if (any(grepl("%$", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
         out <- out/100
+    if (!is.null(data.attribute))
+        attr(out, "statistic") <- data.attribute
     if (warn && is.character(out))
         warning("The entered data could not be interpreted.")
 

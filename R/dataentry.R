@@ -97,13 +97,9 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
 
     df <- data.frame(m[start.row:n.row, start.col:n.col, drop = FALSE],
                      stringsAsFactors = FALSE, fix.empty.names = FALSE)
-    is.percentages <- all(grepl("%$", m[start.row:n.row, start.col:n.col, drop = FALSE]))
-    divide.by.100 <- FALSE
+    data.attribute <- NULL
     if (want.col.names && want.row.names && nchar(m[1,1]) > 0)
-    {
-        attr(df, "statistic") <- m[1, 1]
-        divide.by.100 <- m[1, 1] == "%"
-    }
+        data.attribute <- m[1, 1]
     if (want.col.names)
     {
         tmp.colnames <- unlist(m[1, start.col:n.col])
@@ -149,11 +145,18 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
             else
                 df[[i]] <- v # character
         }
+        if (any(grepl("%$", data.attribute)) && !any(grepl("%$", attr(df[[i]], "statistic"))))
+            df[[i]] <- df[[i]]/100
     }
-    if (divide.by.100)
-        df <- df / 100
-    if (is.percentages || divide.by.100)
-        attr(df, "statistic") <- "%"
+    tmp.attribute <- unique(unlist(sapply(df, function(x){attr(x, "statistic")})))
+    if (length(unlist(tmp.attribute)) == 1)
+    {
+        attr(df, "statistic") <- tmp.attribute
+        for (i in 1:ncol(df))
+            attr(df[[i]], "statistic") <- NULL
+    }
+    if (!is.null(data.attribute))
+        attr(df, "statistic") <- data.attribute
     df
 }
 

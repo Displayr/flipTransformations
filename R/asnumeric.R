@@ -146,7 +146,7 @@ asNumericVector <- function(t)
     ind <- is.na(result) & grepl("%$", v)
     if (any(ind))
         result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100
-    if (all(ind))
+    if (all(ind | isMissing(v)))
         attr(result, "statistic") <- "%"
     
     # Convert parentheses to negative numbers
