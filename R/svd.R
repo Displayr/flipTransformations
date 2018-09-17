@@ -15,8 +15,10 @@ WeightedSVD <- function(x, weights = rep(1, n), nu = min(n, p), nv = min(n, p))
   d <- sqrt(x.eigen$values)
   v <- x.eigen$vectors
   if (nu == 0L)
-    return(list(d = d[1:nv], v = v[, 1:nv]))
+    return(list(d = d[1:nv], v = as.matrix(v[, 1:nv])))
   u <- t(solve(sweep(v, 2, d, "*"), t(x)))
-  list(d = d[1:max(nu, nv)], u = u[, 1:nu], v = v[, 1:nv])
+  list(d = d[1:max(nu, nv)],
+       u = as.matrix(u[, 1:nu]),
+       v = as.matrix(v[, 1:nv]))
 }
 
