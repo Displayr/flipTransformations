@@ -192,6 +192,7 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
 
     # Remove leading/trailing whitespace and quotes
     x <- trimws(x)
+    x <- gsub("[^\x20-\x7E]", "", x)
     x <- gsub("^[\'\"]", "", x)
     x <- gsub("[\'\"]$", "", x)
 
