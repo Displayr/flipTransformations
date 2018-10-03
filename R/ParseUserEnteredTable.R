@@ -123,6 +123,7 @@ extractRowColumnTitles <- function(m)
 #' @noRd
 #' @keywords internal
 #' @importFrom flipTime IsDateTime
+#' @importFrom flipU TrimWhitespace
 parseAsVectorOrMatrix <- function(m, warn = FALSE)
 {
     n.row <- NROW(m)
@@ -153,7 +154,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
                 return(out)
             }
         }
-        
+
         attr(out, "name") <- vm[1]
         attr(out, dim.given) <- TRUE
         return(out)
@@ -184,16 +185,16 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     {
         out <- asNumeric(m[2:n.row, 2:n.col, drop = FALSE], n.row-1, n.col-1)
         if (first.entry.chars)
-            data.attribute <- m[1, 1] 
-        rownames(out) <- m[-1, 1]
-        colnames(out) <- m[1, -1]
+            data.attribute <- m[1, 1]
+        rownames(out) <- TrimWhitespace(m[-1, 1])
+        colnames(out) <- TrimWhitespace(m[1, -1])
         row.names.given <- TRUE # needed in case of numeric row names (but still blank 1-1 entry)
 
     } else if (row.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
         out <- asNumeric(m[, 2:n.col, drop = FALSE], n.row, n.col - 1)
-        rownames(out) <- m[, 1]
+        rownames(out) <- TrimWhitespace(m[, 1])
     } else if (col.names.given)
     {
         # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column

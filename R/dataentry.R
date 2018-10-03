@@ -116,7 +116,7 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     }
     if (want.row.names)
     {
-        tmp.rownames <- unlist(m[,1])[start.row:n.row]
+        tmp.rownames <- TrimWhitespace(unlist(m[,1])[start.row:n.row])
         ind.dup <- which(duplicated(tmp.rownames))
         if (length(ind.dup) > 0)
         {
@@ -191,10 +191,10 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
         x <- unlist(strsplit(x, split=split))
 
     # Remove leading/trailing whitespace and quotes
-    x <- trimws(x)
-    x <- gsub("[^\x20-\x7E]", "", x)
+    x <- gsub("\xA0", " ", x)
     x <- gsub("^[\'\"]", "", x)
     x <- gsub("[\'\"]$", "", x)
+    x <- trimws(x)
 
     return(x)
 }

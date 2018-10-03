@@ -120,7 +120,7 @@ asNumeric <- function(t, nrow = 1, ncol = 1, drop = FALSE, warn = FALSE)
             return(t)
         return(v)
     }
-    
+
     if (!drop)
         out <- matrix(out, nrow, ncol)
     if (is.percentage)
@@ -136,9 +136,7 @@ isMissing <- function(t)
 
 asNumericVector <- function(t)
 {
-    v <- gsub(",", "", as.vector(t))
-    v <- gsub("^[^\x21-\x7E]+", "", v)
-    v <- gsub("[^\x21-\x7E]+$", "", v)
+    v <- gsub(",", "", TrimWhitespace(as.vector(t)))
     v <- gsub("^\\$", "", v)
     result <- suppressWarnings(as.numeric(v))
 
@@ -148,13 +146,13 @@ asNumericVector <- function(t)
         result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100
     if (all(ind | isMissing(v)))
         attr(result, "statistic") <- "%"
-    
+
     # Convert parentheses to negative numbers
     patt <- "^\\(\\$?[0-9.]+)$"
     ind <- is.na(result) & (regexpr(patt, v) > 0)
     if (any(ind))
         result[ind] <- -1 * as.numeric(gsub("[()$]", "", v[ind]))
-    
+
     # Convert parentheses to negative percentages
     patt <- "^\\([0-9.]+%)$"
     ind <- is.na(result) & (regexpr(patt, v) > 0)
