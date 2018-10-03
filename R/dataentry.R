@@ -191,7 +191,7 @@ TextAsVector <- function(x, split = ",", silent = FALSE)
         x <- unlist(strsplit(x, split=split))
 
     # Remove leading/trailing whitespace and quotes
-    x <- gsub("\xA0", " ", x)
+    x <- gsub("\\xA0", " ", x)
     x <- gsub("^[\'\"]", "", x)
     x <- gsub("[\'\"]$", "", x)
     x <- trimws(x)
