@@ -80,7 +80,7 @@ OneHot <- function(data, outcome = NULL)
     for (i in 1:ncol(X))
         if (!is.null(attr(X[, i], "label")))
             colnames(X)[i] <- attr(X[, i], "label")
-    X <- as.matrix(apply(X, 2, as.numeric))
+    X <- matrix(apply(X, 2, as.numeric), ncol = ncol(X))
 
     # convert outcome variable to numeric vector (encoding from 0 to nlevels(outcome)-1)
     y <- NULL
