@@ -22,7 +22,7 @@ Ignored if \code{want.data.frame} is \code{FALSE}}
 \item{want.col.names}{logical; should the first row be interpretted as column names?
 Ignored if \code{want.data.frame} is \code{FALSE}}
 
-\item{want.row.names}{logical; should the first colulm be interpretted as row names?
+\item{want.row.names}{logical; should the first column be interpretted as row names?
 Ignored if \code{want.data.frame} is \code{FALSE}}
 
 \item{us.format}{logical; should the U.S. convention be used when parsing dates?
