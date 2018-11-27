@@ -1,7 +1,7 @@
 Package: flipTransformations
 Type: Package
 Title: Data transformations for flip
-Version: 1.6.8
+Version: 1.6.9
 Author: Displayr <opensource@displayr.com>
 Maintainer: Displayr <opensource@displayr.com>
 Description: Contains functions handling transformations between different
