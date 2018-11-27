@@ -4,7 +4,8 @@
 \alias{AsDataFrame}
 \title{\code{AsDataFrame}}
 \usage{
-AsDataFrame(input.data, use.names = FALSE, ignore.columns = "")
+AsDataFrame(input.data, use.names = FALSE, ignore.columns = "",
+  categorical.as.binary = FALSE)
 }
 \arguments{
 \item{input.data}{Either a \code{\link{data.frame}}, a \code{\link{list}} of
@@ -15,6 +16,9 @@ AsDataFrame(input.data, use.names = FALSE, ignore.columns = "")
 
 \item{ignore.columns}{A list of names of columns to ignore. When \code{input.data}
 is a \code{\link{matrix}}, rows are also ignored.}
+
+\item{categorical.as.binary}{Whether to convert factors to dummy binary variables,
+or else their levels are converted to integers.}
 }
 \description{
 Converts input data to a numeric \code{\link{data.frame}}.
