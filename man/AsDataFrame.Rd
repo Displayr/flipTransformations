@@ -5,7 +5,7 @@
 \title{\code{AsDataFrame}}
 \usage{
 AsDataFrame(input.data, use.names = FALSE, ignore.columns = "",
-  categorical.as.binary = FALSE)
+  categorical.as.binary = FALSE, remove.first = FALSE)
 }
 \arguments{
 \item{input.data}{Either a \code{\link{data.frame}}, a \code{\link{list}} of
@@ -19,6 +19,8 @@ is a \code{\link{matrix}}, rows are also ignored.}
 
 \item{categorical.as.binary}{Whether to convert factors to dummy binary variables,
 or else their levels are converted to integers.}
+
+\item{remove.first}{Whether to remove the first binary variable.}
 }
 \description{
 Converts input data to a numeric \code{\link{data.frame}}.

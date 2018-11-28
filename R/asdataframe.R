@@ -9,13 +9,15 @@
 #'   is a \code{\link{matrix}}, rows are also ignored.
 #' @param categorical.as.binary Whether to convert factors to dummy binary variables,
 #'   or else their levels are converted to integers.
+#' @param remove.first Whether to remove the first binary variable.
 #' @importFrom flipFormat ExtractCommonPrefix Labels Names
 #' @importFrom flipU RemoveAt
 #' @export
 AsDataFrame <- function(input.data,
                         use.names = FALSE,
                         ignore.columns = "",
-                        categorical.as.binary = FALSE)
+                        categorical.as.binary = FALSE,
+                        remove.first = FALSE)
 {
     dat <- if (is.matrix(input.data))
         {
@@ -26,7 +28,9 @@ AsDataFrame <- function(input.data,
         {
             input.data <- data.frame(input.data)
             colnames(input.data) <- Names(input.data)
-            var.dat <- AsNumeric(ProcessQVariables(input.data), binary = categorical.as.binary)
+            var.dat <- AsNumeric(ProcessQVariables(input.data),
+                                 binary = categorical.as.binary,
+                                 remove.first = remove.first)
             # Changing names to labels.
             if (!use.names)
                 names(var.dat) <- ExtractCommonPrefix(Labels(var.dat))$shortened.labels
