@@ -24,4 +24,5 @@ test_that("AsDataFrame",
 
     expect_equal(ncol(suppressWarnings(AsDataFrame(df2))), 9)
     expect_equal(ncol(AsDataFrame(df2, categorical.as.binary = TRUE)), 12)
+    expect_equal(ncol(AsDataFrame(df2, categorical.as.binary = TRUE, remove.first = TRUE)), 11)
 })
