@@ -148,10 +148,10 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
         if (any(grepl("%$", data.attribute)) && !any(grepl("%$", attr(df[[i]], "statistic"))))
             df[[i]] <- df[[i]]/100
     }
-    tmp.attribute <- unique(unlist(sapply(df, function(x){attr(x, "statistic")})))
-    if (length(unlist(tmp.attribute)) == 1)
+    tmp.attr <- sapply(df, function(x){attr(x, "statistic")})
+    if (all(sapply(tmp.attr, identical, y = tmp.attr[[1]])))
     {
-        attr(df, "statistic") <- tmp.attribute
+        attr(df, "statistic") <- tmp.attr[[1]]
         for (i in 1:ncol(df))
             attr(df[[i]], "statistic") <- NULL
     }
