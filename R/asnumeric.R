@@ -160,7 +160,8 @@ asNumericVector <- function(t)
     ind <- is.na(result) & (regexpr(patt, v) > 0)
     if (any(ind))
         result[ind] <- -0.01 * as.numeric(gsub("[()%]", "", v[ind]))
-
+    if (all(ind | isMissing(v)))
+        attr(result, "statistic") <- "%"
 
     return(result)
 }
