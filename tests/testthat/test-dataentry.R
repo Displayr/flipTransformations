@@ -182,8 +182,8 @@ test_that("data frame", {
                                                    1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
                                                    1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400),
                                                  class = c("POSIXct", "POSIXt"), tzone = "UTC"),
-                                char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
-                                                 .Label = c("a","b", "c", "f"), class = "factor")),
+                                char = structure(c(1L, 2L, 2L, 1L, 3L, 3L, 4L, 3L, 4L, 4L, 4L, 3L, 3L, 3L, 4L),
+                                                 .Label = c("a","b", "f", "c"), class = "factor")),
                            .Names = c("num", "date", "char"), row.names = c(NA, -15L), class = "data.frame"))
 })
 
@@ -219,8 +219,8 @@ test_that("data frame row names", {
                                                 1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
                                                 1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400),
                                                 class = c("POSIXct", "POSIXt"), tzone = "UTC"),
-                                char = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
-                                                 .Label = c("a", "b", "c", "f"), class = "factor")),
+                                char = structure(c(1L, 2L, 2L, 1L, 3L, 3L, 4L, 3L, 4L, 4L, 4L, 3L, 3L, 3L, 4L),
+                                                 .Label = c("a", "b", "f", "c"), class = "factor")),
                            .Names = c("num", "date", "char"),
                            row.names = c("row 1", "row 2", "row 3", "row 4", "row 5", "row 6", "row 7", "row 8",
                                          "row 9", "row 10", "row 11", "row 12", "row 13", "row 14", "row 15"),
@@ -242,8 +242,8 @@ test_that("data frame no names", {
                                                1454544000, 1454630400, 1454716800, 1454803200, 1454889600, 1454976000,
                                                1455062400, 1455148800, 1455235200, 1455321600, 1455408000, 1455494400
                                        ), class = c("POSIXct", "POSIXt"), tzone = "UTC"),
-                                X3 = structure(c(1L, 2L, 2L, 1L, 4L, 4L, 3L, 4L, 3L, 3L, 3L, 4L, 4L, 4L, 3L),
-                                               .Label = c("a", "b", "c", "f"), class = "factor")),
+                                X3 = structure(c(1L, 2L, 2L, 1L, 3L, 3L, 4L, 3L, 4L, 4L, 4L, 3L, 3L, 3L, 4L),
+                                               .Label = c("a", "b", "f", "c"), class = "factor")),
                            .Names = c("X1", "X2", "X3"), row.names = c(NA, -15L), class = "data.frame"))
 })
 

@@ -28,6 +28,8 @@ Factor <- function(x, ...)
         else
             result <- factor(x, ...)
     }
+    else if (is.character(x)) # retain ordering in which it appears
+        result <- factor(x, levels = unique(x))
     else
         result <- factor(x, ...)
     return(CopyAttributes(result, x))
