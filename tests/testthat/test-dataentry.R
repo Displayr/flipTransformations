@@ -316,9 +316,7 @@ test_that("ParseAsDataFrame adds statistic attr. if input has %s; DS-1780",
 
 test_that("TextAsVector", {
     res1 <- TextAsVector("What,     is, this")
-    res2 <- TextAsVector(c("'What'", "'is'", "'this'"))
     res3 <- TextAsVector("What's, this")
-    expect_equal(res1, res2)
     expect_equal(grep("\'", res3), 1)
 
     if ("UTF-8" %in% localeToCharset())

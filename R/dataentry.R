@@ -169,9 +169,16 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
 #' @param split Deliminator to split input text.
 #' @param silent Boolean indicating whether a warning is given if smart quotes are removed
 #' @importFrom utils localeToCharset
+#' @importFrom flipU ConvertCommaSeparatedStringToVector
 #' @export
 TextAsVector <- function(x, split = ",", silent = FALSE)
 {
+    return(ConvertCommaSeparatedStringToVector(x, split = split, text.qualifier = "\""))
+
+    # The following code is not used - ConvertCommaSeparatedStringToVector
+    # is used because it allows commas to be escaped using the text.qualifier
+    # However this function is retained for backwards compatibility.
+
     if (length(x) == 0)
         return (NULL)
 
