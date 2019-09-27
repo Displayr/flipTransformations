@@ -71,5 +71,5 @@ test_that("asNumericVector",
           {
               text <- c("abc", "$124", "($5)", "(.5)", "($.99)", "(123", "23%", "(50.1%)")
               expect_error(parsed <- asNumericVector(text), NA)
-              expect_equal(parsed, c(NA, 124, -5, -0.5, -0.99, NA, 0.23, -0.501))
+              expect_equal(parsed, c(NA, 124, -5, -0.5, -0.99, NA, 0.23, -0.501), check.attributes = FALSE)
           })

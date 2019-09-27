@@ -145,9 +145,10 @@ asNumericVector <- function(t)
     # Convert percentages
     ind <- is.na(result) & grepl("%$", v)
     if (any(ind))
+    {
         result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100
-    if (all(ind | isMissing(v)))
         attr(result, "statistic") <- "%"
+    }
 
     # Convert parentheses to negative numbers
     patt <- "^\\(\\$?[0-9.]+)$"
@@ -159,10 +160,10 @@ asNumericVector <- function(t)
     patt <- "^\\([0-9.]+%)$"
     ind <- is.na(result) & (regexpr(patt, v) > 0)
     if (any(ind))
+    {
         result[ind] <- -0.01 * as.numeric(gsub("[()%]", "", v[ind]))
-    if (all(ind | isMissing(v)))
         attr(result, "statistic") <- "%"
-
+    }
     return(result)
 }
 
