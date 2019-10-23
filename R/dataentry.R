@@ -13,6 +13,7 @@
 #' Ignored if \code{want.data.frame} is \code{FALSE}
 #' @param us.format logical; should the U.S. convention be used when parsing dates?
 #' Ignored if \code{want.data.frame} is \code{FALSE}
+#' @importFrom flipU MakeUniqueNames
 #' @export
 ParseEnteredData <- function(raw.matrix, warn = TRUE, want.data.frame = FALSE, want.factors = TRUE,
                              want.col.names = TRUE, want.row.names = FALSE, us.format = NULL)
@@ -120,9 +121,9 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
         ind.dup <- which(duplicated(tmp.rownames))
         if (length(ind.dup) > 0)
         {
-            warning("Row names must be unique. Numbers have been appended to rows with duplicated names: \"",
+            warning("Row names are not unique : \"",
                     paste(tmp.rownames[ind.dup], collapse = "\", \""), "\".")
-            tmp.rownames <- make.unique(tmp.rownames)
+            tmp.rownames <- MakeUniqueNames(tmp.rownames)
         }
         rownames(df) <- tmp.rownames
     }
