@@ -26,7 +26,7 @@ AsDataFrame <- function(input.data,
         }
         else if (is.data.frame(input.data) || !any(sapply(input.data, is.data.frame))) # coerce list of variables to data.frame
         {
-            input.data <- data.frame(input.data)
+            input.data <- data.frame(input.data, check.names = FALSE)
             colnames(input.data) <- Names(input.data)
             var.dat <- AsNumeric(ProcessQVariables(input.data),
                                  binary = categorical.as.binary,
