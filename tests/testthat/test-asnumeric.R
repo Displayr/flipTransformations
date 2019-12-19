@@ -73,3 +73,10 @@ test_that("asNumericVector",
               expect_error(parsed <- asNumericVector(text), NA)
               expect_equal(parsed, c(NA, 124, -5, -0.5, -0.99, NA, 0.23, -0.501), check.attributes = FALSE)
           })
+
+test_that("AsNumeric labels", {
+    x <- factor(c(1,0,0,1,1,0))
+    attr(x, "label") <- "lbl"
+    expect_equal(attr(AsNumeric(x), "label"), "lbl")
+    expect_equal(attr(AsNumeric(x, binary = FALSE), "label"), "lbl")
+})
