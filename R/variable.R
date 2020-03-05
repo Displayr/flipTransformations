@@ -106,21 +106,22 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
     else
         "Values are assigned in the order of the categories: 1, 2, 3, ...;"
     if ((n <- length(variables)) > 1)
-        full.variable.string <- paste0(paste0(variables[1:(n - 1)], collapse = ", "), " and ", variables[n])
+        full.variable.string <- paste0(paste0(variables[1:(n - 1)], collapse = ", "),
+                                       " and ", variables[n])
     else
         full.variable.string <- variables
-    # Catch variables = NULL which means full.variable.string is also NULL
-    if (is.null(full.variable.string))
-        variable.message <- "Data has been automatically converted to numeric."
-    else
+    if (!is.null(variables))
         variable.message <- ngettext(length(variables),
                                      paste0("The variable ", full.variable.string,
-                                            " has been converted automatically to numeric."),
+                                            " has been converted."),
                                      paste0("The variables ", full.variable.string,
-                                            " have been automatically converted to numeric."))
-    paste(variable.message, value.message,
+                                            " have been converted."))
+    else
+        variable.message <- NULL
+    paste("Data has been automatically converted to numeric.", value.message,
           "To use alternative numeric values, transform the data prior including it in this analysis",
-          "(e.g. by changing its structure).")
+          "(e.g. by changing its structure).",
+          variable.message)
 }
 
 #' Convert an ordered factor to a numeric vector.
