@@ -64,3 +64,22 @@ test_that("Dates",
     test_that("ProcessQVariables preserves rownames", expect_equal(ProcessQVariables(date.var), processed.date.var))
 })
 
+test_that("asNumericWarning messages", {
+    single.variable <- "Coca-Cola"
+    two.variables <- c("Coca-Cola", "Pepsi")
+    three.variables <- c("Coca-Cola", "Pepsi", "Red Bull")
+    message.tail <- "Values are assigned in the order of the categories: 1, 2, 3, ...; To use alternative numeric values, transform the data prior including it in this analysis (e.g. by changing its structure)."
+    expect_equal(flipTransformations:::asNumericWarning(single.variable, to.factor.levels = FALSE),
+                 paste0("The variable Coca-Cola has been converted automatically to numeric. ",
+                        message.tail), fixed = TRUE)
+    expect_equal(flipTransformations:::asNumericWarning(two.variables, to.factor.levels = FALSE),
+                 paste0("The variables Coca-Cola and Pepsi have been automatically converted to numeric. ",
+                        message.tail))
+    expect_equal(flipTransformations:::asNumericWarning(three.variables, to.factor.levels = FALSE),
+                 paste0("The variables Coca-Cola, Pepsi and Red Bull have been automatically converted to numeric. ",
+                        message.tail))
+    # Catch case where variable has empty label variable name in asNumericWarning is NULL
+    expect_equal(flipTransformations:::asNumericWarning(NULL, to.factor.levels = FALSE),
+                 paste0("Data has been automatically converted to numeric. ",
+                        message.tail))
+})
