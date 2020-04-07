@@ -133,8 +133,7 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #' @export
 OrderedToNumeric <- function(x)
 {
-    unclassed <- Unclass(x)
-    attr(unclassed, "label") <- attr(x, "label")
+    unclassed <- CopyAttributes(Unclass(x), x)
     return(unclassed)
 }
 
@@ -170,9 +169,8 @@ FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
     }
     if (remove.first)
     {
-        label <- attr(indicators, "label")
-        indicators <- indicators[, -1, drop = FALSE]
-        attr(indicators, "label") <- label
+        new.indicators <- indicators[, -1, drop = FALSE]
+        indicators <- CopyAttributes(new.indicators, indicators)
     }
     return(indicators)
 }
@@ -200,7 +198,7 @@ FactorToIndicators <- function(variable, name = NULL)
             if (!is.null(label))
                 attr(result[, i], "label") <- labels[i]
     }
-    attr(result, "label") <- label
+    result <- CopyAttributes(result, variable)
     result
 }
 

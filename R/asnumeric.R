@@ -32,7 +32,7 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
     if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXt"))
     {
         num <- as.numeric(x)
-        attr(num, "label") <- attr(x, "label")
+        num <- CopyAttributes(num, x)
         return(num)
     }
     if (is.null(name))

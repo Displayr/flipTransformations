@@ -81,7 +81,7 @@ test_that("AsNumeric labels", {
     x <- factor(c(1,0,0,1,1,0))
     attr(x, "label") <- "lbl"
     expect_equal(attr(AsNumeric(x), "label"), "lbl")
-    expect_equal(attr(AsNumeric(x, binary = FALSE), "label"), "lbl")
+    expect_equal(attr(suppressWarnings(AsNumeric(x, binary = FALSE)), "label"), "lbl")
 
     cc <- sprintf("Row %d", c(1:100, 1:3))
     attr(cc, "label") <- "lbl"
