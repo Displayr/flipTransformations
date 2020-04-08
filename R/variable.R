@@ -190,6 +190,7 @@ FactorToIndicators <- function(variable, name = NULL)
     levs <- levels(variable)
     colnames(result) <- paste0(name, ".", 1:nlevels(variable))
     result <- as.data.frame(result)
+    result <- CopyAttributes(result, variable)
     label <- Labels(variable)
     if (!is.null(label))
     {
@@ -198,7 +199,6 @@ FactorToIndicators <- function(variable, name = NULL)
             if (!is.null(label))
                 attr(result[, i], "label") <- labels[i]
     }
-    result <- CopyAttributes(result, variable)
     result
 }
 
