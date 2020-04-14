@@ -10,11 +10,13 @@ test_that("Numeric Variable Set",
 
     out <- ScaleVariableSet(numeric, type = "unit")
     expect_null(dim(out))
+    unit.nom <- (numeric - min(numeric))/diff(range(numeric))
     expect_equal(range(out), c(0, 1))
+    expect_equal(out, unit.nom, check.attributes = FALSE)
 
     numeric[1:5] <- NA
     out <- ScaleVariableSet(numeric, type = "unit")
-    expect_equal(range(out, na.rm = TRUE), c(0, 1))
+    expect_equal(out, scale(numeric), check.attributes = FALSE)
 
     expect_error(ScaleVariableSet(numeric, within.case = TRUE),
                  "only one variable")
