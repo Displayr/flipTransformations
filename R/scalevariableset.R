@@ -68,7 +68,10 @@ replaceFactorsWithValues <- function(x)
     vv <- attr(x, "variablevalues")
     if (is.list(vv))  # multi-variable variable set
     {
-        stopifnot(length(vv) == ncol(x))
+        if (length(vv) != ncol(x))
+            stop("Invalid variable set provided; the length of the ",
+                 dQuote("variablevalues"), " attribute does not match ",
+                 " the number of variables in the variable set.")
         out <- mapply(function(fact, vals) vals[levels(fact)[fact]], x, vv,
                       SIMPLIFY = TRUE)
         return(out)
@@ -78,18 +81,4 @@ replaceFactorsWithValues <- function(x)
         return(as.matrix(v[levels(x)[x]]))
     ## else
     return(as.matrix(as.numeric(x)))
-
-}
-
-replaceValuesWithFactors <- function(v.scaled, v.orig, data)
-{
-    if (is.data.frame(data))
-    {
-
-    }else
-    {
-        unique.s <- unique(v.scaled)
-        unique.o <- unique(v.orig)
-
-    }
 }
