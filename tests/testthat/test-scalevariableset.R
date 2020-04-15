@@ -15,7 +15,7 @@ test_that("Numeric Variable Set",
     expect_equal(out, unit.nom, check.attributes = FALSE)
 
     numeric[1:5] <- NA
-    out <- ScaleVariableSet(numeric, type = "unit")
+    out <- ScaleVariableSet(numeric)
     expect_equal(out, scale(numeric), check.attributes = FALSE)
 
     expect_error(ScaleVariableSet(numeric, within.case = TRUE),
