@@ -103,10 +103,20 @@ test_that("Nominal - Multi Variable Set with NAs",
 
 })
 
+test_that("Numeric - multi Ignores SUM column",
+{
+    out <- ScaleVariableSet(numeric.multi)
+    expect_equal(out, scale(numeric.multi[, -ncol(numeric.multi)]),
+                 check.attributes = FALSE)
+    expect_equal(colnames(out), colnames(numeric.multi)[-ncol(numeric.multi)])
+})
+
+
 test_that("Numeric - grid",
 {
-    out <- ScaleVariableSet(numeric.grid)
-    expect_equal(out, scale(out), check.attributes = FALSE)
-    expect_equal(colnames(out), colnames(numeric.grid))
+    out <- ScaleVariableSet(numeric.grid, type = "center")
+    ng.no.sum <- numeric.grid[, !grepl("SUM", colnames(numeric.grid))]
+    expect_equal(out, scale(ng.no.sum, scale = FALSE), check.attributes = FALSE)
+    expect_equal(colnames(out), colnames(ng.no.sum))
 })
 

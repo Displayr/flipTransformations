@@ -15,6 +15,8 @@
 #' @return A numeric vector if \code{data} contains only a single
 #'     variable or a data.frame containing the scaled values.
 #' @seealso \code{\link{scale}}
+#' @examples
+#' ScaleVariableSet(1:5, type = "unit")
 #' @export
 ScaleVariableSet <- function(
                              data,
@@ -31,7 +33,11 @@ ScaleVariableSet <- function(
     if (is.categorical)
         data.with.values <- replaceFactorsWithValues(data)
     else
+    {
+        if (grepl("Number[MG]", attr(data, "questiontype")))
+            data <- removeSUMColumns(data)
         data.with.values <- as.matrix(data)
+    }
         ## may need to drop NET
         ## if (NCOL(data.with.values) > 1)
         ## data.with.values <- data.with.values[, !grepl("^NET$|^SUM$", colnames(data.with.values))]
@@ -81,4 +87,15 @@ replaceFactorsWithValues <- function(x)
         return(as.matrix(v[levels(x)[x]]))
     ## else
     return(as.matrix(as.numeric(x)))
+}
+
+#' @importFrom flipU CopyAttributes
+#' @noRd
+removeSUMColumns <- function(df)
+{
+    qt <- attr(df, "questiontype")
+    if (qt == "NumberMulti"){
+        return(df[, !colnames(df) %in% "SUM"])
+    }else  # NumberGrid
+        return(df[, !grepl("^SUM, |, SUM$", colnames(df))])
 }
