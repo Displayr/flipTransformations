@@ -1,7 +1,7 @@
 Package: flipTransformations
 Type: Package
 Title: Data transformations for flip
-Version: 1.6.10
+Version: 1.7.2
 Author: Displayr <opensource@displayr.com>
 Maintainer: Displayr <opensource@displayr.com>
 Description: Contains functions handling transformations between different
@@ -23,6 +23,5 @@ Remotes:
     Displayr/flipExampleData,
     Displayr/flipFormat,
     Displayr/flipTime,
-    Displayr/flipU@DS-2702
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
