@@ -54,6 +54,9 @@ test_that("AsNumeric",
               # character vector - check order
               cc <- sprintf("Row %d", c(1:100, 1:3))
               expect_equal(suppressWarnings(AsNumeric(cc, binary = FALSE)), c(1:100, 1:3))
+
+              attr(cc, "label") <- "lbl"
+              expect_equal(attr(suppressWarnings(AsNumeric(cc, binary = FALSE)), "label"), "lbl")
           })
 
 df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)
@@ -73,3 +76,18 @@ test_that("asNumericVector",
               expect_error(parsed <- asNumericVector(text), NA)
               expect_equal(parsed, c(NA, 124, -5, -0.5, -0.99, NA, 0.23, -0.501), check.attributes = FALSE)
           })
+
+test_that("AsNumeric labels", {
+    x <- factor(c(1,0,0,1,1,0))
+    attr(x, "label") <- "lbl"
+    expect_equal(attr(AsNumeric(x), "label"), "lbl")
+    expect_equal(attr(suppressWarnings(AsNumeric(x, binary = FALSE)), "label"), "lbl")
+
+    cc <- sprintf("Row %d", c(1:100, 1:3))
+    attr(cc, "label") <- "lbl"
+    expect_equal(attr(suppressWarnings(AsNumeric(cc, binary = FALSE)), "label"), "lbl")
+
+    dd <- seq(ISOdate(2000,1,1,0), by="day", length.out=10)
+    attr(dd, "label") <- "lbl"
+    expect_equal(attr(suppressWarnings(AsNumeric(dd, binary = FALSE)), "label"), "lbl")
+})

@@ -30,7 +30,11 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
             x <- x.tmp
     }
     if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXt"))
-        return(as.numeric(x))
+    {
+        num <- as.numeric(x)
+        num <- CopyAttributes(num, x)
+        return(num)
+    }
     if (is.null(name))
     {
         names <- Names(x)
