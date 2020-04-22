@@ -16,7 +16,10 @@
 #'     variable or a data.frame containing the scaled values.
 #' @seealso \code{\link{scale}}
 #' @examples
-#' ScaleVariableSet(1:5, type = "unit")
+#' x <- structure(c(1, 2, 3, 4, 5), questiontype = "Number",
+#'                dataset = "dat", name = "x", label = "x", question = "x")
+#'
+#' ScaleVariableSet(x, type = "unit")
 #' @export
 ScaleVariableSet <- function(
                              data,
@@ -34,7 +37,8 @@ ScaleVariableSet <- function(
         data.with.values <- replaceFactorsWithValues(data)
     else
     {
-        if (grepl("Number[MG]", attr(data, "questiontype")))
+        qt <- attr(data, "questiontype")
+        if (!is.null(qt) && grepl("Number[MG]", qt))
             data <- removeSUMColumns(data)
         data.with.values <- as.matrix(data)
     }

@@ -33,7 +33,10 @@ scaling on the data; first converting any categorical variables to
 numeric as necessary.
 }
 \examples{
-ScaleVariableSet(1:5, type = "unit")
+x <- structure(c(1, 2, 3, 4, 5), questiontype = "Number",
+               dataset = "dat", name = "x", label = "x", question = "x")
+
+ScaleVariableSet(x, type = "unit")
 }
 \seealso{
 \code{\link{scale}}
