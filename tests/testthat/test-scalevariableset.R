@@ -14,6 +14,10 @@ test_that("Numeric Variable Set",
     expect_equal(range(out), c(0, 1))
     expect_equal(out, unit.nom, check.attributes = FALSE)
 
+    out <- ScaleVariableSet(numeric, type = "rank")
+    ## numeric is an ID var which happens to be strictly increasing
+    expect_equal(out, 1:800, check.attributes = FALSE)
+
     numeric[1:5] <- NA
     out <- ScaleVariableSet(numeric)
     expect_equal(out, scale(numeric), check.attributes = FALSE)
@@ -66,6 +70,10 @@ test_that("Ordinal Variable Set with NAs",
     out <- ScaleVariableSet(ordinal.hide, type = "unit")
     expect_equal(range(out, na.rm = TRUE), c(0, 1),
                  check.attributes = FALSE)
+
+    out <- ScaleVariableSet(ordinal.hide, type = "rank")
+    out.expect <- rank(ord.val, na.last = "keep", ties.method = "average")
+    expect_equal(out, out.expect, check.attributes = FALSE)
 })
 
 test_that("Nominal - Multi Variable Set with NAs",
@@ -101,6 +109,11 @@ test_that("Nominal - Multi Variable Set with NAs",
     expect_equal(out, t(scale(t(nm.val))),
                  check.attributes = FALSE)
 
+    out <- ScaleVariableSet(nominal.multi, type = "rank", within.case = TRUE)
+    out.expect <- t(apply(nm.val, 1, rank, na.last = "keep",
+                          ties.method = "average"))
+    expect_equal(colnames(out), colnames(nominal.multi))
+    expect_equal(out, out.expect, check.attributes = FALSE)
 })
 
 test_that("Numeric - multi Ignores SUM column",

@@ -8,9 +8,9 @@
 #'     columns or all factor columns.
 #' @param type Character string specifying the type of scaling to
 #'     perform; one of \code{"standardize"} (the default),
-#'     \code{"center"}, or \code{"unit"}.
-#' @param within.case Logical; should the scaling be performed with
-#'     case (rows) or variables (columns). An error is through if
+#'     \code{"center"}, \code{"rank"}, or \code{"unit"}.
+#' @param within.case Logical; should the scaling be performed within
+#'     case (rows) or variables (columns). An error is thrown if
 #'     \code{TRUE} and \code{data} contains only one variable.
 #' @return A numeric vector if \code{data} contains only a single
 #'     variable or a data.frame containing the scaled values.
@@ -23,7 +23,7 @@
 #' @export
 ScaleVariableSet <- function(
                              data,
-                             type = c("standardize", "center", "unit"),
+                             type = c("standardize", "center", "unit", "rank"),
                              within.case = FALSE)
 {
     type <- match.arg(type)
@@ -58,6 +58,9 @@ ScaleVariableSet <- function(
                            max.x <- max(x, na.rm = TRUE)
                            return((x - min.x)/(max.x - min.x))
                        })
+    else if (type == "rank")
+        out <- apply(data.with.values, 2, rank, na.last = "keep",
+                     ties.method = "average")
     else
         out <- scale(data.with.values, scale = type != "center")
 

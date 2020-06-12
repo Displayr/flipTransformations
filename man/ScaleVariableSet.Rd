@@ -6,7 +6,7 @@
 \usage{
 ScaleVariableSet(
   data,
-  type = c("standardize", "center", "unit"),
+  type = c("standardize", "center", "unit", "rank"),
   within.case = FALSE
 )
 }
@@ -17,10 +17,10 @@ columns or all factor columns.}
 
 \item{type}{Character string specifying the type of scaling to
 perform; one of \code{"standardize"} (the default),
-\code{"center"}, or \code{"unit"}.}
+\code{"center"}, \code{"rank"}, or \code{"unit"}.}
 
-\item{within.case}{Logical; should the scaling be performed with
-case (rows) or variables (columns). An error is through if
+\item{within.case}{Logical; should the scaling be performed within
+case (rows) or variables (columns). An error is thrown if
 \code{TRUE} and \code{data} contains only one variable.}
 }
 \value{
