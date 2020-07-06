@@ -204,7 +204,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
-    if (any(grepl("%$", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
+    if (any(grepl("%)?$", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
         out <- out/100
     if (!is.null(data.attribute))
         attr(out, "statistic") <- data.attribute

@@ -4,8 +4,13 @@
 \alias{AsDataFrame}
 \title{\code{AsDataFrame}}
 \usage{
-AsDataFrame(input.data, use.names = FALSE, ignore.columns = "",
-  categorical.as.binary = FALSE, remove.first = FALSE)
+AsDataFrame(
+  input.data,
+  use.names = FALSE,
+  ignore.columns = "",
+  categorical.as.binary = FALSE,
+  remove.first = FALSE
+)
 }
 \arguments{
 \item{input.data}{Either a \code{\link{data.frame}}, a \code{\link{list}} of

@@ -4,8 +4,7 @@
 \alias{asNumericList}
 \title{\code{AsNumericList}}
 \usage{
-asNumericList(x, binary = TRUE, remove.first = FALSE,
-  return.data.frame = TRUE)
+asNumericList(x, binary = TRUE, remove.first = FALSE, return.data.frame = TRUE)
 }
 \arguments{
 \item{x}{A list containing the variables to combine. The
