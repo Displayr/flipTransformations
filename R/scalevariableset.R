@@ -158,7 +158,7 @@ numbersFromCategoricalVariableSets <- function(x)
 
 numbersFromCategoricalQVariable <- function(x, value.attr, source.vals, code.frame)
 {
-    if (is.null(v))
+    if (is.null(value.attr))
         return(as.numeric(x))
 
     if (is.null(code.frame) || is.null(source.vals))
