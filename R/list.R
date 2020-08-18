@@ -17,6 +17,18 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         result <- vector("list", length(x))
         names(result) <- names(x)
     }
+    is.multi.variable.set <-all(c("variablesourcevalues", "variablevalues",
+                              "codeframe") %in% names(attributes(x)))
+    if (is.multi.variable.set && !binary)
+    {
+        out <- numbersFromCategoricalVariableSets(x)
+        if (return.data.frame)
+            result <- as.data.frame(out, check.names = FALSE)
+        else
+            for (i in seq_along(out))
+                result[[i]] <- out[, i]
+        return(CopyAttributes(result, x))
+    }
     for (counter in seq(along = x))
     {
         variable <- x[[counter]]
@@ -25,7 +37,8 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         attr(variable, "InLoop") <- TRUE
         if (any(class(variable) %in% c("factor", "character", "POSIXct", "POSIXt", "Date")))
         {
-            variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"), remove.first = remove.first)
+            variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"),
+                                  remove.first = remove.first)
             uc <- attr(variable, "Unclassed")
             if (!is.null(uc))
             {

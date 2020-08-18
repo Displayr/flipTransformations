@@ -133,8 +133,12 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #' @export
 OrderedToNumeric <- function(x)
 {
-    unclassed <- CopyAttributes(Unclass(x), x)
-    return(unclassed)
+    is.variable.set <-all(c("sourcevalues", "values", "codeframe") %in% names(attributes(x)))
+    if (is.variable.set)
+        out <- numbersFromCategoricalVariableSets(x)
+    else
+        out <- Unclass(x)
+    return(CopyAttributes(out, x))
 }
 
 #' \code{FactorToNumeric}

@@ -133,3 +133,73 @@ test_that("Numeric - grid",
     expect_equal(colnames(out), colnames(ng.no.sum))
 })
 
+test_that("Nominal with merge, hide and changed value attr",
+{
+    ## Note: 1) 30 to 34 and 35 to 39 have been merged + renamed to 30 to 39
+    ## 2) 50 to 54 has been hidden
+    ## 3) value attribute for 65 or more changed to 65 from 77
+    x <- nominal.merge.hide
+    v <- attr(x, "values")
+    cf <- attr(x, "codeframe")
+    sv <- attr(x, "sourcevalues")
+    out <- flipTransformations:::numbersFromCategoricalVariableSets(x)
+
+    expect_is(out, "numeric")
+    expect_equal(length(out), length(x))
+
+    to <- table(out)
+    tx <- table(x)
+    expect_named(to, c("21", "27",
+                       "34.5",  # ave. of underlyting values for 30 to 34 and 35 to 39
+                       "42", "47", "52", "60",
+                       "65"))  # value attr. diff from sourceval
+    idx <- c(1:5, 8, 6, 7)
+    expect_equal(as.numeric(to), as.numeric(tx[idx]))
+
+    out.OtN <- OrderedToNumeric(x)
+    expect_equal(out.OtN, out, check.attributes = FALSE)
+    attr.to.rm <- eval(formals(flipU::CopyAttributes)$attr.to.not.copy)
+    expect_equal(attributes(x)[!names(attributes(x)) %in% attr.to.rm],
+                 attributes(out.OtN)[!names(attributes(out.OtN)) %in% attr.to.rm])
+
+    out.AN <- AsNumeric(x, FALSE)
+    expect_equal(out.AN, out, check.attributes = FALSE)
+    expect_equal(attributes(x)[!names(attributes(x)) %in% attr.to.rm],
+                 attributes(out.AN)[!names(attributes(out.AN)) %in% attr.to.rm])
+
+})
+
+test_that("PickOneMulti with merge, hide, NET",
+{
+    ## Note: 1) variablevalues don't match variablesourcevalues:
+    ##  Hate = -3, Love = 3
+    ## 2) Hate has been hidden from codeframe
+    ## 3) Neither like nor dislike has been merged to "NOT positives" (see cf below)
+    ## 4) codeframe contains an extra NET "Like + Love NET"
+    x <- super.pick.one.multi
+    v <- attr(x, "variablevalues")
+    cf <- attr(x, "codeframe")
+    sv <- attr(x, "variablesourcevalues")
+    out <- flipTransformations:::numbersFromCategoricalVariableSets(x)
+
+    expect_is(out, "matrix")
+    expect_equal(colnames(out), names(x))
+
+    ## 0,-1 averaged to -.5
+    ## -2 in sourcevals mapped to -3, 2 in sourcevals to 3
+    for (i in seq_along(x))
+    {
+        ti <- table(out[, i])
+        expect_named(ti, c("-3", "-0.5", "1", "3"))
+        ## hidden cf Hate is at end of levels of factor from R (Core wontfix)
+        xi <- x[[i]]
+        idx <- c("Hate", levels(xi)[-length(levels(xi))])
+        expect_equal(as.numeric(ti), as.numeric(table(xi)[idx]))
+    }
+
+    out.AN <- AsNumeric(x, binary = FALSE)
+    expect_equal(out.AN, as.data.frame(out), check.attributes = FALSE)
+    attr.to.rm <- eval(formals(flipU::CopyAttributes)$attr.to.not.copy)
+    expect_equal(attributes(x)[!names(attributes(x)) %in% attr.to.rm],
+                 attributes(out.AN)[!names(attributes(out.AN)) %in% attr.to.rm])
+})
