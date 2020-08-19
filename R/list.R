@@ -17,6 +17,18 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         result <- vector("list", length(x))
         names(result) <- names(x)
     }
+
+    is.categorical.multi <- isCategoricalMultiVariableSet(x)
+    if (is.categorical.multi && !binary)
+    {
+        out <- numbersFromCategoricalVariableSets(x)
+        if (return.data.frame)
+            result <- as.data.frame(out, check.names = FALSE)
+        else
+            for (i in seq_len(NCOL(out)))
+                result[[i]] <- out[, i]
+        return(CopyAttributes(result, x))
+    }
     for (counter in seq(along = x))
     {
         variable <- x[[counter]]
@@ -25,7 +37,8 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         attr(variable, "InLoop") <- TRUE
         if (any(class(variable) %in% c("factor", "character", "POSIXct", "POSIXt", "Date")))
         {
-            variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"), remove.first = remove.first)
+            variable <- AsNumeric(variable, binary = binary, name = attr(variable, "name"),
+                                  remove.first = remove.first)
             uc <- attr(variable, "Unclassed")
             if (!is.null(uc))
             {
@@ -118,4 +131,24 @@ SplitVectorToList <- function(values, groups)
     out <- lapply(levels(groups), function(l) values[non.na.g & groups == l])
     names(out) <- gnames
     out
+}
+
+#' Checks if input is a Multi variable set from Displayr/Q
+#' @return logical scalar
+#' @noRd
+isMultiVariableSet <- function(x)
+    all(c("variablesourcevalues", "variablevalues",
+          "codeframe") %in% names(attributes(x)))
+
+isVariableSet <- function(x)
+    all(c("sourcevalues", "values", "codeframe") %in% names(attributes(x)))
+
+isCategoricalMultiVariableSet <- function(x)
+{
+    non.cat.qtypes <- c("PickAnyGrid", "PickAny", "NumberMulti", "NumberGrid")
+    qt <- attr(x, "questiontype")
+    if (is.null(qt))
+        return(FALSE)
+    is.multi.variable.set  <- isMultiVariableSet(x)
+    return(is.multi.variable.set && !qt %in% non.cat.qtypes)
 }

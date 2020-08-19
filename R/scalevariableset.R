@@ -34,8 +34,11 @@ ScaleVariableSet <- function(
 
     is.categorical <- is.factor(data) || (is.data.frame(data) && is.factor(data[[1]]))
     if (is.categorical)
-        data.with.values <- replaceFactorsWithValues(data)
-    else
+    {
+        data.with.values <- numbersFromCategoricalVariableSets(data)
+        if (NCOL(data.with.values) == 1L)
+            data.with.values <- as.matrix(data.with.values)
+    }else
     {
         qt <- attr(data, "questiontype")
         if (!is.null(qt) && grepl("Number[MG]", qt))
@@ -105,4 +108,77 @@ removeSUMColumns <- function(df)
         return(df[, !colnames(df) %in% "SUM"])
     }else  # NumberGrid
         return(df[, !grepl("^SUM, |, SUM$", colnames(df))])
+}
+
+#' Get numbers from attributtes of Pick One and Pick One - Multi questions
+#'
+#'  Extracts the codeframe and value attributes from the (R data.frame/factor representation of) Displayr's Categorical Variable Sets (PickOne and PickOneMulti questions in Q) and applies them to the input factors/data.frame to convert it to its underlying values.
+#' @param x A variable set from Q/Displayr (an R factor or data.frame
+#'     with special attributes).
+#' @return A matrix of numeric values with number of rows equal \code{NROW(x)}.
+#' @details levels(x) are always present in the names of the codeframe
+#'     attribute, \emph{unless} codes are hidden. The codeframe
+#'     contains sourcevalues for each code/level, which need to be
+#'     mapped from the sourcevalues attribute (original values
+#'     as read in with the data set) to the (possibly user-modified)
+#'     values attribute.
+#'
+#'     A level that is the result of a merge will contain multiple
+#'     source values for that element in the codeframe. These are
+#'     mapped to the corresponding underlying values in the values
+#'     attribute and averaged.
+#'
+#' @noRd
+numbersFromCategoricalVariableSets <- function(x)
+{
+    vv <- attr(x, "variablevalues")
+    if (is.list(vv))  # multi-variable variable set
+    {
+        if (length(vv) != ncol(x))  # probably not needed
+            stop("Invalid variable set provided; the length of the ",
+                 dQuote("variablevalues"), " attribute does not match ",
+                 " the number of variables in the variable set.")
+
+        ## out <- mapply(function(fact, vals) vals[levels(fact)[fact]], x, vv,
+        ##               SIMPLIFY = TRUE)
+        sv <- attr(x, "variablesourcevalues")
+        cf <- attr(x, "codeframe")
+
+        return(mapply(numbersFromCategoricalQVariable, x, vv, sv,
+                      MoreArgs = list(code.frame = cf),
+                      SIMPLIFY = TRUE))
+    }
+    ## else single variable variable set
+    return(numbersFromCategoricalQVariable(x,
+                                           attr(x, "values"),
+                                           attr(x, "sourcevalues"),
+                                           attr(x, "codeframe")))
+}
+
+
+numbersFromCategoricalQVariable <- function(x, value.attr, source.vals, code.frame)
+{
+    if (is.null(value.attr))
+        return(as.numeric(x))
+
+    if (is.null(code.frame) || is.null(source.vals))
+        return(value.attr[levels(x)[x]])
+
+    level.sv <- lapply(levels(x),
+              function(l)
+              {
+                  if (l %in% names(code.frame))
+                      return(code.frame[[l]])
+                  else  # hidden code
+                      return(source.vals[[l]])
+              })
+    names(level.sv) <- levels(x)
+
+    sv.codes <- lapply(level.sv,
+                                   function(val) names(source.vals[which(source.vals %in% val)]))
+    v.codes <- lapply(sv.codes, function(val) value.attr[val])
+    ## take average of values for merges
+    level.vals <- vapply(v.codes, mean, numeric(1L))
+    out <- level.vals[x]
+    return(unname(out))
 }
