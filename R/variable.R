@@ -133,7 +133,7 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #' @export
 OrderedToNumeric <- function(x)
 {
-    is.variable.set <-all(c("sourcevalues", "values", "codeframe") %in% names(attributes(x)))
+    is.variable.set <-isVariableSet(x)
     if (is.variable.set)
         out <- numbersFromCategoricalVariableSets(x)
     else

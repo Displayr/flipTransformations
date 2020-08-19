@@ -17,9 +17,9 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         result <- vector("list", length(x))
         names(result) <- names(x)
     }
-    is.multi.variable.set <-all(c("variablesourcevalues", "variablevalues",
-                              "codeframe") %in% names(attributes(x)))
-    if (is.multi.variable.set && !binary)
+
+    is.categorical.multi <- isCategoricalMultiVariableSet(x)
+    if (is.categorical.multi && !binary)
     {
         out <- numbersFromCategoricalVariableSets(x)
         if (return.data.frame)
@@ -131,4 +131,24 @@ SplitVectorToList <- function(values, groups)
     out <- lapply(levels(groups), function(l) values[non.na.g & groups == l])
     names(out) <- gnames
     out
+}
+
+#' Checks if input is a Multi variable set from Displayr/Q
+#' @return logical scalar
+#' @noRd
+isMultiVariableSet <- function(x)
+    all(c("variablesourcevalues", "variablevalues",
+          "codeframe") %in% names(attributes(x)))
+
+isVariableSet <- function(x)
+    all(c("sourcevalues", "values", "codeframe") %in% names(attributes(x)))
+
+isCategoricalMultiVariableSet <- function(x)
+{
+    non.cat.qtypes <- c("PickAnyGrid", "PickAny", "NumberMulti", "NumberGrid")
+    qt <- attr(x, "questiontype")
+    if (is.null(qt))
+        return(FALSE)
+    is.multi.variable.set  <- isMultiVariableSet(x)
+    return(is.multi.variable.set && !qt %in% non.cat.qtypes)
 }

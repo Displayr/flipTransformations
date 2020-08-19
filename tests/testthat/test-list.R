@@ -63,3 +63,15 @@ test_that("SplitVectorToList factor values",
     expect_equal(levels(out[[2]]), levels(y))
 })
 
+test_that("AsNumeric, doesn't mangle non-categorical VS; DS-2906'",
+{
+    vs.env <- new.env()
+    load("variable.sets.rda", vs.env)
+    expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$binary.grid))
+    expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$numeric.multi))
+    expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$numeric.grid))
+    expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$binary.multi))
+    bg <- vs.env$binary.grid
+    bg.an <- AsNumeric(vs.env$binary.grid, FALSE)
+    expect_equal(bg.an, bg, check.attributes = FALSE)
+})
