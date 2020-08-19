@@ -25,7 +25,7 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
         if (return.data.frame)
             result <- as.data.frame(out, check.names = FALSE)
         else
-            for (i in seq_along(out))
+            for (i in seq_len(NCOL(out)))
                 result[[i]] <- out[, i]
         return(CopyAttributes(result, x))
     }

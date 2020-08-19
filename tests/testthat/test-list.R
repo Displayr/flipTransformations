@@ -74,4 +74,17 @@ test_that("AsNumeric, doesn't mangle non-categorical VS; DS-2906'",
     bg <- vs.env$binary.grid
     bg.an <- AsNumeric(vs.env$binary.grid, FALSE)
     expect_equal(bg.an, bg, check.attributes = FALSE)
+
+    ## check asNumericList works with return.data.frame = FALSE
+    ## Note: that this won't get called in production in this way because
+    ## mutli variable sets from Q/Displayr are always data.frames so
+    ## AsNumeric.data.frame (return.data.frame = TRUE) will get called
+    nm <- vs.env$nominal.multi
+    out <- asNumericList(nm, FALSE, return.data.frame = FALSE)
+    out.df <- asNumericList(nm, FALSE, return.data.frame = TRUE)
+    expect_is(out, "list")
+    expect_length(out, ncol(nm))
+    expect_is(out[[1]], "numeric")
+    expect_equal(as.data.frame(out), out.df, check.attributes = FALSE)
 })
+
