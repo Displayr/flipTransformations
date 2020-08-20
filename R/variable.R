@@ -144,7 +144,7 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #' @seealso \code{\link{numbersFromCategoricalVariableSets}}, \code{\link{Unclass}}
 #' @importFrom stats model.matrix
 #' @examples
-#' file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+#' file <- system.file("extdata", "variable.sets.rda", package = "flipTransformations")
 #' vs.env <- new.env()
 #' load(file, vs.env)
 #' ord.num <- AsNumeric(vs.env$ordinal, TRUE)

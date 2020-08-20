@@ -1,4 +1,5 @@
-load("variable.sets.rda")
+file <- system.file("extdata", "variable.sets.rda", package = "flipTransformations")
+load(file)
 
 test_that("Numeric Variable Set",
 {

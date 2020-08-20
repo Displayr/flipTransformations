@@ -29,7 +29,7 @@ variable; otherwise, the integers 1, 2, ... as per the ordering of
 the factors.
 }
 \examples{
-file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+file <- system.file("extdata", "variable.sets.rda", package = "flipTransformations")
 vs.env <- new.env()
 load(file, vs.env)
 ord.num <- AsNumeric(vs.env$ordinal, TRUE)

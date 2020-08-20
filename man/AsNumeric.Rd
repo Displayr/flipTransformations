@@ -42,7 +42,7 @@ coerced to numeric, these values will be used to create the numeric
 variable; otherwise, the integers 1, 2, ... are used for the values.
 }
 \examples{
-file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+file <- system.file("extdata", "variable.sets.rda", package = "flipTransformations")
 vs.env <- new.env()
 load(file, vs.env)
 dummy.nm <- AsNumeric(vs.env$nominal.multi, TRUE)

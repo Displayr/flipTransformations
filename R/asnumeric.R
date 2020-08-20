@@ -29,7 +29,7 @@
 #' @seealso \code{\link{numbersFromCategoricalVariableSets}}, \code{\link{Unclass}}, \code{\link{FactorToNumeric}}
 #' @importFrom flipFormat RemoveParentName
 #' @examples
-#' file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+#' file <- system.file("extdata", "variable.sets.rda", package = "flipTransformations")
 #' vs.env <- new.env()
 #' load(file, vs.env)
 #' dummy.nm <- AsNumeric(vs.env$nominal.multi, TRUE)
