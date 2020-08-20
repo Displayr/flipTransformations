@@ -127,9 +127,30 @@ asNumericWarning <- function(variables, to.factor.levels = FALSE)
 #' Convert an ordered factor to a numeric vector.
 #'
 #' @param x An ordered factor.
-#' @details If all levels are numeric they are converted to the same numbers.
-#'   Else they are converted to 1, 2, 3, ... as per the ordering of the factors.
+#' @details It is first checked if \code{x} is a categorical variable
+#'     set (question) from Displayr (Q), in which case their value
+#'     attributes are used.  To check this, (\code{x} is searched for
+#'     attributes "questiontype", and "sourcevalues", "values",
+#'     "codeframe" (for "PickOne" questiontype/vector \code{x}) and
+#'     "sourcevariablevalues", "variablevalues", and "codeframe"
+#'     attributes, in the case of "PickOneMulti"
+#'     questiontype/data.frame \code{x}). See the Examples.
+#'
+#' If \code{x} is missing these attributes, \code{\link{Unclass}} is
+#' used. If all labels of \code{x} (or columns of \code{x}) can be
+#' coerced to numeric, these values will be used to create the numeric
+#' variable; otherwise, the integers 1, 2, ... as per the ordering of
+#' the factors.
+#' @seealso \code{\link{numbersFromCategoricalVariableSets}}, \code{\link{Unclass}}
 #' @importFrom stats model.matrix
+#' @examples
+#' file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+#' vs.env <- new.env()
+#' load(file, vs.env)
+#' ord.num <- AsNumeric(vs.env$ordinal, TRUE)
+#' ## Compare
+#' table(ord.num)
+#' levels(vs.env$ordinal)
 #' @export
 OrderedToNumeric <- function(x)
 {
@@ -141,16 +162,17 @@ OrderedToNumeric <- function(x)
     return(CopyAttributes(out, x))
 }
 
-#' \code{FactorToNumeric}
-#' @description Convert a factor variable to a numeric vector (when the factor is ordered),
+#' Convert a factor variable to a numeric vector
+#'
+#' Convert a factor variable to a numeric vector (when the factor is ordered),
 #' or a matrix of indicator variables (when the factor is not ordered).
 #' @param x A factor or ordered factor.
-#' @param binary Returns the factor as binary variables.
+#' @param binary Returns the factor as binary variables. If \code{FALSE}, \code{\link{OrderedToNumeric}}.
 #' @param name The name of the variable.
 #' @param remove.first Remove the first binary variable, if a binary variable is being created.
 #' @importFrom flipFormat RemoveParentName Names
 #' @importFrom flipU CopyAttributes
-#' @seealso \code{\link[stats]{model.matrix}}
+#' @seealso \code{\link[stats]{model.matrix}}, \code{\link{AsNumeric}}, \code{\link{OrderedToNumeric}}
 #' @return a vector of length \code{x}, if \code{x} is an ordered factor; otherwise, a 0-1 matrix
 #' with number of rows equal to the length of \code{x} an number of columns equal to the number of
 #' levels in \code{x}

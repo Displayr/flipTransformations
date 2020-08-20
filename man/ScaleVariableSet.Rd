@@ -39,5 +39,5 @@ x <- structure(c(1, 2, 3, 4, 5), questiontype = "Number",
 ScaleVariableSet(x, type = "unit")
 }
 \seealso{
-\code{\link{scale}}
+\code{\link{scale}}, \code{\link{numbersFromCategoricalVariableSets}}
 }

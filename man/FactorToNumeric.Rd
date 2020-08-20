@@ -2,14 +2,14 @@
 % Please edit documentation in R/variable.R
 \name{FactorToNumeric}
 \alias{FactorToNumeric}
-\title{\code{FactorToNumeric}}
+\title{Convert a factor variable to a numeric vector}
 \usage{
 FactorToNumeric(x, binary = TRUE, name = NULL, remove.first = TRUE)
 }
 \arguments{
 \item{x}{A factor or ordered factor.}
 
-\item{binary}{Returns the factor as binary variables.}
+\item{binary}{Returns the factor as binary variables. If \code{FALSE}, \code{\link{OrderedToNumeric}}.}
 
 \item{name}{The name of the variable.}
 
@@ -25,5 +25,5 @@ Convert a factor variable to a numeric vector (when the factor is ordered),
 or a matrix of indicator variables (when the factor is not ordered).
 }
 \seealso{
-\code{\link[stats]{model.matrix}}
+\code{\link[stats]{model.matrix}}, \code{\link{AsNumeric}}, \code{\link{OrderedToNumeric}}
 }

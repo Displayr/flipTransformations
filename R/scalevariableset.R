@@ -14,7 +14,7 @@
 #'     \code{TRUE} and \code{data} contains only one variable.
 #' @return A numeric vector if \code{data} contains only a single
 #'     variable or a data.frame containing the scaled values.
-#' @seealso \code{\link{scale}}
+#' @seealso \code{\link{scale}}, \code{\link{numbersFromCategoricalVariableSets}}
 #' @examples
 #' x <- structure(c(1, 2, 3, 4, 5), questiontype = "Number",
 #'                dataset = "dat", name = "x", label = "x", question = "x")
@@ -112,23 +112,29 @@ removeSUMColumns <- function(df)
 
 #' Get numbers from attributtes of Pick One and Pick One - Multi questions
 #'
-#'  Extracts the codeframe and value attributes from the (R data.frame/factor representation of) Displayr's Categorical Variable Sets (PickOne and PickOneMulti questions in Q) and applies them to the input factors/data.frame to convert it to its underlying values.
+#'  Extracts the codeframe and value attributes from the (R
+#'  data.frame/factor representation of) Displayr's Categorical
+#'  Variable Sets (PickOne and PickOneMulti questions in Q) and
+#'  applies them to the input factors/data.frame to convert it to its
+#'  underlying values.
 #' @param x A variable set from Q/Displayr (an R factor or data.frame
 #'     with special attributes).
-#' @return A matrix of numeric values with number of rows equal \code{NROW(x)}.
+#' @return For data.frame (vector) \code{x}, A matrix (vector) of
+#'     numeric values with number of rows (elements) equal to
+#'     \code{NROW(x)}.
 #' @details levels(x) are always present in the names of the codeframe
 #'     attribute, \emph{unless} codes are hidden. The codeframe
 #'     contains sourcevalues for each code/level, which need to be
-#'     mapped from the sourcevalues attribute (original values
-#'     as read in with the data set) to the (possibly user-modified)
-#'     values attribute.
+#'     mapped from the sourcevalues attribute (original values as read
+#'     in with the data set) to the (possibly user-modified) values
+#'     attribute.
 #'
 #'     A level that is the result of a merge will contain multiple
 #'     source values for that element in the codeframe. These are
 #'     mapped to the corresponding underlying values in the values
 #'     attribute and averaged.
 #'
-#' @noRd
+#' @keywords internal
 numbersFromCategoricalVariableSets <- function(x)
 {
     vv <- attr(x, "variablevalues")

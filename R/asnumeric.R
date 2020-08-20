@@ -1,14 +1,42 @@
-#' \code{AsNumeric}
-#' @description Coerces a \code{\link{data.frame}} or \code{\link{vector}} that may contain
-#' factors into a \code{\link{vector}} or \code{\link{data.frame}} that does not contain factors.
+#' Coerce categorical data to numeric
+#'
+#' Coerces a \code{\link{data.frame}} or \code{\link{vector}} that may
+#' contain factors into a \code{\link{vector}} or
+#' \code{\link{data.frame}} that does not contain factors.
 #' @param x The \code{\link{data.frame}} or \code{\link{vector}}.
-#' @param binary If \code{TRUE}, unordered factors are represented as dummy variables.
-#' Otherwise, they are represented as sequential integers.
-#' @param name Used if \code{binary} is \code{TRUE} to construct variable names. This parameter is
-#' ignored if x is a \code{\link{data.frame}} or a \code{\link{list}}.
+#' @param binary If \code{TRUE}, unordered factors are represented as
+#'     dummy variables.  Otherwise, their value attributes/levels are
+#'     used to coerce each factor to a single numeric variable. See the Details.
+#' @param name Used if \code{binary} is \code{TRUE} to construct
+#'     variable names. This parameter is ignored if x is a
+#'     \code{\link{data.frame}} or a \code{\link{list}}.
 #' @param remove.first Remove the first binary variable.
 #' @details Characters are treated as factors.
+#'
+#' When \code{binary} is \code{FALSE}, it is first checked if \code{x}
+#'     is a variable set (question) from Displayr (Q), in which case
+#'     their value attributes are used.  To check this, (\code{x} is
+#'     searched for attributes "questiontype", and "sourcevalues",
+#'     "values", "codeframe" (for "PickOne" questiontype/vector
+#'     \code{x}) and "sourcevariablevalues", "variablevalues", and
+#'     "codeframe" attributes, in the case of "PickOneMulti"
+#'     questiontype/data.frame \code{x}). See the Examples.
+#'
+#' If \code{x} is missing these attributes, \code{\link{Unclass}} is
+#' used. If all labels of \code{x} (or columns of \code{x}) can be
+#' coerced to numeric, these values will be used to create the numeric
+#' variable; otherwise, the integers 1, 2, ... are used for the values.
+#' @seealso \code{\link{numbersFromCategoricalVariableSets}}, \code{\link{Unclass}}, \code{\link{FactorToNumeric}}
 #' @importFrom flipFormat RemoveParentName
+#' @examples
+#' file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+#' vs.env <- new.env()
+#' load(file, vs.env)
+#' dummy.nm <- AsNumeric(vs.env$nominal.multi, TRUE)
+#' num.nm <- AsNumeric(vs.env$nominal.merge.hide, FALSE)
+#' ## Compare
+#' table(num.nm)
+#' levels(vs.env$nominal.merge.hide)
 #' @export
 AsNumeric <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
 {

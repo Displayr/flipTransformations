@@ -13,6 +13,30 @@ OrderedToNumeric(x)
 Convert an ordered factor to a numeric vector.
 }
 \details{
-If all levels are numeric they are converted to the same numbers.
-  Else they are converted to 1, 2, 3, ... as per the ordering of the factors.
+It is first checked if \code{x} is a categorical variable
+    set (question) from Displayr (Q), in which case their value
+    attributes are used.  To check this, (\code{x} is searched for
+    attributes "questiontype", and "sourcevalues", "values",
+    "codeframe" (for "PickOne" questiontype/vector \code{x}) and
+    "sourcevariablevalues", "variablevalues", and "codeframe"
+    attributes, in the case of "PickOneMulti"
+    questiontype/data.frame \code{x}). See the Examples.
+
+If \code{x} is missing these attributes, \code{\link{Unclass}} is
+used. If all labels of \code{x} (or columns of \code{x}) can be
+coerced to numeric, these values will be used to create the numeric
+variable; otherwise, the integers 1, 2, ... as per the ordering of
+the factors.
+}
+\examples{
+file <- system.file("tests", "testthat", "variable.sets.rda", package = "flipTransformations")
+vs.env <- new.env()
+load(file, vs.env)
+ord.num <- AsNumeric(vs.env$ordinal, TRUE)
+## Compare
+table(ord.num)
+levels(vs.env$ordinal)
+}
+\seealso{
+\code{\link{numbersFromCategoricalVariableSets}}, \code{\link{Unclass}}
 }
