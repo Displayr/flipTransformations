@@ -160,7 +160,10 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         return(out)
     }
 
-    statistic.list <- c("", "%", "Column %", "Row %", "Total %")
+    statistic.list <- c("", "%", "Column %", "Row %", "Total %",
+        "% Column Share", "% Row Share", "% Total Share",
+        "% Responses", "% Row Responses", "% Column Responses", "% Total Responses",
+        "Cumulative %", "Expected %", "Residual %")
     # These are not used be cause they can plausibly be row/column labels
     #   "n", "Average", "Standard Error", "Population")
     first.entry.chars <- !isTextNumeric(m[1, 1], allow.missing = TRUE)
@@ -204,7 +207,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
-    if (any(grepl("%)?$", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
+    if (any(grepl("%", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
         out <- out/100
     if (!is.null(data.attribute))
         attr(out, "statistic") <- data.attribute

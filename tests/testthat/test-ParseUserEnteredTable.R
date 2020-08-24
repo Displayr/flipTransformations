@@ -406,3 +406,15 @@ test_that("Row and Column titles",
     expect_equal(attr(res2, "row.column.names"), c("animals", "attributes"))
     expect_equal(attr(res1, "row.column.names"), c("", "attributes"))
 })
+
+test_that("Pasted Data with statistic",
+{
+    raw <- structure(c("% Column Share", "Other", "Burger Shack", "Nuovo Burger",
+        "Arnold's", "Ma's burgers", "Burger Chef", "Apr-Jun 15", "60",
+        "2", "0", "21", "2", "11"), .Dim = c(7L, 2L))
+    res <- ParseEnteredData(raw)
+    expect_equal(res, structure(c(0.6, 0.02, 0, 0.21, 0.02, 0.11), .Dim = c(6L, 1L), .Dimnames = list(
+    c("Other", "Burger Shack", "Nuovo Burger", "Arnold's", "Ma's burgers",
+    "Burger Chef"), "Apr-Jun 15"), statistic = "% Column Share"))
+})
+
