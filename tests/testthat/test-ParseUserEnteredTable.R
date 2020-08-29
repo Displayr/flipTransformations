@@ -469,3 +469,17 @@ test_that("Parsing with the 1-1 entry",
     expect_equal(dim(res), c(4, 5))
 })
 
+test_that("Character matrices are conservatively treated",
+{
+    raw <- structure(c("Name", "Ann", "Bob", "Charlie", "Dave", "Ed", "Fred",
+        "Gary", "Henry", "Ian", "Jo", "Role", "Cook", "Server", "Cook",
+        "Server", "Manager", "Manager", "Cook", "Server", "Cook", "Server",
+        "Shift", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch", "Dinner",
+        "Dinner", "Dinner", "Dinner", "Dinner", "Salary", "1000", "1200",
+        "1400", "1500", "2200", "2000", "2000", "1500", "1600", "1800",
+        "Age", "19", "24", "29", "24", "32", "41", "28", "30", "22",
+        "25"), .Dim = c(11L, 5L))
+    res <- ParseEnteredData(raw)
+    expect_equal(dim(res), c(10, 5))
+})
+
