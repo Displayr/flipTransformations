@@ -160,47 +160,84 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         return(out)
     }
 
-    statistic.list <- c("", "%", "Column %", "Row %", "Total %",
-        "% Column Share", "% Row Share", "% Total Share",
-        "% Responses", "% Row Responses", "% Column Responses", "% Total Responses",
-        "Cumulative %", "Expected %", "Residual %")
-    # These are not used be cause they can plausibly be row/column labels
-    #   "n", "Average", "Standard Error", "Population")
-    first.entry.chars <- !isTextNumeric(m[1, 1], allow.missing = TRUE)
     data.attribute <- NULL
-    idx <- if (first.entry.chars) -1
-           else seq_len(n.col)
-    col.names.given <- !isTextNumeric(m[1, idx], allow.missing = TRUE)
-    idx <- if (first.entry.chars) -1
-           else seq_len(n.row)
-    if (col.names.given)
-        row.names.given <- m[1,1] %in% statistic.list
-    else
-        row.names.given <- !isTextNumeric(m[idx, 1], allow.missing = TRUE)
-    if (m[1,1] %in% statistic.list)
+    row.names.given <- isPossibleLabel(m[-1,1])
+    col.names.given <- isPossibleLabel(m[1,-1])
+
+    # Handling ambiguous row/column labels
+    if (is.na(row.names.given) || is.na(col.names.given))
     {
-        row.names.given <- nrow(m) >= 2
-        col.names.given <- (ncol(m) - row.names.given) >= 1
+        # if either is not a label then the 1,1 position cannot be a statistic
+        if (isTRUE(!row.names.given))
+            col.names.given <- isTRUE(isPossibleLabel(m[1,]))
+        else if (isTRUE(!col.names.given))
+            row.names.given <- isTRUE(isPossibleLabel(m[,1]))
+        else
+        {
+            # We only need to check whether the 1,1 entry is a statistic
+            # if BOTH row and column labels might be present
+            statistic.list <- c("", "%", "% Column Responses", "% Column Share",
+                "% Excluding NaN", "% Responses", "% Row Responses", "% Row Share",
+                " %Share", "% Total Responses", "% Total Share", "5th Percentile",
+                "25th Percentile", "75th Percentile", "95th Percentile",
+                "Average", "Base n", "Base Population", "Coefficient", "Column %",
+                "Column Comparisons", "Column n", "Column Names", 
+                "Column Population", "Columns Compared", "Column Standard Error",
+                "Column Standard Error of Mean", "Corrected p", "Correlation",
+                "Cumulative %", "d.f", "Effective n", "Effective Base n",
+                "Expected Average", "Expected %", "Expected Correlation",
+                "Expected n", "Index", "Interquartile Range", "Labels",
+                "Lower Confidence Interval", "Lower Confidence Interval %",
+                "Maximum", "Median", "Minimum", "Missing n", "Mode",
+                "Multiple Comparison Adjustment", "n", "n Observations",
+                "Not duplicate", "Observation", "p", "Population", "Probability %",
+                "Range", "Residual", "Residual %", "Row %", "Row Population",
+                "Row n", "Standard Deviation", "Standard Error", "Sum", "Text",
+                "Text With No Blanks", "Total %", "Trimmed Average", "t-Statistic",
+                "Unique Text", "Upper Confidence Interval", 
+                "Upper Confident Interval %", "Values", "z-Statistic")
+           
+            if (m[1,1] %in% statistic.list)
+            {
+                row.names.given <- TRUE
+                col.names.given <- TRUE
+            }
+            else if (isTRUE(row.names.given))
+                col.names.given <- FALSE
+            else if (isTRUE(col.names.given))
+                row.names.given <- FALSE
+            else
+            {  
+                if (nchar(m[1,1]) > 0 && !isTextNumeric(m[1,1]))
+                {
+                    # at least one of them is a label
+                    # but which one (or both) is unclear 
+                    row.names.given <- FALSE
+                    col.names.given <- TRUE
+                }
+                else
+                {
+                    row.names.given <- FALSE
+                    col.names.given <- FALSE
+                }
+            }
+        }
     }
-    if ((row.names.given && col.names.given) ||
-        (row.names.given && !first.entry.chars) ||
-        (col.names.given && !first.entry.chars))
+
+    if (row.names.given && col.names.given)
     {
         out <- asNumeric(m[2:n.row, 2:n.col, drop = FALSE], n.row-1, n.col-1)
-        if (first.entry.chars)
+        if (nchar(m[1,1]) > 0)
             data.attribute <- m[1, 1]
         rownames(out) <- TrimWhitespace(m[-1, 1])
         colnames(out) <- TrimWhitespace(m[1, -1])
-        row.names.given <- TRUE # needed in case of numeric row names (but still blank 1-1 entry)
 
     } else if (row.names.given)
     {
-        # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first row
         out <- asNumeric(m[, 2:n.col, drop = FALSE], n.row, n.col - 1)
         rownames(out) <- TrimWhitespace(m[, 1])
     } else if (col.names.given)
     {
-        # somewhat ambiguous case, named 1,1 entry, but otherwise all numbers in first column
         out <- asNumeric(m[2:n.row, , drop = FALSE], n.row - 1, n.col)
         colnames(out) <- m[1, ]
     }
@@ -228,4 +265,24 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         attr(out, "statistic") <- tmp
     }
     out
+}
+
+# Returns a logical indicating whether the vector of text might be a label
+# Returns NA if they are all whole integers or can be parsed as a date
+isPossibleLabel <- function(t)
+{
+    v <- asNumericVector(t)
+    if (any(isMissing(t)) && any(!is.na(v)) && all(!is.na(v) | isMissing(t)))
+        return(FALSE)
+    if (any(is.na(v)))
+        return(TRUE)
+
+    # Additional checks to see if the numeric text can also be read as a label
+    if (any(nchar(t) == 0))
+        return(FALSE)
+    if (IsDateTime(t))
+        return (NA)
+    if (any(v != as.integer(v)))
+        return (FALSE)
+    return(NA)
 }
