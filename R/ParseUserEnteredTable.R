@@ -186,7 +186,7 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         "Upper Confident Interval %", "Values", "z-Statistic")
     
     # If input data is text, we asumme there no row labels unless statistic is supplied 
-    if (any(!isTextNumeric(m[-1,-1])))
+    if (any(!isTextNumeric(m[-1,-1], allow.missing = TRUE)))
         row.names.given <- m[1,1] %in% statistic.list
 
     # Handling ambiguous row/column labels

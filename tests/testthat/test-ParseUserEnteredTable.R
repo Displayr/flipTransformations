@@ -481,5 +481,10 @@ test_that("Character matrices are conservatively treated",
         "25"), .Dim = c(11L, 5L))
     res <- ParseEnteredData(raw)
     expect_equal(dim(res), c(10, 5))
+
+    raw <- matrix(c("", "Denmark", "Egypt", "Hong Kong", "Mexico",
+          "Timezone", "GMT+1", "GMT+2", "GMT+8", "GMT-6"), 5, 2)
+    res <- ParseEnteredData(raw)
+    expect_equal(dim(res), c(4, 1))
 })
 
