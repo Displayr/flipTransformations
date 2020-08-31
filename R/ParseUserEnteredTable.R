@@ -164,30 +164,9 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     row.names.given <- isPossibleLabel(m[-1,1])
     col.names.given <- isPossibleLabel(m[1,-1])
 
-    statistic.list <- c("", "%", "% Column Responses", "% Column Share",
-        "% Excluding NaN", "% Responses", "% Row Responses", "% Row Share",
-        " %Share", "% Total Responses", "% Total Share", "5th Percentile",
-        "25th Percentile", "75th Percentile", "95th Percentile",
-        "Average", "Base n", "Base Population", "Coefficient", "Column %",
-        "Column Comparisons", "Column n", "Column Names", 
-        "Column Population", "Columns Compared", "Column Standard Error",
-        "Column Standard Error of Mean", "Corrected p", "Correlation",
-        "Cumulative %", "d.f", "Effective n", "Effective Base n",
-        "Expected Average", "Expected %", "Expected Correlation",
-        "Expected n", "Index", "Interquartile Range", "Labels",
-        "Lower Confidence Interval", "Lower Confidence Interval %",
-        "Maximum", "Median", "Minimum", "Missing n", "Mode",
-        "Multiple Comparison Adjustment", "n", "n Observations",
-        "Not duplicate", "Observation", "p", "Population", "Probability %",
-        "Range", "Residual", "Residual %", "Row %", "Row Population",
-        "Row n", "Standard Deviation", "Standard Error", "Sum", "Text",
-        "Text With No Blanks", "Total %", "Trimmed Average", "t-Statistic",
-        "Unique Text", "Upper Confidence Interval", 
-        "Upper Confident Interval %", "Values", "z-Statistic")
-    
-    # If input data is text, we asumme there no row labels unless statistic is supplied 
+    # If input data is text, we assume there no row labels unless statistic is supplied
     if (any(!isTextNumeric(m[-1,-1], allow.missing = TRUE)))
-        row.names.given <- m[1,1] %in% statistic.list
+        row.names.given <- isQStatistic(m[1,1])
 
     # Handling ambiguous row/column labels
     if (is.na(row.names.given) || is.na(col.names.given))
@@ -201,8 +180,8 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
         {
             # We only need to check whether the 1,1 entry is a statistic
             # if BOTH row and column labels might be present
-           
-            if (m[1,1] %in% statistic.list)
+
+            if (isQStatistic(m[1,1]))
             {
                 row.names.given <- TRUE
                 col.names.given <- TRUE
@@ -212,11 +191,11 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
             else if (isTRUE(col.names.given))
                 row.names.given <- FALSE
             else
-            {  
+            {
                 if (nchar(m[1,1]) > 0 && !isTextNumeric(m[1,1]))
                 {
                     # at least one of them is a label
-                    # but which one (or both) is unclear 
+                    # but which one (or both) is unclear
                     row.names.given <- FALSE
                     col.names.given <- TRUE
                 }
@@ -272,12 +251,39 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     out
 }
 
+
+isQStatistic <- function(x)
+{
+    statistic.list <- c("", "%", "% Column Responses", "% Column Share",
+        "% Excluding NaN", "% Responses", "% Row Responses", "% Row Share",
+        " %Share", "% Total Responses", "% Total Share", "5th Percentile",
+        "25th Percentile", "75th Percentile", "95th Percentile",
+        "Average", "Base n", "Base Population", "Coefficient", "Column %",
+        "Column Comparisons", "Column n", "Column Names",
+        "Column Population", "Columns Compared", "Column Standard Error",
+        "Column Standard Error of Mean", "Corrected p", "Correlation",
+        "Cumulative %", "d.f", "Effective n", "Effective Base n",
+        "Expected Average", "Expected %", "Expected Correlation",
+        "Expected n", "Index", "Interquartile Range", "Labels",
+        "Lower Confidence Interval", "Lower Confidence Interval %",
+        "Maximum", "Median", "Minimum", "Missing n", "Mode",
+        "Multiple Comparison Adjustment", "n", "n Observations",
+        "Not duplicate", "Observation", "p", "Population", "Probability %",
+        "Range", "Residual", "Residual %", "Row %", "Row Population",
+        "Row n", "Standard Deviation", "Standard Error", "Sum", "Text",
+        "Text With No Blanks", "Total %", "Trimmed Average", "t-Statistic",
+        "Unique Text", "Upper Confidence Interval",
+        "Upper Confident Interval %", "Values", "z-Statistic")
+    return(x %in% statistic.list)
+}
+
 # Returns a logical indicating whether the vector of text might be a label
 # Returns NA if they are all whole integers or can be parsed as a date
 isPossibleLabel <- function(t)
 {
     v <- asNumericVector(t)
-    if (any(isMissing(t)) && any(!is.na(v)) && all(!is.na(v) | isMissing(t)))
+    has.numeric.and.missing <- any(isMissing(t)) && any(!is.na(v)) && all(!is.na(v) | isMissing(t))
+    if (has.numeric.and.missing) # all missing could potentially be a valid label
         return(FALSE)
     if (any(is.na(v)))
         return(TRUE)

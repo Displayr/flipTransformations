@@ -429,7 +429,7 @@ test_that("Parsing with the 1-1 entry",
         c("Other", "Burger Shack", "Nuovo Burger", "Arnold's", "Ma's burgers",
         "Burger Chef"), "Apr-Jun 15"), statistic = "Random statistic"))
 
-    # NA + NA + match statistic
+    # Ambiguous row label + Ambiguous col label + match statistic
     raw <- structure(c("", "2011", "2013", "2009",
       "2005", "2001", "2001", "2007", "2008", "2003", "2002", "2007", "2003", "2008", "2004",
       "2003", "2008", "2003", "2007", "2003", "2005", "2002", "2007", "2003", "2007"),
@@ -437,32 +437,32 @@ test_that("Parsing with the 1-1 entry",
     res <- ParseEnteredData(raw)
     expect_equal(dim(res), c(4, 4))
 
-    # F + NA + match statistic
+    # Ambiguous row label + No col label + match statistic
     raw2 <- raw
     raw2[1,4] <- 2000.1
     res <- ParseEnteredData(raw2)
     expect_equal(dim(res), c(5, 5))
 
-    # T + NA + match statistic
+    # Ambiguous row label + col label + match statistic
     raw3 <- raw
     raw3[1,] <- c("Index", letters[1:4])
     res <- ParseEnteredData(raw3)
     expect_equal(dim(res), c(4, 4))
 
-    # T + NA + !match statistic
+    # Ambiguous row label + col label + !match statistic
     raw4 <- raw
     raw4[1,] <- letters[1:5]
     res <- ParseEnteredData(raw4)
     expect_equal(dim(res), c(4, 5))
 
-    # NA + NA + !match statistic
+    # Ambiguous row label + Ambiguous col label + !match statistic
     # note that dim 4,5 or 4,4 is equally valid. but not 5,5
     raw5 <- raw
     raw5[1,1] <- "X"
     res <- ParseEnteredData(raw5)
     expect_equal(dim(res), c(4, 5))
 
-    # F + NA + !match statistic
+    # No row label + Ambiguous col label + !match statistic
     raw6 <- raw
     raw6[1:2,1] <- c("X", "2000.5")
     res <- ParseEnteredData(raw6)
