@@ -120,7 +120,7 @@ test_that("2 x 3",
     m[1, 2:ncol(m)] <- letters[2:ncol(m)]
     m <- t(m)
     out <- ParseUserEnteredTable(m)
-    expect_equal(colnames(out), m[1,])
+    expect_equal(colnames(out), m[1,2])
 })
 
 test_that("Missing data",
@@ -356,12 +356,12 @@ test_that("Numeric names with statistic",
 
 test_that("1-d statistic",
 {
-    txt <- structure(c("Average", "Variance", "Minimum", "Maximum",
+    txt <- structure(c("Mean", "Variance", "Minimum", "Maximum",
         "5", "2.5", "0.02", "6.7"), .Dim = c(4L, 2L))
     res <- ParseUserEnteredTable(txt)
     expect_equal(length(res), 4)
 
-    txt <- structure(c("Average", "5", "Variance", "2.5", "Minimum", "0.02",
+    txt <- structure(c("Mean", "5", "Variance", "2.5", "Minimum", "0.02",
         "Maximum", "6.7"), .Dim = c(2L, 4L))
     res <- ParseUserEnteredTable(txt)
     expect_equal(length(res), 4)
@@ -406,3 +406,85 @@ test_that("Row and Column titles",
     expect_equal(attr(res2, "row.column.names"), c("animals", "attributes"))
     expect_equal(attr(res1, "row.column.names"), c("", "attributes"))
 })
+
+test_that("Parsing with the 1-1 entry",
+{
+    # 1-1 matches a statistic, with non-numeric row and columns names
+    raw <- structure(c("% Column Share", "Other", "Burger Shack", "Nuovo Burger",
+        "Arnold's", "Ma's burgers", "Burger Chef", "Apr-Jun 15", "60",
+        "2", "0", "21", "2", "11"), .Dim = c(7L, 2L))
+    res <- ParseEnteredData(raw)
+    expect_equal(res, structure(c(0.6, 0.02, 0, 0.21, 0.02, 0.11),
+        .Dim = c(6L, 1L), .Dimnames = list(
+        c("Other", "Burger Shack", "Nuovo Burger", "Arnold's", "Ma's burgers",
+        "Burger Chef"), "Apr-Jun 15"), statistic = "% Column Share"))
+
+    # 1-1 does not exactly match statistic, but has non-numeric row and column names
+    raw <- structure(c("Random statistic", "Other", "Burger Shack", "Nuovo Burger",
+        "Arnold's", "Ma's burgers", "Burger Chef", "Apr-Jun 15", "60",
+        "2", "0", "21", "2", "11"), .Dim = c(7L, 2L))
+    res <- ParseEnteredData(raw)
+    expect_equal(res, structure(c(60, 2, 0, 21, 2, 11),
+        .Dim = c(6L, 1L), .Dimnames = list(
+        c("Other", "Burger Shack", "Nuovo Burger", "Arnold's", "Ma's burgers",
+        "Burger Chef"), "Apr-Jun 15"), statistic = "Random statistic"))
+
+    # Ambiguous row label + Ambiguous col label + match statistic
+    raw <- structure(c("", "2011", "2013", "2009",
+      "2005", "2001", "2001", "2007", "2008", "2003", "2002", "2007", "2003", "2008", "2004",
+      "2003", "2008", "2003", "2007", "2003", "2005", "2002", "2007", "2003", "2007"),
+      .Dim = c(5L,5L))
+    res <- ParseEnteredData(raw)
+    expect_equal(dim(res), c(4, 4))
+
+    # Ambiguous row label + No col label + match statistic
+    raw2 <- raw
+    raw2[1,4] <- 2000.1
+    res <- ParseEnteredData(raw2)
+    expect_equal(dim(res), c(5, 5))
+
+    # Ambiguous row label + col label + match statistic
+    raw3 <- raw
+    raw3[1,] <- c("Index", letters[1:4])
+    res <- ParseEnteredData(raw3)
+    expect_equal(dim(res), c(4, 4))
+
+    # Ambiguous row label + col label + !match statistic
+    raw4 <- raw
+    raw4[1,] <- letters[1:5]
+    res <- ParseEnteredData(raw4)
+    expect_equal(dim(res), c(4, 5))
+
+    # Ambiguous row label + Ambiguous col label + !match statistic
+    # note that dim 4,5 or 4,4 is equally valid. but not 5,5
+    raw5 <- raw
+    raw5[1,1] <- "X"
+    res <- ParseEnteredData(raw5)
+    expect_equal(dim(res), c(4, 5))
+
+    # No row label + Ambiguous col label + !match statistic
+    raw6 <- raw
+    raw6[1:2,1] <- c("X", "2000.5")
+    res <- ParseEnteredData(raw6)
+    expect_equal(dim(res), c(4, 5))
+})
+
+test_that("Character matrices are conservatively treated",
+{
+    raw <- structure(c("Name", "Ann", "Bob", "Charlie", "Dave", "Ed", "Fred",
+        "Gary", "Henry", "Ian", "Jo", "Role", "Cook", "Server", "Cook",
+        "Server", "Manager", "Manager", "Cook", "Server", "Cook", "Server",
+        "Shift", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch", "Dinner",
+        "Dinner", "Dinner", "Dinner", "Dinner", "Salary", "1000", "1200",
+        "1400", "1500", "2200", "2000", "2000", "1500", "1600", "1800",
+        "Age", "19", "24", "29", "24", "32", "41", "28", "30", "22",
+        "25"), .Dim = c(11L, 5L))
+    res <- ParseEnteredData(raw)
+    expect_equal(dim(res), c(10, 5))
+
+    raw <- matrix(c("", "Denmark", "Egypt", "Hong Kong", "Mexico",
+          "Timezone", "GMT+1", "GMT+2", "GMT+8", "GMT-6"), 5, 2)
+    res <- ParseEnteredData(raw)
+    expect_equal(dim(res), c(4, 1))
+})
+
