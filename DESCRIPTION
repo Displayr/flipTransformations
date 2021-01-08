@@ -18,13 +18,11 @@ Imports:
     flipTime (>= 1.2.2),
     flipU (>= 1.0.0),
     stats,
-    utils,
-    verbs
+    utils
 Remotes:
     Displayr/flipExampleData,
     Displayr/flipFormat,
     Displayr/flipTime,
-    Displayr/flipU,
-    Displayr/verbs
+    Displayr/flipU
 RoxygenNote: 7.1.1
 Encoding: UTF-8
