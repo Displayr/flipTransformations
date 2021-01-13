@@ -4,9 +4,9 @@ test_that("ParseText",
 {
     expect_equal(ParseText("1,200,111"), 1200111)
     expect_equal(ParseText("(1,200,111)"), -1200111)
-    expect_equal(ParseText("45%"), structure(0.45, statistic = "%"))
-    expect_equal(ParseText("-45%"), structure(-0.45, statistic = "%"))
-    expect_equal(ParseText("(45%)"), structure(-0.45, statistic = "%"))
+    expect_equal(ParseText("45%"), structure(45, statistic = "%"))
+    expect_equal(ParseText("-45%"), structure(-45, statistic = "%"))
+    expect_equal(ParseText("(45%)"), structure(-45, statistic = "%"))
     expect_equal(ParseText("0.07"), 0.07)
     expect_equal(ParseText("0..07"), "0..07")
     expect_equal(ParseText("0..07", type = "Numeric"), NA_real_)

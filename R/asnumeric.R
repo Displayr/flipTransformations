@@ -172,30 +172,23 @@ asNumericVector <- function(t)
 {
     v <- gsub(",", "", TrimWhitespace(as.vector(t)))
     v <- gsub("^\\$", "", v)
-    result <- suppressWarnings(as.numeric(v))
-
-    # Convert percentages
-    ind <- is.na(result) & grepl("%$", v)
-    if (any(ind))
-    {
-        result[ind] <- suppressWarnings(as.numeric(gsub("%$", "", v[ind]))) / 100
-        attr(result, "statistic") <- "%"
-    }
 
     # Convert parentheses to negative numbers
-    patt <- "^\\(\\$?[0-9.]+)$"
-    ind <- is.na(result) & (regexpr(patt, v) > 0)
-    if (any(ind))
-        result[ind] <- -1 * as.numeric(gsub("[()$]", "", v[ind]))
+    patt <- "^\\(\\$?[0-9.]+%?)$"
+    is.neg <- regexpr(patt, v) > 0
+    v <- gsub("[()$]", "", v)
 
-    # Convert parentheses to negative percentages
-    patt <- "^\\([0-9.]+%)$"
-    ind <- is.na(result) & (regexpr(patt, v) > 0)
-    if (any(ind))
-    {
-        result[ind] <- -0.01 * as.numeric(gsub("[()%]", "", v[ind]))
+    # Convert percentages
+    result <- suppressWarnings(as.numeric(v))
+    is.pct <- grepl("%$", v)
+    if (any(is.pct))
+        result[is.pct] <- suppressWarnings(as.numeric(gsub("%$", "", v[is.pct])))
+    if (any(is.pct) && all(is.na(result) | is.pct))
         attr(result, "statistic") <- "%"
-    }
+    else
+        result[is.pct] <- result[is.pct]/100
+
+    result[is.neg] <- -1 * result[is.neg]
     return(result)
 }
 
