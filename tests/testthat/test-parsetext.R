@@ -5,6 +5,8 @@ test_that("ParseText",
     expect_equal(ParseText("1,200,111"), 1200111)
     expect_equal(ParseText("(1,200,111)"), -1200111)
     expect_equal(ParseText("45%"), structure(45, statistic = "%"))
+    expect_equal(ParseText("45%", same.as = ParseText("0.15")), 0.45)
+    expect_equal(ParseText("0.45", same.as = ParseText("15%")), structure(45, statistic = "%"))
     expect_equal(ParseText("-45%"), structure(-45, statistic = "%"))
     expect_equal(ParseText("(45%)"), structure(-45, statistic = "%"))
     expect_equal(ParseText("0.07"), 0.07)

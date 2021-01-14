@@ -32,7 +32,19 @@ ParseText <- function(x, same.as = NULL, type = "Automatic")
     tmp.out <- NA
 
     if (type %in% c("automatic", "numeric"))
+    {
         tmp.out <- asNumericVector(x)
+        # if same.as is provided we try to get the format matching as well
+        if (!is.null(same.as))
+        {
+            if (isTRUE(grepl("%", attr(same.as, "statistic"))) &&
+                !isTRUE(grepl("%", attr(tmp.out, "statistic"))))
+                tmp.out <- structure(tmp.out * 100, statistic= "%")
+            else if (!isTRUE(grepl("%", attr(same.as, "statistic"))) &&
+                isTRUE(grepl("%", attr(tmp.out, "statistic"))))
+                tmp.out <- as.numeric(tmp.out)/100
+        }
+    }
     if (!is.na(tmp.out) || type %in% c("numeric"))
         return(tmp.out)
 
