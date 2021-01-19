@@ -175,7 +175,7 @@ asNumericVector <- function(t)
 
     # Convert parentheses to negative numbers
     patt <- "^\\(\\$?[0-9.]+%?)$"
-    is.neg <- regexpr(patt, v) > 0
+    is.neg <- grepl(patt, v)
     v <- gsub("[()$]", "", v)
 
     # Convert percentages

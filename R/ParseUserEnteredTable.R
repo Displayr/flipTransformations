@@ -168,14 +168,11 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     if (any(!isTextNumeric(m[-1,-1], allow.missing = TRUE)))
         row.names.given <- isQStatistic(m[1,1])
 
-    # If input data are percentages then we can do more tests
-    .is_pct <- function(x) { tmp <- asNumericVector(x); return(!is.null(attr(tmp, "statistic"))) }
-
     # Handling ambiguous row/column labels
     if (is.na(row.names.given) || is.na(col.names.given))
     {
         # If input data are percentages then we can do more tests
-        .is_pct <- function(x) { tmp <- asNumericVector(x); return(!is.null(attr(tmp, "statistic"))) }
+        .is_pct <- function(x) { tmp <- asNumericVector(x); return(isTRUE(grepl("%", attr(tmp, "statistic")))) }
         if (.is_pct(m[-1,-1]))
         {
             if (is.na(row.names.given))
