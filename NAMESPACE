@@ -3,6 +3,7 @@
 S3method(AsNumeric,data.frame)
 S3method(AsNumeric,default)
 S3method(AsNumeric,list)
+S3method(AsNumeric,logical)
 export(AdjustDataToReflectWeights)
 export(AsDataFrame)
 export(AsNumeric)
