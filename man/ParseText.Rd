@@ -11,11 +11,11 @@ ParseText(x, same.as = NULL, type = "Automatic")
 
 \item{same.as}{A variable of the same class as the desired output. If this is supplied then \code{class(same.as)} will be used instead of \code{type}.}
 
-\item{type}{The desired type of the output. If set to "Automatic" 
-(and \code{same.as} is not supplied) then \code{numeric}, \code{POSIXct}, 
+\item{type}{The desired type of the output. If set to "Automatic"
+(and \code{same.as} is not supplied) then \code{numeric}, \code{POSIXct},
 \code{Date}, and \code{character} will be tried sequentially. However,
 if a specific type is specified, then \code{NA} will be returned if
-it cannot be appropriately parsed. Note that \code{factors} will be 
+it cannot be appropriately parsed. Note that \code{factors} will be
 treated as characters}
 }
 \description{

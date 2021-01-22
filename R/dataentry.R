@@ -146,8 +146,6 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
             else
                 df[[i]] <- v # character
         }
-        if (any(grepl("%", data.attribute)) && !any(grepl("%", attr(df[[i]], "statistic"))))
-            df[[i]] <- df[[i]]/100
     }
     tmp.attr <- sapply(df, function(x){attr(x, "statistic")})
     if (all(sapply(tmp.attr, identical, y = tmp.attr[[1]])))

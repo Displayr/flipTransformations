@@ -334,12 +334,12 @@ test_that("Numeric names with statistic",
             "", "Score", "20", "30", "50"), .Dim = c(5L, 3L))
 
     expect_error(res <- ParseUserEnteredTable(raw), NA)
-    expect_equal(res[1:3], c(0.2, 0.3, 0.5))
+    expect_equal(res[1:3], c(0.2, 0.3, 0.5) * 100)
     expect_equal(attr(res, "statistic"), "%")
 
     expect_error(resDF <- ParseUserEnteredTable(raw, want.data.frame = TRUE,
                             want.col.names = TRUE, want.row.names = TRUE), NA)
-    expect_equal(resDF[1:3,1], c(0.2, 0.3, 0.5))
+    expect_equal(resDF[1:3,1], c(0.2, 0.3, 0.5) * 100)
     expect_equal(attr(resDF, "statistic"), "%")
 
     # check for redundancies
@@ -348,9 +348,9 @@ test_that("Numeric names with statistic",
         "north america", "europe", "oceania", "asia", "", "", "VAL",
         "12%", "19%", "", "-10%", "40%"), .Dim = c(8L, 5L))
     res2a <- ParseUserEnteredTable(raw2)
-    expect_equal(res2a[1:5], c(0.12, 0.19, NA, -0.10, 0.40))
+    expect_equal(res2a[1:5], c(0.12, 0.19, NA, -0.10, 0.40) * 100)
     res2b <- ParseUserEnteredTable(raw2, want.data.frame = TRUE)
-    expect_equal(res2b[1:5,2], c(0.12, 0.19, NA, -0.10, 0.40))
+    expect_equal(res2b[1:5,2], c(0.12, 0.19, NA, -0.10, 0.40) * 100)
 
 })
 
@@ -414,7 +414,7 @@ test_that("Parsing with the 1-1 entry",
         "Arnold's", "Ma's burgers", "Burger Chef", "Apr-Jun 15", "60",
         "2", "0", "21", "2", "11"), .Dim = c(7L, 2L))
     res <- ParseEnteredData(raw)
-    expect_equal(res, structure(c(0.6, 0.02, 0, 0.21, 0.02, 0.11),
+    expect_equal(res, structure(c(0.6, 0.02, 0, 0.21, 0.02, 0.11) * 100,
         .Dim = c(6L, 1L), .Dimnames = list(
         c("Other", "Burger Shack", "Nuovo Burger", "Arnold's", "Ma's burgers",
         "Burger Chef"), "Apr-Jun 15"), statistic = "% Column Share"))

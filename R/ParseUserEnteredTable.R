@@ -171,8 +171,17 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     # Handling ambiguous row/column labels
     if (is.na(row.names.given) || is.na(col.names.given))
     {
+        # If input data are percentages then we can do more tests
+        .is_pct <- function(x) { tmp <- asNumericVector(x); return(isTRUE(grepl("%", attr(tmp, "statistic")))) }
+        if (.is_pct(m[-1,-1]))
+        {
+            if (is.na(row.names.given))
+                row.names.given <- !.is_pct(m[-1,1])
+            if (is.na(col.names.given))
+                col.names.given <- !.is_pct(m[1,-1])
+        }
         # if either is not a label then the 1,1 position cannot be a statistic
-        if (isTRUE(!row.names.given))
+        else if (isTRUE(!row.names.given))
             col.names.given <- isTRUE(isPossibleLabel(m[1,]))
         else if (isTRUE(!col.names.given))
             row.names.given <- isTRUE(isPossibleLabel(m[,1]))
@@ -228,8 +237,6 @@ parseAsVectorOrMatrix <- function(m, warn = FALSE)
     else
         out <- asNumeric(m, n.row, n.col)
 
-    if (any(grepl("%", data.attribute)) && !isTRUE(attr(out, "statistic") == "%"))
-        out <- out/100
     if (!is.null(data.attribute))
         attr(out, "statistic") <- data.attribute
     if (warn && is.character(out))

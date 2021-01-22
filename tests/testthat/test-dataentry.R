@@ -155,8 +155,8 @@ test_that("numeric matrix with percentages", {
     expect_error(res2 <- ParseEnteredData(datW2), NA)
     expect_error(res3 <- ParseEnteredData(datW3), NA)
     expect_equal(attr(res1, "statistic"), "%")
-    expect_equal(res2[1,1], 0.52)
-    expect_equal(res3[1,1], 0.52)
+    expect_equal(res2[1,1], 52)
+    expect_equal(res3[1,1], 52)
 })
 
 test_that("numeric matrix with commas", {

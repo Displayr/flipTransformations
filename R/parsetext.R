@@ -5,11 +5,11 @@
 #' entries separated by a comma (or other deliminator) is expected.
 #' @param x The input character string to be converted.
 #' @param same.as A variable of the same class as the desired output. If this is supplied then \code{class(same.as)} will be used instead of \code{type}.
-#' @param type The desired type of the output. If set to "Automatic" 
-#' (and \code{same.as} is not supplied) then \code{numeric}, \code{POSIXct}, 
+#' @param type The desired type of the output. If set to "Automatic"
+#' (and \code{same.as} is not supplied) then \code{numeric}, \code{POSIXct},
 #' \code{Date}, and \code{character} will be tried sequentially. However,
 #' if a specific type is specified, then \code{NA} will be returned if
-#' it cannot be appropriately parsed. Note that \code{factors} will be 
+#' it cannot be appropriately parsed. Note that \code{factors} will be
 #' treated as characters
 #' @importFrom flipTime AsDateTime AsDate
 #' @export
@@ -30,12 +30,24 @@ ParseText <- function(x, same.as = NULL, type = "Automatic")
     }
     type <- tolower(type)
     tmp.out <- NA
-    
+
     if (type %in% c("automatic", "numeric"))
+    {
         tmp.out <- asNumericVector(x)
+        # if same.as is provided we try to get the format matching as well
+        if (!is.null(same.as))
+        {
+            if (isTRUE(grepl("%", attr(same.as, "statistic"))) &&
+                !isTRUE(grepl("%", attr(tmp.out, "statistic"))))
+                tmp.out <- structure(tmp.out * 100, statistic= "%")
+            else if (!isTRUE(grepl("%", attr(same.as, "statistic"))) &&
+                isTRUE(grepl("%", attr(tmp.out, "statistic"))))
+                tmp.out <- as.numeric(tmp.out)/100
+        }
+    }
     if (!is.na(tmp.out) || type %in% c("numeric"))
         return(tmp.out)
-   
+
     if (type %in% c("automatic", "posixct", "posixt"))
         tmp.out <- AsDateTime(x, on.parse.failure = "silent")
     if (!is.na(tmp.out) || type %in% c("posixct", "posixt"))
