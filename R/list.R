@@ -46,6 +46,8 @@ asNumericList <- function(x, binary = TRUE, remove.first = FALSE, return.data.fr
                 attr(result, "Unclassed") <- NULL
             }
         }
+        if (is.logical(variable))
+            variable <- AsNumeric(variable)
         attr(variable, "InLoop") <- NULL
         if (return.data.frame)
         {

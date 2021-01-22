@@ -1,4 +1,4 @@
-#' Coerce categorical data to numeric
+#' Coerce categorical data to numeric or logical to integer
 #'
 #' Coerces a \code{\link{data.frame}} or \code{\link{vector}} that may
 #' contain factors into a \code{\link{vector}} or
@@ -50,7 +50,6 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
 {
     if (is.numeric(x))
         return(x)
-
     if (is.character(x))
     {
         x.tmp <- AsDateTime(x, on.parse.failure = "silent")
@@ -77,6 +76,17 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
     if (length(x) == 1 && length(levels(x)) == 1) # avoid errors with factor of length 1
         return(1)
     FactorToNumeric(x, binary & !is.ordered(x), name = name, remove.first = remove.first)
+}
+
+#' @export
+AsNumeric.logical <- function(x, binary = TRUE, name = NULL, remove.first = FALSE)
+{
+    # as.integer is the fastest way to convert but loses attributes
+    # multiplying by 1 retains attributes
+    if (is.vector(x))
+        return(as.integer(x))
+    else
+        return(x * 1L)
 }
 
 #' @export

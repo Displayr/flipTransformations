@@ -103,6 +103,26 @@ test_that("AsNumeric",
               expect_warning(output <- AsNumeric(cc, binary = FALSE),
                              warn.msg.without.names, fixed = TRUE)
               expect_equal(attr(output, "label"), "lbl")
+              # Logical inputs
+              expect_equal(AsNumeric(c(TRUE, FALSE)), 1:0)
+              ## Attributes survive
+              expect_equal(AsNumeric(structure(c(TRUE, FALSE), foo = "bar")),
+                                     structure(1:0, foo = "bar"))
+              ## Array/matrix ok
+              expect_equal(AsNumeric(structure(matrix(c(TRUE, FALSE), nrow = 2), foo = "bar")),
+                           structure(matrix(1:0, nrow = 2), foo = "bar"))
+              # Data frame with logical element is coerced to integer
+              df.in <- structure(list(x = structure(c(TRUE, FALSE), foo = "bar"),
+                                      y = 1:2,
+                                      z = structure(11:12, bar = "baz")),
+                                 row.names = 1:2,
+                                 class = "data.frame")
+              df.out <- structure(list(x = structure(1:0, foo = "bar", name = "x"),
+                                       y = structure(1:2, name = "y"),
+                                       z = structure(11:12, bar = "baz", name = "z")),
+                                  row.names = c("1", "2"),
+                                  class = "data.frame")
+              expect_equal(AsNumeric(df.in), df.out)
           })
 
 df <- data.frame(a = 1:3, b = c("x", "y", "z"), c = 99:101)
