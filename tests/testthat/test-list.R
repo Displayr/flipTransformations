@@ -72,6 +72,11 @@ test_that("AsNumeric, doesn't mangle non-categorical VS; DS-2906'",
     expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$numeric.multi))
     expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$numeric.grid))
     expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$binary.multi))
+    expect_false(flipTransformations:::isCategoricalMultiVariableSet(vs.env$binary.multi.compact))
+    expect_equivalent(flipTransformations::AsNumeric(vs.env$binary.multi.compact, binary = FALSE),
+                      vs.env$binary.multi.compact)
+    expect_equivalent(flipTransformations::AsNumeric(vs.env$binary.multi.compact, binary = TRUE),
+                      vs.env$binary.multi.compact)
     bg <- vs.env$binary.grid
     bg.an <- AsNumeric(vs.env$binary.grid, FALSE)
     expect_equal(bg.an, bg, check.attributes = FALSE)

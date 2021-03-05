@@ -147,7 +147,7 @@ isVariableSet <- function(x)
 
 isCategoricalMultiVariableSet <- function(x)
 {
-    non.cat.qtypes <- c("PickAnyGrid", "PickAny", "NumberMulti", "NumberGrid")
+    non.cat.qtypes <- c("PickAnyGrid", "PickAny", "PickAnyCompact", "NumberMulti", "NumberGrid")
     qt <- attr(x, "questiontype")
     if (is.null(qt))
         return(FALSE)
