@@ -1,0 +1,688 @@
+#' Create factor variables from numeric variables using one of a variety of
+#' methods.
+#' 
+#' @param input.data The \code{\link{data.frame}} or \code{\link{vector}} 
+#'      containing the data to be categorized. Data should be numeric.
+#' @param method A string describing which method is to be used to categorize
+#'      the data. Options are \code{tidy.intervals}, \code{percentiles},
+#'      \code{equal.width}, and \code{custom}.
+#' @param num.categories An integer sepcifying the number of categories for
+#'      the new factor. This does not apply for \code{percentiles} or for
+#'      \code{Custom} because in those cases the number of categories is
+#'      imlpied by the \code{percents} and \code{custom.breaks} argumens
+#'      respectively.
+#' @param right A boolean value specifying that when determining breaks
+#'      in the data, the close side of the inerval should be on the right 
+#'      (i.e on the larger end of the interval). This is ignored for 
+#'      \code{tidy.intervals}, where both TRUE and FALSE values are tried
+#'      when searching for a solution.
+#' @param round.input.data A boolean value specifying whether the input
+#'      data should be rounded before categorization.
+#' @param decimals An integer which determines to how many decimals the
+#       data should be rounded when \code{round.input.data} is \code{TRUE}.
+#' @param label.decimals An integer value which determines how many
+#'      decimal places should be included in formatted labels.
+#' @param open.ends A boolean value which determines if labels at the upper
+#'      and lower ends of the range should be open-ended or should contain
+#'      both end points of the interval. E.g. if \code{TRUE} then interval
+#'      (0, 17] would be "Less than 18", otherwise it would be "0 to 17".
+#' @param label.style A character indicating the style of labels to use
+#'      for the new factor levels. Options are \code{tidy.labels}, 
+#'      \code{inequality.notation}, \code{interval.notation}, and
+#'      \code{percentiles}, with the latter option only being applicable
+#'      if \code{method} is also \code{percentiles}.
+#' @param number.prefix A character to be appended before numbers in new
+#'      factor labels.
+#' @param number.suffix A character to be after before numbers in new
+#'      factor labels.
+#' @param open.bottom.string A character indicating text to be placed at the
+#'      beginning of open-ended labels at the start of the range for open
+#'      intervals.
+#' @param closed.bottom.string A character indicating text to be placed at the
+#'      end of open-ended labels at the start of the range for closed
+#'      intervals.
+#' @param open.top.string A character indicating text to be placed at the
+#'      beginning of open-ended labels at the end of the range for open
+#'      intervals.
+#' @param closed.top.string A character indicating text to be placed at the
+#'      end of open-ended labels at the end of the range for closed
+#'      intervals.
+#' @param equal.intervals.start A numeric value indicating the start of the
+#'      range when using \code{method} of \code{equal.width}.
+#' @param equal.intervals.end A numeric value indicating the end of the
+#'      range when using \code{method} of \code{equal.width}.
+#' @param custom.breaks A character containing a comma-seprated list of 
+#'      numeric values to be used as custom break points when the 
+#'      \code{method} is \code{Custom}.
+#' @param percents A single numeric value, or a character containing a comma
+#'      -separated list of numeric values to be used when the \code{method}
+#'      of \code{percentiles} is used. Values should be between 0 and 100.
+#' @param quantile.type An interger between 1 and 9 to be passed to
+#'      \code{quantile} which determines the algorithm for creating quantiles.
+#'
+#'
+#' @importFrom flipU ConvertCommaSeparatedStringToVector
+#' @importFrom plyr mapvalues
+#' @importFrom stats var quantile
+#' @export
+NiceNumericCuts <- function(input.data,
+                           method = "tidy.intervals",
+                           num.categories = 5,
+                           right = TRUE,
+                           round.input.data = FALSE,
+                           decimals = 1,
+                           label.decimals = 1,
+                           open.ends = TRUE,
+                           label.style = "tidy.labels",
+                           number.prefix = "",
+                           number.suffix = "",
+                           open.bottom.string = "Less than ",
+                           closed.bottom.string = " and below",
+                           open.top.string = "More than ",
+                           closed.top.string = " and over",
+                           equal.intervals.start = 0,
+                           equal.intervals.end = 100,
+                           custom.breaks = NULL,
+                           percents = NULL,
+                           quantile.type = 7 #R default 
+                           ) { 
+    equal.intervals.start = as.numeric(equal.intervals.start)
+    equal.intervals.end = as.numeric(equal.intervals.end)
+
+    if (method == "custom" && is.null(custom.breaks)) {
+        stop("No custom breakpoints have been entered for the custom intervals.")
+    }
+
+    if (method == "percentile" && is.null(custom.breaks)) {
+        stop("No percentages have been entered for the percentiles.")
+    }
+
+    # # Convert factors if user wants to use numbers present in labels
+    # get.data.as.numeric <- function(x,
+    #                                 factors.use.labels = TRUE,
+    #                                 grouping.mark = ",", 
+    #                                 decimals.mark = "\\." ) {
+    #     if (is.factor(x)) {
+    #         if (factors.use.labels) {
+    #             new.values = factorLabelsAsNumeric(as.character(levels(x)), 
+    #                                                grouping.mark = grouping.mark, 
+    #                                                decimals.mark = decimals.mark)
+    #             x.raw = as.numeric(as.character(mapvalues(x, from = levels(x), to = new.values)))
+    #         } else {
+    #             q.levels = attr(x, "levels")
+    #             q.source.values = attr(x, "sourcevalues")
+    #             if (!is.null(q.levels) && !is.null(q.source.values)) {
+    #                 if (length(q.levels) < length(q.source.values)) {
+    #                     warning("Some categories in ", attr(x, "label"), 
+    #                         " have been merged and the average value for the merged categories has been used. Consider reverting any merged categories.")
+    #                 }
+    #             }
+    #             x.raw = AsNumeric(x, binary = FALSE)
+    #         }
+    #     } else {
+    #         x.raw = x
+    #     }
+    #     return(x.raw)
+    # }
+
+    # input.data = as.data.frame(lapply(input.data, 
+    #                                   FUN = get.data.as.numeric,
+    #                                   factors.use.labels = factors.use.labels,
+    #                                   grouping.mark = grouping.mark, 
+    #                                   decimals.mark = decimals.mark))
+    input.data = as.data.frame(input.data)
+    classes = lapply(input.data, FUN = class)
+    numerics = vapply(classes, FUN = function (x) return("numeric" %in% x), FUN.VALUE = logical(1))
+    if (!all(numerics)) {
+        stop("Nice numeric cuts requires numeric input data.")
+    }
+
+    # Obtain the full set of raw values from the inputs
+    raw.data = as.vector(as.matrix(input.data))
+    raw.data = raw.data[!is.na(raw.data)]
+
+    # User may find tidier intervals if they round first
+    if (round.input.data) {
+        raw.data = round(raw.data, decimals)
+        input.data = as.data.frame(lapply(input.data, 
+                                          FUN = round, 
+                                          digits = decimals))
+    }
+
+    # Data which are all integers are handled differently later
+    all.integers = all(raw.data %% 1 == 0)
+    min.val = min(raw.data)
+    max.val = max(raw.data)
+    uniques = unique(raw.data)
+    n.unique = length(uniques)
+
+    
+
+    # Handle each of the allowed methods for forming categories
+
+    if (method == "percentiles") {
+        percents = ConvertCommaSeparatedStringToVector(percents)
+        percents = as.numeric(percents)
+        if (any(is.na(percents))) {
+            stop("There is a problem with the entries in the Percentages field. ",
+                 "Please enter a single number or a comma-seperated list of numbers.")
+        }
+        if (length(percents) == 1) {
+            if (100 %% percents != 0) {
+                stop("The entered percentage ", 
+                     percents, 
+                     " does not divide evenly into 100%. ",
+                     "Try setting \'Number of categories\' to 5, 10, 20, etc")
+            } else {
+                percents = seq(0, 100, by = percents)
+            } 
+        } else {
+            percents = c(0, percents, 100)
+            percents = sort(percents)
+        }
+        percents = unique(percents)
+        percents = percents / 100
+        qq = quantile(raw.data, probs = percents, 
+                      na.rm = TRUE, include.lowest = TRUE, 
+                      type = quantile.type)
+        
+        if (length(which(duplicated(qq))) > 0) {
+            warning("Some percentiles are empty in the range you have specified and will not be shown");
+        }
+        
+        # Remove duplicate cut points
+        qq = qq[!duplicated(qq, fromLast = TRUE)]
+
+        if (label.style == "percentiles") {
+            lower.labels = names(qq)[-length(qq)]
+            upper.labels = names(qq)[-1]
+
+            # Percentiles always start at 0%
+            # and end at 100%
+            lower.labels[1] = "0%"
+            upper.labels[length(upper.labels)] != "100%"
+
+            # Paste inequalities into labels depending on whether the closed interval
+            # boundary is on the left or the right.
+            if (right) {
+                lower.labels[-1] = paste0("> ", lower.labels[-1])
+            } else {
+                upper.labels[-length(upper.labels)] = paste0("< ", upper.labels[-length(upper.labels)])
+            }
+
+
+            percentile.labels = paste0(lower.labels, " to ", upper.labels)
+            new.factors = lapply(input.data, 
+                                 FUN = cut, 
+                                 breaks = qq, 
+                                 right = right, 
+                                 include.lowest = TRUE, 
+                                 labels = percentile.labels)
+        } else {
+            new.factors = lapply(input.data, 
+                                 FUN = cut, 
+                                 breaks = qq, 
+                                 right = right, 
+                                 include.lowest = TRUE, 
+                                 labels = NULL, 
+                                 dig.lab = 4)
+            new.labels = tidyIntervalLabels(levels(new.factors[[1]]),
+                                            raw.data = raw.data, 
+                                            decimals = label.decimals, 
+                                            style = label.style,
+                                            integer.data = all.integers,
+                                            open.ended = open.ends, 
+                                            prefix = number.prefix, 
+                                            suffix = number.suffix,
+                                            open.bottom.string = open.bottom.string,
+                                            closed.bottom.string = closed.bottom.string,
+                                            open.top.string = open.top.string,
+                                            closed.top.string = closed.top.string)
+            new.factors = lapply(new.factors, 
+                                 FUN = mapvalues, 
+                                 from = levels(new.factors[[1]]), 
+                                 to = new.labels)
+        }
+        new.factors = as.data.frame(new.factors)    
+
+    } else {
+        if (method == "equal.width") {
+            if (min.val < equal.intervals.start) {
+                n.lower = length(which(raw.data < equal.intervals.start))
+                warning(n.lower, " values in the data are less than the start point of ", equal.intervals.start, 
+                ". These will be assigned a missing value. Consider setting the Start point setting to ", floor(min.val))
+            }
+            if (max.val > equal.intervals.end) {
+                n.higher = length(which(raw.data > equal.intervals.end))
+                warning(n.higher, " values in the data are greater than the end point of ", equal.intervals.end, 
+                ". These will be assigned a missing value. Consider setting the End point setting to ", ceiling(max.val))
+            } 
+            start = equal.intervals.start
+            end = equal.intervals.end
+            if (nchar(start) == 0) { 
+                start = min.val
+            } else {
+                start = as.numeric(start)
+            }
+
+            if (nchar(end) == 0) {
+                end = max.val
+            } else {
+                end = as.numeric(end)
+            }
+            
+            cuts = seq(start, end, length.out = num.categories + 1)
+        } else if (method == "custom") {
+            if (is.character(custom.breaks)) {
+                cuts = as.numeric(ConvertCommaSeparatedStringToVector(custom.breaks))    
+            } else {
+                cuts = custom.breaks
+            }
+            if (any(is.na(cuts))) {
+                stop("Some of the break points could not be interpreted as numbers. ",
+                    "Please ensure Category Boundaries contains a comma-seperated list of numbers.")
+            }
+            start = min(cuts)
+            end = max(cuts)
+            if (min.val < start) {
+                n.lower = length(which(raw.data < start))
+                warning(n.lower, " values in the data are less than the start point of ", start, 
+                ". These will be assigned a missing value. Consider setting the samllest value in \'Break points\' to ", floor(min.val))
+            }
+            if (max.val > end) {
+                n.higher = length(which(raw.data > end))
+                warning(n.higher, " values in the data are greater than the end point of ", end, 
+                ". These will be assigned a missing value. Consider setting the largest value in \'Break points\' to ", ceiling(max.val))
+            } 
+        } else if (method == "tidy.intervals") {
+
+            #Calculate 0.05 and 0.95 percentiles
+            quants<-quantile(raw.data, probs = c(0.045, 0.955))
+            #Subset according to the two percentiles
+            if (n.unique > 20) {
+                middle.data <- raw.data[raw.data > quants[1] & raw.data < quants[2]]
+            } else {
+                middle.data <- raw.data
+            }
+
+            # The "pretty" function alone is not guaranteed to find a solution which
+            # has the desired number of categories, and the function doesn't care
+            # if it produces intervals with small numbers of observations.
+
+            # Loop through different results from the "pretty" function to find
+            # a good solution. For each "pretty" result we merge small categories
+            # until the desired number of categories is reached. The best solution
+            # is the one which most closely matches the desired number of categories
+            # (hopefully exactly) and which features categories whose proportions
+            # have the lowest variance (i.e. are the most evenly distributed).
+
+            # Here we try different values for:
+            # - n: The number of intervals requested from "pretty". Asking for more
+            #      intervals results in smaller intervals, the smallest of which are
+            #      then merged with one another.
+            # - hu: The "high.us.bias" parameter. Smaller values of this parameter
+            #       result in solutions from "pretty" which are allowed to be smaller
+            #       in width. High values tend to only produce wider categories, and 
+            #       often fewer in number than that requested by the user.
+            # - test.right: Values for the "right" parameter for the "cut" function.
+            #               Given a set of cuts, setting this parameter TRUE or FALSE
+            #               can results in more evenly-distributed categories, so we
+            #               try both. Also, this allows us to remove the choice from
+            #               the user and just give them the best result.
+
+            # Generate trials
+            trials = list()
+            j = 1
+            for (n in ceiling(c(num.categories, num.categories*1.5, num.categories*2))) {
+                for (hu in c(0.5, 1, 1.5)) {
+                    for (test.right in c(TRUE, FALSE)) {
+                        cuts = pretty(middle.data, n = n, min.n = n, high.u.bias = hu)
+                        
+                        # Pad out the "pretty" intervals with intervals of equal width
+                        # until we have the whole range covered. Remember, the pretty
+                        # solution is only evaluated with the most outlying values
+                        # removed.
+                        interval = cuts[2] - cuts[1]
+                        min.diff = cuts[1] - min.val
+                        extra.intervals.below = ceiling(min.diff / interval)
+                        max.diff = max.val - cuts[length(cuts)]
+                        extra.intervals.above = ceiling(max.diff / interval)
+                        cuts = c(cuts[1] - interval * 1:extra.intervals.below, cuts) #Pad below
+                        cuts = c(cuts, cuts[length(cuts)] + interval * 1:extra.intervals.above) #Pad above
+                        cuts = sort(cuts)
+                        if (min(cuts) < 0 && min.val >= 0) { 
+                            # Don't go lower than zero if the data are all > 0
+                            cuts = cuts[cuts >= 0]
+                            cuts = c(0, cuts)                
+                        }
+                        cuts = unique(cuts)
+                        cuts.data = reduceBreaksToTargetNumber(raw.data, breaks = cuts, target.levels = num.categories, 
+                                                right = test.right)
+                        trials[[j]] = list("cuts" = cuts.data$cuts, 
+                                           "counts" = cuts.data$counts, 
+                                           "variance" = var(cuts.data$counts/sum(cuts.data$counts)), 
+                                           "n.cats" = length(cuts.data$counts), 
+                                           "right" = test.right)
+                        j = j + 1
+                    }
+                }
+            }
+
+            # Search trials to pick the best one
+            best.solution = 1
+            target.num = num.categories
+            lowest.diff = 100
+            diffs = vapply(trials, FUN = function(x) { return(abs(x$n.cat - target.num))}, FUN.VALUE = numeric(1))
+            mindiff = min(diffs)
+            candidates = diffs == min(diffs)
+            if (length(which(candidates)) == 1) {
+                best.solution = which(candidates)
+            } else {
+                lowest.variance = 100
+                for (j in which(candidates)) {
+                    if (trials[[j]]$variance < lowest.variance) {
+                        best.solution = j
+                        lowest.variance = trials[[j]]$variance
+                    }
+                }
+            }
+
+            cuts = trials[[best.solution]]$cuts
+            right = trials[[best.solution]]$right
+        } else {
+            stop("Method ", method, " is not recognized. Use one of: tidy.intervals, equal.width, percentiles, or custom.")
+        }
+        new.factors = as.data.frame(lapply(input.data, 
+                                           FUN = cut, 
+                                           breaks = cuts, 
+                                           right = right, 
+                                           include.lowest = TRUE, 
+                                           labels = NULL, 
+                                           dig.lab = 4))
+        new.labels = tidyIntervalLabels(levels(new.factors[[1]]),
+                                            raw.data = raw.data, 
+                                            decimals = label.decimals, 
+                                            style = label.style, 
+                                            integer.data = all.integers,
+                                            open.ended = open.ends,
+                                            prefix = number.prefix, 
+                                            suffix = number.suffix,
+                                            open.bottom.string = open.bottom.string,
+                                            closed.bottom.string = closed.bottom.string,
+                                            open.top.string = open.top.string,
+                                            closed.top.string = closed.top.string)                                        
+        new.factors = as.data.frame(lapply(new.factors, 
+                                           FUN = mapvalues, 
+                                           from = levels(new.factors[[1]]), 
+                                           to = new.labels))
+    }
+    return(new.factors)
+}
+
+# Merge breaks by combining the smallest level with the smallest level to either side
+# until the target number of levels remains
+reduceBreaksToTargetNumber <- function(raw.data, breaks, target.levels = 3, right = TRUE) {
+
+    # Compute the initial distribution of responses
+    new.factor = cut(raw.data, breaks = breaks, right = right, include.lowest = TRUE)
+    counts = table(new.factor)
+
+    # Does anything need to be merged?
+    # If min number not set, just check number of target levels
+    if (length(counts) <= target.levels) {
+        return(list("cuts" = breaks, "counts" = counts))
+    }
+
+    while (length(counts) > target.levels) {
+        smallest.category = names(counts[(counts == min(counts))])[1]
+        ind = which(names(counts) == smallest.category)
+        if(ind == length(counts)) {
+            # At the upper end, always merging left
+            counts[ind-1] = counts[ind-1] + counts[ind]
+            counts = counts[-ind]
+            breaks = breaks[-ind]
+        } else if (ind == 1) {
+            # At the bottom end, always merging right
+            counts[2] = counts[2] + counts[1]
+            counts = counts[-1]
+            breaks = breaks[-2]
+        } else {
+            # In the middle, merge into the smaller of the
+            # two surrounding categories
+            merge.above = counts[ind + 1] < counts[ind - 1]
+            if (merge.above) {
+                counts[ind+1] = counts[ind+1] + counts[ind]
+                breaks = breaks[-(ind+1)]
+                counts = counts[-ind]
+            } else {
+                counts[ind-1] = counts[ind-1] + counts[ind]
+                breaks = breaks[-ind]
+                counts = counts[-ind]
+            }
+        }
+    }
+    return(list("cuts" = breaks, "counts" = counts))
+}
+
+
+# Loop through a given set of interval labels
+# produced by the cut() function,
+# of the form [x , y], (x, y], [x,y), (x,y)
+# extract the numbers and create new labels
+# based on requested style.
+tidyIntervalLabels <- function(labels, 
+                               raw.data, 
+                               decimals = NULL, 
+                               style = "tidy.labels", 
+                               integer.data = FALSE, 
+                               prefix = "", 
+                               suffix = "", 
+                               open.ended = FALSE,
+                               open.bottom.string = "Less than ",
+                               closed.bottom.string = " and below",
+                               open.top.string = "More than ",
+                               closed.top.string = " and over") {
+    new.labels = labels
+    for (k in 1:length(labels)) {
+        is.first = k == 1
+        is.last = k == length(labels)
+        previous.val = NULL
+        next.val = NULL
+        if(!is.first) {
+            previous.val = getValuesInInterval(labels[k-1])[2]
+        }
+        if(!is.last) {
+            next.val =  getValuesInInterval(labels[k+1])[1]
+        }
+
+        new.labels[k] = tidyIntervalLabel(labels[k], 
+                                          raw.data = raw.data,
+                                          decimals = decimals,
+                                          style = style,
+                                          integer.data = integer.data,
+                                          prefix = prefix,
+                                          suffix = suffix,
+                                          open.ended = open.ended,
+                                          first.label = is.first,
+                                          last.label = is.last,
+                                          open.bottom.string = open.bottom.string,
+                                          closed.bottom.string = closed.bottom.string,
+                                          open.top.string = open.top.string,
+                                          closed.top.string = closed.top.string,
+                                          previous.val = previous.val,
+                                          next.val = next.val)
+    }
+    return(new.labels)
+}
+
+# Extract upper and lower values from interval labels
+# produced by the cut() function (see above).
+getValuesInInterval <- function(label) {
+    bounds = strsplit(label, ",")[[1]]
+    bounds = as.numeric(gsub("\\(|\\)|\\[|\\]", "", bounds))
+    return(bounds)
+}
+
+# Tidy an individual interval label accorsing to the 
+# desired style, taking into account whether the
+# label is first or last in the sequence, and which
+# values directly precede or follow this label.
+tidyIntervalLabel <- function(label, 
+                              raw.data, 
+                              decimals = 2, 
+                              style = "tidy.labels", 
+                              integer.data = FALSE, 
+                              prefix = "", 
+                              suffix = "", 
+                              open.ended = FALSE,
+                              first.label = FALSE,
+                              last.label = FALSE,
+                              open.bottom.string = "Less than ",
+                              closed.bottom.string = " and below",
+                              open.top.string = "More than ",
+                              closed.top.string = " and over",
+                              previous.val = NULL,
+                              next.val = NULL) {
+
+    raw.data = sort(raw.data)
+
+    # Determine upper and lower boundary of interval
+    bounds = strsplit(label, ",")[[1]]
+    lower = bounds[1]
+    lower.num = as.numeric(gsub("(", "", gsub("[", "", lower, fixed = TRUE), fixed = TRUE))
+    upper = bounds[2]
+    upper.num = as.numeric(gsub("]", "", gsub(")", "", upper, fixed = TRUE), fixed = TRUE))
+
+    # Determine whether boundar intervals are open or closed
+    upper.is.open = grepl(")", upper, fixed = TRUE)
+    lower.is.open = grepl("(", lower, fixed = TRUE)  
+
+    # Tidy up data values when using
+    # "tidy.labels" option including
+    # special handling for integer data
+    # and identifying next largest / next smallest
+    # value in data for open intervals
+    if (style == "tidy.labels") {
+        if (lower.is.open) {
+            if (integer.data) {
+                lower.num = floor(lower.num) + 1
+                lower.is.open = FALSE
+            } else {
+                if (last.label && open.ended) {
+                    lower.num = previous.val
+                } else {
+                    lower.num = min(raw.data[raw.data > lower.num])
+                       
+                } 
+            }     
+        }
+        if (upper.is.open) {
+            if (integer.data) {
+                upper.num = floor(upper.num) - 1
+                upper.is.open = FALSE
+            } else {
+                if (first.label && open.ended) {
+                    upper.num = next.val
+                } else {
+                    upper.num = max(raw.data[raw.data < upper.num])
+                }      
+            }
+        }
+    }
+
+    # Format desired number of decimal places
+    lower.num = formatC(lower.num, digits = decimals, format = "f") 
+    upper.num = formatC(upper.num, digits = decimals, format = "f")
+
+
+    # Add prefix and suffix
+    lower.string = paste0(prefix, lower.num, suffix)
+    upper.string = paste0(prefix, upper.num, suffix)
+
+    # Paste values as labels based on desired style
+    if (style == "tidy.labels") {
+        if (upper.num == lower.num) {
+            new.label = upper.string
+        } else if (first.label && open.ended) {
+            new.label = ifelse(upper.is.open, 
+                        paste0(open.bottom.string, upper.string), 
+                        paste0(upper.string, closed.bottom.string))
+        } else if (last.label && open.ended) {
+            new.label = ifelse(lower.is.open, 
+                               paste0(open.top.string, lower.string), 
+                               paste0(lower.string, closed.top.string))
+        } else {
+            new.label = paste0(lower.string, " to ", upper.string)
+        }
+            
+    } else if (style == "inequality.notation") {
+        # Only add inequality signs when boundary is open
+        # except for first and last label if user wants
+        # open-ended labels
+        lower.ineq = ifelse(lower.is.open, "> ", "")
+        upper.ineq = ifelse(upper.is.open, "< ", "")
+        if (first.label && open.ended) {
+            upper.ineq = ifelse(upper.is.open, "< ", "<=")
+            new.label = paste0(upper.ineq, upper.string)
+        } else if (last.label && open.ended) {
+            lower.ineq = ifelse(lower.is.open, "> ", ">=")
+            new.label = paste0(lower.ineq, lower.string)
+        } else {
+            new.label = ifelse(upper.num == lower.num, 
+                               lower.string, 
+                               paste0(lower.ineq, lower.string, " to ", upper.ineq, upper.string))
+        }
+    } else if (style == "interval.notation") {
+        lower.symbol = ifelse(lower.is.open, "(", "[")
+        upper.symbol = ifelse(upper.is.open, ")", "]")
+        new.label = ifelse(upper.num == lower.num, 
+                           paste0("[", lower.string, "]"), 
+                           paste0(lower.symbol, lower.string, "," , 
+                           upper.string, upper.symbol))
+    } else {
+        stop("Label style ", style, "not recognized. Use one of: tidy.labels, inequality.notation, interval.notation")
+    }
+
+    return(new.label)
+
+}
+
+
+
+
+
+# #' @importFrom Hmisc escapeRegex
+# factorLabelsAsNumeric <- function(labels, grouping.mark = ",", decimals.mark = ".") {
+#     grouping.mark = escapeRegex(grouping.mark)
+#     decimals.mark = escapeRegex(decimals.mark)
+#     extract.numbers.from.label <- function (x, grouping.mark = ",", decimals.mark = "\\.") {
+#         x = gsub(grouping.mark, "", x)
+#         x = gsub(decimals.mark, "\\.", x)
+#         return(as.numeric(unlist(regmatches(x, gregexpr("(?>-)*[[:digit:]]+\\.*[[:digit:]]*", x, perl=TRUE)))))
+#     }
+#     values.in.labels = lapply(labels, FUN = extract.numbers.from.label, grouping.mark = grouping.mark)
+
+#     # Check what we can do with these
+#     lens = unlist(lapply(values.in.labels, FUN = length))
+#     if (any(lens == 0)) {
+#         offending.labels = labels[lens == 0]
+#         if (length(offending.labels) > 3) offending.labels = offending.labels[1:3]
+#         warning("Some category labels do not appear to contain numbers. These categories will be assigned a value of NA. These labels include: ", paste0(offending.labels, collapse = ", "))
+#     }
+
+#     if (any(lens > 1)) {
+#         offending.labels = labels[lens > 1]
+#         if (length(offending.labels) > 3) offending.labels = offending.labels[1:3]
+#         warning("Some category labels appear to contain more than one number, and additional numbers cannot be used to form numeric groupings. Only the first number in each has been used. These labels include: ", paste0(offending.labels, collapse = ", "))
+#     }
+
+#     get.first.number = function (values) {
+#         if (length(values) == 0) {
+#             return(NA) 
+#         } else {
+#             return(values[1])
+#         }
+#     }
+#     return(vapply(values.in.labels, FUN = get.first.number, FUN.VALUE = numeric(1)))
+
+# }
