@@ -3,6 +3,8 @@ context("NiceNumericCuts")
 #Data Files
 data(phone, package = "flipExampleData")
 data(burger.brand.tracking, package = "flipExampleData")
+data(ilock, package = "flipExampleData")
+
 
 # Test cases
 # Phone count of SMS messages sent
@@ -22,26 +24,90 @@ beta.left = round(rbeta(725, 5, 1) * 50)
 # Number of times dine in and burger shack
 sparse.integers = burger.brand.tracking$nQ5c_1_1
 
+# Categories with single values
+# Income relabeled with single values
+fake.income = ilock$Q7
+levels(fake.income) = c("$1,000",
+                        "$1,000",
+                        "$3,000",
+                        "$4,000",
+                        "$5,000",
+                        "$6,000",
+                        "$7,000",
+                        "$8,000",
+                        "$10,000",
+                        "$12,500",
+                        "$15,000",
+                        "$17,500",
+                        "$20,000",
+                        "$22,500",
+                        "$25,000",
+                        "$30,000",
+                        "$35,000",
+                        "$40,000",
+                        "$50,000",
+                        "$60,000",
+                        "$75,000",
+                        "$90,000",
+                        "$110,000",
+                        "$130,000",
+                        "$150,000",
+                        "$200,000",
+                        "Don’t know",
+                        "I refuse to answer this question")
+
+# Euro number convention
+fake.euro.income = ilock$Q7
+levels(fake.euro.income) = c("$1.000,00",
+                        "$1.000,00",
+                        "$3.000,00",
+                        "$4.000,00",
+                        "$5.000,00",
+                        "$6.000,00",
+                        "$7.000,00",
+                        "$8.000,00",
+                        "$10.000,00",
+                        "$12,500",
+                        "$15.000,00",
+                        "$17,500",
+                        "$20.000,00",
+                        "$22,500",
+                        "$25.000,00",
+                        "$30.000,00",
+                        "$35.000,00",
+                        "$40.000,00",
+                        "$50.000,00",
+                        "$60.000,00",
+                        "$75.000,00",
+                        "$90.000,00",
+                        "$110.000,00",
+                        "$130.000,00",
+                        "$150.000,00",
+                        "$200.000,00",
+                        "Don’t know",
+                        "I refuse to answer this question")
 
 
 
 # Test results to check
 load("label.style.tests.rda")
 
-
+# label.style.tests = list()
 # Test cosmetic properties
 styles = c("tidy.labels", "inequality.notation", "interval.notation")
 prefix = "$"
 suffix = " AUD"
 label.decimals = 2
 for (style in styles) {
-    test_that(paste0("Label styles and customization: ", style), {
-        expect_equal(table(NiceNumericCuts(beta.left, 
+    this.result = table(suppressWarnings(NiceNumericCuts(beta.left, 
                             label.style = style, 
                             number.prefix = "$", 
                             number.suffix = " AUD", 
-                            label.decimals = 2)), label.style.tests[[style]])
+                            label.decimals = 2)))
+    test_that(paste0("Label styles and customization: ", style), {
+        expect_equal(this.result, label.style.tests[[style]])
     })
+    # label.style.tests[[style]] = this.result
 }
 
 
@@ -50,6 +116,7 @@ test.cases = c("counts.data", "normal.high.range", "normal.small.range", "beta.l
 
 # Tidy intervals
 load("tidy.intervals.results.rda")
+# tidy.intervals.results = list()
 for(open.or.closed in c("open", "closed")) {
     open.ends = open.or.closed == "open"
     for (ncats in c("six", "ten")) {
@@ -59,13 +126,17 @@ for(open.or.closed in c("open", "closed")) {
             num.categories = 10
         }
         for (test.case in test.cases) {
-            test_that(paste0("Tidy intervals results: ", paste0(c(open.or.closed, ncats, test.case), collapse = ", ")), {
-                expect_equal(table(NiceNumericCuts(get0(test.case),
+            test.name = paste0("Tidy intervals results: ", paste0(c(open.or.closed, ncats, test.case), collapse = ", "))
+            this.result = table(suppressWarnings(NiceNumericCuts(get0(test.case),
                                                      method = "tidy.intervals",
                                                      num.categories = num.categories,
                                                      label.decimals = 2,
-                                                     open.ends = open.ends)), tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]])
+                                                     open.ends = open.ends)))
+
+            test_that(test.name, {
+                expect_equal(this.result, tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]])
             })
+            # tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]] = this.result
         }
 
     }
@@ -160,16 +231,36 @@ for (test.case in test.cases) {
 }
 
 
+# Euro numbers
+load("euro.format.results.rda")
+# euro.format.results = list()
+for (data.type in c("factor", "character")) {
+    test_that(paste0("European number convention: ", data.type), {
+        test.data = fake.euro.income
+        if (data.type == "character") {
+            test.data = as.character(test.data)
+        }
+        this.result = suppressWarnings(table(NiceNumericCuts(test.data,
+                                      num.categories = 5, 
+                                      grouping.mark = ".", 
+                                      decimals.mark = ",")))
+        expect_equal(this.result, euro.format.results[[data.type]])
+        # euro.format.results[[data.type]] = this.result 
+    })
+}
+
+
+
 # Missing data
 test_that("Missing values preserved", {
-    this.result = NiceNumericCuts(counts.data)
+    this.result = suppressWarnings(NiceNumericCuts(counts.data))
     expect_equal(length(which(is.na(this.result))), length(which(is.na(counts.data))))
 })
 
 # Multiple variables
 test_that("Multiple variables in data frame handled",{
     my.df = data.frame(counts.data, beta.left)
-    this.result = NiceNumericCuts(my.df)
+    this.result = suppressWarnings(NiceNumericCuts(my.df))
     expect_equal(dim(this.result), dim(my.df))
     expect_equal(levels(this.result[, 1]), levels(this.result[, 2]))
     expect_equal(length(which(is.na(this.result[, 1]))), length(which(is.na(this.result[, 1]))))

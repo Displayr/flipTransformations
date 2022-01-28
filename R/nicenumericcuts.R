@@ -13,9 +13,7 @@
 #'      respectively.
 #' @param right A boolean value specifying that when determining breaks
 #'      in the data, the close side of the inerval should be on the right 
-#'      (i.e on the larger end of the interval). This is ignored for 
-#'      \code{tidy.intervals}, where both TRUE and FALSE values are tried
-#'      when searching for a solution.
+#'      (i.e on the larger end of the interval).
 #' @param round.input.data A boolean value specifying whether the input
 #'      data should be rounded before categorization.
 #' @param decimals An integer which determines to how many decimals the
@@ -59,7 +57,14 @@
 #'      of \code{percentiles} is used. Values should be between 0 and 100.
 #' @param quantile.type An interger between 1 and 9 to be passed to
 #'      \code{quantile} which determines the algorithm for creating quantiles.
-#'
+#' @param factors.use.labels A logical value indicating whether numeric
+#'      information should be extracted from factor labels. If \code{FALSE}
+#'      the function will instead try to extract the underlying numerice
+#'      values from Q/Displayr.
+#' @param grouping.mark A character to be used as the thousands-grouping
+#'      mark when inferring numeric information from factor labels. 
+#' @param decimals.mark A character to be used as the decimals-grouping
+#'      mark when inferring numeric information from factor labels. 
 #'
 #' @importFrom flipU ConvertCommaSeparatedStringToVector
 #' @importFrom plyr mapvalues
@@ -84,7 +89,10 @@ NiceNumericCuts <- function(input.data,
                            equal.intervals.end = 100,
                            custom.breaks = NULL,
                            percents = NULL,
-                           quantile.type = 7 #R default 
+                           quantile.type = 7,
+                           factors.use.labels = TRUE,
+                           grouping.mark = ",", 
+                           decimals.mark = "."
                            ) { 
     equal.intervals.start = as.numeric(equal.intervals.start)
     equal.intervals.end = as.numeric(equal.intervals.end)
@@ -97,48 +105,104 @@ NiceNumericCuts <- function(input.data,
         stop("No percentages have been entered for the percentiles.")
     }
 
-    # # Convert factors if user wants to use numbers present in labels
-    # get.data.as.numeric <- function(x,
-    #                                 factors.use.labels = TRUE,
-    #                                 grouping.mark = ",", 
-    #                                 decimals.mark = "\\." ) {
-    #     if (is.factor(x)) {
-    #         if (factors.use.labels) {
-    #             new.values = factorLabelsAsNumeric(as.character(levels(x)), 
-    #                                                grouping.mark = grouping.mark, 
-    #                                                decimals.mark = decimals.mark)
-    #             x.raw = as.numeric(as.character(mapvalues(x, from = levels(x), to = new.values)))
-    #         } else {
-    #             q.levels = attr(x, "levels")
-    #             q.source.values = attr(x, "sourcevalues")
-    #             if (!is.null(q.levels) && !is.null(q.source.values)) {
-    #                 if (length(q.levels) < length(q.source.values)) {
-    #                     warning("Some categories in ", attr(x, "label"), 
-    #                         " have been merged and the average value for the merged categories has been used. Consider reverting any merged categories.")
-    #                 }
-    #             }
-    #             x.raw = AsNumeric(x, binary = FALSE)
-    #         }
-    #     } else {
-    #         x.raw = x
-    #     }
-    #     return(x.raw)
-    # }
 
-    # input.data = as.data.frame(lapply(input.data, 
-    #                                   FUN = get.data.as.numeric,
-    #                                   factors.use.labels = factors.use.labels,
-    #                                   grouping.mark = grouping.mark, 
-    #                                   decimals.mark = decimals.mark))
-    input.data = as.data.frame(input.data)
-    classes = lapply(input.data, FUN = class)
-    numerics = vapply(classes, FUN = function (x) return("numeric" %in% x), FUN.VALUE = logical(1))
-    if (!all(numerics)) {
-        stop("Nice numeric cuts requires numeric input data.")
+    # Convert factors if user wants to use numbers present in labels
+    get.data.as.numeric <- function(x,
+                                    factors.use.labels = TRUE,
+                                    grouping.mark = ",", 
+                                    decimals.mark = "\\." ) {
+        
+        # Coerce characters to factors for ease of mapping
+        if (is.character(x)) {
+            x = factor(x)
+            factors.use.labels = TRUE
+        }
+
+
+        if (is.factor(x)) {
+            if (factors.use.labels) {
+                # Scrape numeric information from labels, check
+                # the numbers are appropriate, and then map
+                # to numeric.
+                label.chunks = lapply(levels(x), 
+                          FUN = extractRangeInformationFromLabel, 
+                          grouping.mark = grouping.mark, 
+                          decimals.mark = decimals.mark)
+
+                # Obtain numeric values from each label and count them
+                numbers.from.labels = lapply(label.chunks, 
+                                             FUN = function (x) return(x$numbers))
+
+                number.of.numbers = vapply(numbers.from.labels, 
+                                           FUN = length, 
+                                           FUN.VALUE = numeric(1))
+
+                if (any(number.of.numbers == 0)) {
+                    warning("Some data labels do not contain numbers. These will not be combined.")
+                }
+
+                if (any(number.of.numbers > 1)) {
+                    warning("Some data labels contain more than one numeric value. ",
+                        "These will be not be combined.")
+                }
+
+
+                new.values = rep(NA, length(x))
+                for (j in 1L:length(levels(x))) {
+                    lev = levels(x)[j]
+                    if (number.of.numbers[j] == 1) {
+                        new.values[x == lev] = numbers.from.labels[[j]][1]   
+                    }
+                }
+                x.raw = new.values
+            } else {
+                # Use attribute info from Q/Displayr
+                q.levels = attr(x, "levels")
+                q.source.values = attr(x, "sourcevalues")
+                if (!is.null(q.levels) && !is.null(q.source.values)) {
+                    if (length(q.levels) < length(q.source.values)) {
+                        warning("Some categories in ", attr(x, "label"), 
+                            " have been combined and the average value for the combined ",
+                            "categories has been used. Consider reverting any combined categories.")
+                    }
+                }
+                x.raw = AsNumeric(x, binary = FALSE)
+            }
+        } else if (is.numeric(x)) {
+            x.raw = x
+        } else {
+            stop("Cannot transform data of type ", class(x)[1])
+        }
+        return(x.raw)
     }
 
+    input.data = as.data.frame(input.data)
+    original.data = input.data
+    classes = lapply(input.data, FUN = class)
+    numerics = vapply(classes, FUN = function (x) return("numeric" %in% x), FUN.VALUE = logical(1))
+    input.data = as.data.frame(lapply(input.data, 
+                                      FUN = get.data.as.numeric,
+                                      factors.use.labels = factors.use.labels,
+                                      grouping.mark = grouping.mark, 
+                                      decimals.mark = decimals.mark))
+
+    
+
+    # factors = vapply(classes, FUN = function (x) return("factor" %in% x), FUN.VALUE = logical(1))
+    # chararacters = vapply(classes, FUN = function (x) return("character" %in% x), FUN.VALUE = logical(1))
+
+    # if (is.numeric(input[[1]] && !all(numerics))) {
+    #     stop("All Variables should be the same type (e.g. numeric).")
+    # }
+
+    # if (!all(numerics)) {
+    #     stop("Nice numeric cuts requires numeric input data.")
+    # }
+
+
+
     # Obtain the full set of raw values from the inputs
-    raw.data = as.vector(as.matrix(input.data))
+    raw.data = unlist(input.data)
     raw.data = raw.data[!is.na(raw.data)]
 
     # User may find tidier intervals if they round first
@@ -237,7 +301,9 @@ NiceNumericCuts <- function(input.data,
                                             open.bottom.string = open.bottom.string,
                                             closed.bottom.string = closed.bottom.string,
                                             open.top.string = open.top.string,
-                                            closed.top.string = closed.top.string)
+                                            closed.top.string = closed.top.string,
+                                            grouping.mark = grouping.mark, 
+                                            decimals.mark = decimals.mark)
             new.factors = lapply(new.factors, 
                                  FUN = mapvalues, 
                                  from = levels(new.factors[[1]]), 
@@ -296,99 +362,14 @@ NiceNumericCuts <- function(input.data,
             } 
         } else if (method == "tidy.intervals") {
 
-            #Calculate 0.05 and 0.95 percentiles
-            quants<-quantile(raw.data, probs = c(0.045, 0.955))
-            #Subset according to the two percentiles
-            if (n.unique > 20) {
-                middle.data <- raw.data[raw.data > quants[1] & raw.data < quants[2]]
-            } else {
-                middle.data <- raw.data
+            cuts = pretty(raw.data, n = num.categories)
+            if (length(cuts) != num.categories + 1) {
+                warning("Could not find a pretty solution with exactly ", num.categories, 
+                    " categories. Pretty solutions break the interval into multiples of ",
+                    "2, 5, 10, and some combinations are not guaranteed. Consider changing ",
+                    "the \'Target number of categories\' option.")
             }
 
-            # The "pretty" function alone is not guaranteed to find a solution which
-            # has the desired number of categories, and the function doesn't care
-            # if it produces intervals with small numbers of observations.
-
-            # Loop through different results from the "pretty" function to find
-            # a good solution. For each "pretty" result we merge small categories
-            # until the desired number of categories is reached. The best solution
-            # is the one which most closely matches the desired number of categories
-            # (hopefully exactly) and which features categories whose proportions
-            # have the lowest variance (i.e. are the most evenly distributed).
-
-            # Here we try different values for:
-            # - n: The number of intervals requested from "pretty". Asking for more
-            #      intervals results in smaller intervals, the smallest of which are
-            #      then merged with one another.
-            # - hu: The "high.us.bias" parameter. Smaller values of this parameter
-            #       result in solutions from "pretty" which are allowed to be smaller
-            #       in width. High values tend to only produce wider categories, and 
-            #       often fewer in number than that requested by the user.
-            # - test.right: Values for the "right" parameter for the "cut" function.
-            #               Given a set of cuts, setting this parameter TRUE or FALSE
-            #               can results in more evenly-distributed categories, so we
-            #               try both. Also, this allows us to remove the choice from
-            #               the user and just give them the best result.
-
-            # Generate trials
-            trials = list()
-            j = 1
-            for (n in ceiling(c(num.categories, num.categories*1.5, num.categories*2))) {
-                for (hu in c(0.5, 1, 1.5)) {
-                    for (test.right in c(TRUE, FALSE)) {
-                        cuts = pretty(middle.data, n = n, min.n = n, high.u.bias = hu)
-                        
-                        # Pad out the "pretty" intervals with intervals of equal width
-                        # until we have the whole range covered. Remember, the pretty
-                        # solution is only evaluated with the most outlying values
-                        # removed.
-                        interval = cuts[2] - cuts[1]
-                        min.diff = cuts[1] - min.val
-                        extra.intervals.below = ceiling(min.diff / interval)
-                        max.diff = max.val - cuts[length(cuts)]
-                        extra.intervals.above = ceiling(max.diff / interval)
-                        cuts = c(cuts[1] - interval * 1:extra.intervals.below, cuts) #Pad below
-                        cuts = c(cuts, cuts[length(cuts)] + interval * 1:extra.intervals.above) #Pad above
-                        cuts = sort(cuts)
-                        if (min(cuts) < 0 && min.val >= 0) { 
-                            # Don't go lower than zero if the data are all > 0
-                            cuts = cuts[cuts >= 0]
-                            cuts = c(0, cuts)                
-                        }
-                        cuts = unique(cuts)
-                        cuts.data = reduceBreaksToTargetNumber(raw.data, breaks = cuts, target.levels = num.categories, 
-                                                right = test.right)
-                        trials[[j]] = list("cuts" = cuts.data$cuts, 
-                                           "counts" = cuts.data$counts, 
-                                           "variance" = var(cuts.data$counts/sum(cuts.data$counts)), 
-                                           "n.cats" = length(cuts.data$counts), 
-                                           "right" = test.right)
-                        j = j + 1
-                    }
-                }
-            }
-
-            # Search trials to pick the best one
-            best.solution = 1
-            target.num = num.categories
-            lowest.diff = 100
-            diffs = vapply(trials, FUN = function(x) { return(abs(x$n.cat - target.num))}, FUN.VALUE = numeric(1))
-            mindiff = min(diffs)
-            candidates = diffs == min(diffs)
-            if (length(which(candidates)) == 1) {
-                best.solution = which(candidates)
-            } else {
-                lowest.variance = 100
-                for (j in which(candidates)) {
-                    if (trials[[j]]$variance < lowest.variance) {
-                        best.solution = j
-                        lowest.variance = trials[[j]]$variance
-                    }
-                }
-            }
-
-            cuts = trials[[best.solution]]$cuts
-            right = trials[[best.solution]]$right
         } else {
             stop("Method ", method, " is not recognized. Use one of: tidy.intervals, equal.width, percentiles, or custom.")
         }
@@ -410,12 +391,36 @@ NiceNumericCuts <- function(input.data,
                                             open.bottom.string = open.bottom.string,
                                             closed.bottom.string = closed.bottom.string,
                                             open.top.string = open.top.string,
-                                            closed.top.string = closed.top.string)                                        
+                                            closed.top.string = closed.top.string,
+                                            grouping.mark = grouping.mark, 
+                                            decimals.mark = decimals.mark)                                        
         new.factors = as.data.frame(lapply(new.factors, 
                                            FUN = mapvalues, 
                                            from = levels(new.factors[[1]]), 
                                            to = new.labels))
     }
+
+    # Fill in missing values for non-numeric labels when input data is
+    # factor/character
+    if (any(!numerics)) {
+        for (j in 1L:ncol(original.data)) {
+            if (!is.numeric(original.data[, j])) {
+                missings = is.na(new.factors[, j])
+                level.list = levels(new.factors[, j])
+                if (is.factor(original.data[, j])) {
+                    level.list = c(level.list, as.character(levels(droplevels(original.data[missings, j]))))
+                } else {
+                    level.list = c(level.list, unique(as.character(original.data[missings, j])))    
+                }
+                levels(new.factors[, j]) = level.list
+                new.factors[missings, j] = as.character(original.data[missings, j])
+            }
+
+        }    
+    }
+
+    
+
     return(new.factors)
 }
 
@@ -481,7 +486,10 @@ tidyIntervalLabels <- function(labels,
                                open.bottom.string = "Less than ",
                                closed.bottom.string = " and below",
                                open.top.string = "More than ",
-                               closed.top.string = " and over") {
+                               closed.top.string = " and over",
+                               grouping.mark = ",", 
+                               decimals.mark = "."
+                               ) {
     new.labels = labels
     for (k in 1:length(labels)) {
         is.first = k == 1
@@ -510,7 +518,9 @@ tidyIntervalLabels <- function(labels,
                                           open.top.string = open.top.string,
                                           closed.top.string = closed.top.string,
                                           previous.val = previous.val,
-                                          next.val = next.val)
+                                          next.val = next.val,
+                                          grouping.mark = grouping.mark, 
+                                          decimals.mark = decimals.mark)
     }
     return(new.labels)
 }
@@ -541,6 +551,8 @@ tidyIntervalLabel <- function(label,
                               closed.bottom.string = " and below",
                               open.top.string = "More than ",
                               closed.top.string = " and over",
+                              grouping.mark = ",", 
+                              decimals.mark = ".",
                               previous.val = NULL,
                               next.val = NULL) {
 
@@ -572,7 +584,6 @@ tidyIntervalLabel <- function(label,
                     lower.num = previous.val
                 } else {
                     lower.num = min(raw.data[raw.data > lower.num])
-                       
                 } 
             }     
         }
@@ -591,8 +602,8 @@ tidyIntervalLabel <- function(label,
     }
 
     # Format desired number of decimal places
-    lower.num = formatC(lower.num, digits = decimals, format = "f") 
-    upper.num = formatC(upper.num, digits = decimals, format = "f")
+    lower.num = formatC(lower.num, digits = decimals, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark) 
+    upper.num = formatC(upper.num, digits = decimals, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark)
 
 
     # Add prefix and suffix

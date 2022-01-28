@@ -36,7 +36,6 @@ for (test.case in test.cases) {
         test_that(paste0("Ranges even proportions:", paste0(c(test.case, ncats), collapse = ", ")), {
             expect_equal(this.result, ranges.even.proportions.results[[test.case]][[ncats]])    
         })
-        
         # ranges.even.proportions.results[[test.case]][[ncats]] = this.result
     }
 }
@@ -92,14 +91,15 @@ levels(euro.income) = c("Less than €20.000,00",
 
 # euro.results = list() 
 load("euro.results.rda")
+# euro.results = list()
 for (method in c("even.proportions", "even.ranges")) {
-    this.result = table(MergeRangeCategories(euro.income, 
+    this.result = table(suppressWarnings(MergeRangeCategories(euro.income, 
                                        num.categories = 4,
                                        method = method,
                                        lower.bound = 0,
                                        upper.bound = 200000,
                                        grouping.mark = ".",
-                                       decimals.mark = ","))
+                                       decimals.mark = ",")))
     # euro.results[[method]] = this.result
     test_that(paste0("Euro results: ", method), {
         expect_equal(this.result, euro.results[[method]])

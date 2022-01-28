@@ -25,7 +25,10 @@ NiceNumericCuts(
   equal.intervals.end = 100,
   custom.breaks = NULL,
   percents = NULL,
-  quantile.type = 7
+  quantile.type = 7,
+  factors.use.labels = TRUE,
+  grouping.mark = ",",
+  decimals.mark = "."
 )
 }
 \arguments{
@@ -44,9 +47,7 @@ respectively.}
 
 \item{right}{A boolean value specifying that when determining breaks
 in the data, the close side of the inerval should be on the right 
-(i.e on the larger end of the interval). This is ignored for 
-\code{tidy.intervals}, where both TRUE and FALSE values are tried
-when searching for a solution.}
+(i.e on the larger end of the interval).}
 
 \item{round.input.data}{A boolean value specifying whether the input
 data should be rounded before categorization.}
@@ -105,6 +106,17 @@ of \code{percentiles} is used. Values should be between 0 and 100.}
 
 \item{quantile.type}{An interger between 1 and 9 to be passed to
 \code{quantile} which determines the algorithm for creating quantiles.}
+
+\item{factors.use.labels}{A logical value indicating whether numeric
+information should be extracted from factor labels. If \code{FALSE}
+the function will instead try to extract the underlying numerice
+values from Q/Displayr.}
+
+\item{grouping.mark}{A character to be used as the thousands-grouping
+mark when inferring numeric information from factor labels.}
+
+\item{decimals.mark}{A character to be used as the decimals-grouping
+mark when inferring numeric information from factor labels.}
 }
 \description{
 Create factor variables from numeric variables using one of a variety of

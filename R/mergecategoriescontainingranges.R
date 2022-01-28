@@ -76,6 +76,10 @@ MergeRangeCategories = function(input.data,
         stop("Could not detect sufficient numeric data to merge ranges.")
     }
 
+    if (sum(non.number) > 0) {
+        warning("Some labels do not contain numbers and will not be combined.")
+    }
+
 
     # Begin collating information about the labels
     label.data = data.frame(original.labels = names(counts), 
@@ -192,7 +196,7 @@ MergeRangeCategories = function(input.data,
     merge.data = label.data[, c("ID", "counts", "range")]
     if (method[1] == "even.proportions") {
         values = merge.data$counts
-        n.cats = num.categories - length(which(non.number))
+        # n.cats = num.categories - length(which(non.number))
     } else if (method[1] == "even.ranges") {
         no.range = is.na(merge.data$range)
         if (any(no.range)) {
@@ -203,7 +207,7 @@ MergeRangeCategories = function(input.data,
                 "of range and CATEGORICAL DATA > End of Range to overcome this.")
             
         }
-        n.cats = num.categories - length(which(no.range)) - length(which(non.number))
+        # n.cats = num.categories - length(which(no.range)) - length(which(non.number))
         merge.data = merge.data[!no.range, ]
         values = merge.data$range
 
@@ -212,7 +216,7 @@ MergeRangeCategories = function(input.data,
              "'even.proportions' or 'even.ranges'.")
     }
 
-    if (n.cats < 2) {
+    if (length(values) <= num.categories) {
         warning("There is insufficient numeric information in the data labels to ",
             "determine how to combine these categories into ", num.categories,
             " categories. No merging has been done.")
@@ -221,7 +225,7 @@ MergeRangeCategories = function(input.data,
 
     merge.solution = mostEvenOrdinalMerge(merge.data$ID, 
                                           values = values, 
-                                          target.number = n.cats)
+                                          target.number = num.categories)
 
     for (j in 1L:length(merge.solution)) {
         current.ids = strsplit(merge.solution[j], "\\.")[[1]]
