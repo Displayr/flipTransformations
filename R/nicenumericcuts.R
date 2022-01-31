@@ -317,15 +317,27 @@ NiceNumericCuts <- function(input.data,
 
     } else {
         if (method == "equal.width") {
+            if (is.null(equal.intervals.start)) {
+                warning("The start point for the combined categories has been set to the minimum value of ", 
+                    formatC(min.val, digits = 2), ". To change this, enter a value in \'Start point\'.")
+                equal.intervals.start = min.val        
+            }
+            if (is.null(equal.intervals.end)) {
+                warning("The end point for the combined categories has been set to the maximum value of ", 
+                    formatC(max.val, digits = 2), ". To change this, enter a value in \'End point\'.")
+                equal.intervals.end = max.val        
+            }
             if (min.val < equal.intervals.start) {
                 n.lower = length(which(raw.data < equal.intervals.start))
                 warning(n.lower, " values in the data are less than the start point of ", equal.intervals.start, 
-                ". These will be assigned a missing value. Consider setting the Start point setting to ", floor(min.val))
+                ". These will be assigned a missing value. Consider setting the Start point setting to ", 
+                floor(min.val), " or lower.")
             }
             if (max.val > equal.intervals.end) {
                 n.higher = length(which(raw.data > equal.intervals.end))
                 warning(n.higher, " values in the data are greater than the end point of ", equal.intervals.end, 
-                ". These will be assigned a missing value. Consider setting the End point setting to ", ceiling(max.val))
+                ". These will be assigned a missing value. Consider setting the End point setting to ", 
+                ceiling(max.val), " or greater.")
             } 
             start = equal.intervals.start
             end = equal.intervals.end
