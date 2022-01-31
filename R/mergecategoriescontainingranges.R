@@ -92,7 +92,7 @@ MergeRangeCategories = function(input.data,
     if (sum(non.number) > 0) {
         no.number.labels = label.data[non.number, "original.labels"]
         no.number.label.text = paste0("\'", no.number.labels[1], "\'")
-        if (length(labels) > 1) {
+        if (length(no.number.label.text) > 1) {
             no.number.label.text = paste0(paste0("\'", no.number.labels[1:2], "\'"), collapse = " and ")
         }
         warning("Some labels do not contain numbers and will not be combined. Such labels include ", no.number.label.text)
@@ -207,12 +207,13 @@ MergeRangeCategories = function(input.data,
         # n.cats = num.categories - length(which(non.number))
     } else if (method[1] == "even.ranges") {
         no.range = is.na(merge.data$range)
-        labels = merge.data[no.range, "original.labels"]
-        no.range.label.text = paste0("\'", labels[1], "\'")
-        if (length(labels) > 1) {
-            no.range.label.text = paste0(paste0("\'", labels[1:2], "\'"), collapse = " and ")
-        }
+        
         if (any(no.range)) {
+            no.range.labels = merge.data[no.range, "original.labels"]
+            no.range.label.text = paste0("\'", labels[1], "\'")
+            if (length(no.range.labels) > 1) {
+                no.range.label.text = paste0(paste0("\'", no.range.labels[1:2], "\'"), collapse = " and ")
+            }
             warning("Some labels only contain a single value, and so the range ",
                 "of values represented by these labels cannot be determined. These ",
                 "categories will not be merged. For labels which appear as the ",
