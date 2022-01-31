@@ -320,7 +320,7 @@ getMergedCounts = function(merges, data) {
 
 #' @importFrom stringr str_count fixed
 #' @importFrom Hmisc escapeRegex
-extractRangeInformationFromLabel <- function(x, grouping.mark = ",", decimals.mark = "\\.") {
+extractRangeInformationFromLabel <- function(x, grouping.mark = ",", decimals.mark = ".") {
         grouping.mark = escapeRegex(grouping.mark)
         decimals.mark = escapeRegex(decimals.mark)
 

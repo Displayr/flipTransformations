@@ -94,8 +94,12 @@ NiceNumericCuts <- function(input.data,
                            grouping.mark = ",", 
                            decimals.mark = "."
                            ) { 
-    equal.intervals.start = as.numeric(equal.intervals.start)
-    equal.intervals.end = as.numeric(equal.intervals.end)
+    
+    # Protect against empty strings supplied
+    # by Displayr UI
+    equal.intervals.start = ifelse(nzchar(equal.intervals.start), as.numeric(equal.intervals.start), NULL)
+    equal.intervals.end = ifelse(nzchar(equal.intervals.end), as.numeric(equal.intervals.end), NULL)
+
 
     if (method == "custom" && is.null(custom.breaks)) {
         stop("No custom breakpoints have been entered for the custom intervals.")
@@ -424,50 +428,50 @@ NiceNumericCuts <- function(input.data,
     return(new.factors)
 }
 
-# Merge breaks by combining the smallest level with the smallest level to either side
-# until the target number of levels remains
-reduceBreaksToTargetNumber <- function(raw.data, breaks, target.levels = 3, right = TRUE) {
+# # Merge breaks by combining the smallest level with the smallest level to either side
+# # until the target number of levels remains
+# reduceBreaksToTargetNumber <- function(raw.data, breaks, target.levels = 3, right = TRUE) {
 
-    # Compute the initial distribution of responses
-    new.factor = cut(raw.data, breaks = breaks, right = right, include.lowest = TRUE)
-    counts = table(new.factor)
+#     # Compute the initial distribution of responses
+#     new.factor = cut(raw.data, breaks = breaks, right = right, include.lowest = TRUE)
+#     counts = table(new.factor)
 
-    # Does anything need to be merged?
-    # If min number not set, just check number of target levels
-    if (length(counts) <= target.levels) {
-        return(list("cuts" = breaks, "counts" = counts))
-    }
+#     # Does anything need to be merged?
+#     # If min number not set, just check number of target levels
+#     if (length(counts) <= target.levels) {
+#         return(list("cuts" = breaks, "counts" = counts))
+#     }
 
-    while (length(counts) > target.levels) {
-        smallest.category = names(counts[(counts == min(counts))])[1]
-        ind = which(names(counts) == smallest.category)
-        if(ind == length(counts)) {
-            # At the upper end, always merging left
-            counts[ind-1] = counts[ind-1] + counts[ind]
-            counts = counts[-ind]
-            breaks = breaks[-ind]
-        } else if (ind == 1) {
-            # At the bottom end, always merging right
-            counts[2] = counts[2] + counts[1]
-            counts = counts[-1]
-            breaks = breaks[-2]
-        } else {
-            # In the middle, merge into the smaller of the
-            # two surrounding categories
-            merge.above = counts[ind + 1] < counts[ind - 1]
-            if (merge.above) {
-                counts[ind+1] = counts[ind+1] + counts[ind]
-                breaks = breaks[-(ind+1)]
-                counts = counts[-ind]
-            } else {
-                counts[ind-1] = counts[ind-1] + counts[ind]
-                breaks = breaks[-ind]
-                counts = counts[-ind]
-            }
-        }
-    }
-    return(list("cuts" = breaks, "counts" = counts))
-}
+#     while (length(counts) > target.levels) {
+#         smallest.category = names(counts[(counts == min(counts))])[1]
+#         ind = which(names(counts) == smallest.category)
+#         if(ind == length(counts)) {
+#             # At the upper end, always merging left
+#             counts[ind-1] = counts[ind-1] + counts[ind]
+#             counts = counts[-ind]
+#             breaks = breaks[-ind]
+#         } else if (ind == 1) {
+#             # At the bottom end, always merging right
+#             counts[2] = counts[2] + counts[1]
+#             counts = counts[-1]
+#             breaks = breaks[-2]
+#         } else {
+#             # In the middle, merge into the smaller of the
+#             # two surrounding categories
+#             merge.above = counts[ind + 1] < counts[ind - 1]
+#             if (merge.above) {
+#                 counts[ind+1] = counts[ind+1] + counts[ind]
+#                 breaks = breaks[-(ind+1)]
+#                 counts = counts[-ind]
+#             } else {
+#                 counts[ind-1] = counts[ind-1] + counts[ind]
+#                 breaks = breaks[-ind]
+#                 counts = counts[-ind]
+#             }
+#         }
+#     }
+#     return(list("cuts" = breaks, "counts" = counts))
+# }
 
 
 # Loop through a given set of interval labels
