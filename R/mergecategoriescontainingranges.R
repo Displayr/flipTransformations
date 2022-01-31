@@ -210,7 +210,7 @@ MergeRangeCategories = function(input.data,
         
         if (any(no.range)) {
             no.range.labels = merge.data[no.range, "original.labels"]
-            no.range.label.text = paste0("\'", labels[1], "\'")
+            no.range.label.text = paste0("\'", no.range.labels[1], "\'")
             if (length(no.range.labels) > 1) {
                 no.range.label.text = paste0(paste0("\'", no.range.labels[1:2], "\'"), collapse = " and ")
             }
