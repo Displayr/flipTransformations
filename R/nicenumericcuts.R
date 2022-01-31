@@ -97,8 +97,17 @@ NiceNumericCuts <- function(input.data,
     
     # Protect against empty strings supplied
     # by Displayr UI
-    equal.intervals.start = ifelse(nzchar(equal.intervals.start), as.numeric(equal.intervals.start), NULL)
-    equal.intervals.end = ifelse(nzchar(equal.intervals.end), as.numeric(equal.intervals.end), NULL)
+    if(nzchar(equal.intervals.start)) {
+        equal.intervals.start = as.numeric(equal.intervals.start)
+    } else {
+        equal.intervals.start = NULL
+    }
+
+    if(nzchar(equal.intervals.end)) {
+        equal.intervals.end = as.numeric(equal.intervals.end)    
+    } else {
+        equal.intervals.end = NULL
+    }
 
 
     if (method == "custom" && is.null(custom.breaks)) {
