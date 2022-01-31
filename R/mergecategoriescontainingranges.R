@@ -76,9 +76,7 @@ MergeRangeCategories = function(input.data,
         stop("Could not detect sufficient numeric data to merge ranges.")
     }
 
-    if (sum(non.number) > 0) {
-        warning("Some labels do not contain numbers and will not be combined.")
-    }
+
 
 
     # Begin collating information about the labels
@@ -90,6 +88,16 @@ MergeRangeCategories = function(input.data,
                                         FUN = identifyClosedOrOpenBoundariesFromText, 
                                         FUN.VALUE = character(1))
     label.data$label.character[pairs & label.data$label.character == "ambiguous"] = "closed"
+
+    if (sum(non.number) > 0) {
+        no.number.labels = label.data[non.number, "original.labels"]
+        no.number.label.text = paste0("\'", no.number.labels[1], "\'")
+        if (length(labels) > 1) {
+            no.number.label.text = paste0(paste0("\'", no.number.labels[1:2], "\'"), collapse = " and ")
+        }
+        warning("Some labels do not contain numbers and will not be combined. Such labels include ", no.number.label.text)
+    }
+
 
     # Labelling is ambiguous if we cannot determine whether those labels
     # which contain a single numeric value refer to an open or closed interval.
@@ -193,18 +201,24 @@ MergeRangeCategories = function(input.data,
 
     label.data$ID = letters[1:nrow(label.data)]
 
-    merge.data = label.data[, c("ID", "counts", "range")]
+    merge.data = label.data[, c("ID", "original.labels", "counts", "range")]
     if (method[1] == "even.proportions") {
         values = merge.data$counts
         # n.cats = num.categories - length(which(non.number))
     } else if (method[1] == "even.ranges") {
         no.range = is.na(merge.data$range)
+        labels = merge.data[no.range, "original.labels"]
+        no.range.label.text = paste0("\'", labels[1], "\'")
+        if (length(labels) > 1) {
+            no.range.label.text = paste0(paste0("\'", labels[1:2], "\'"), collapse = " and ")
+        }
         if (any(no.range)) {
             warning("Some labels only contain a single value, and so the range ",
                 "of values represented by these labels cannot be determined. These ",
                 "categories will not be merged. For labels which appear as the ",
-                "first or last categories, you can supply CATEGORICAL DATA > Start ",
-                "of range and CATEGORICAL DATA > End of Range to overcome this.")
+                "first or last categories, you can supply INPUT DATA LABELS > Start ",
+                "of range and INPUT DATA LABELS > End of Range to overcome this.",
+                "Such labels include ", no.range.label.text)
             
         }
         # n.cats = num.categories - length(which(no.range)) - length(which(non.number))

@@ -328,12 +328,14 @@ NiceNumericCuts <- function(input.data,
         if (method == "equal.width") {
             if (is.null(equal.intervals.start)) {
                 warning("The start point for the combined categories has been set to the minimum value of ", 
-                    formatC(min.val, digits = 2), ". To change this, enter a value in \'Start point\'.")
+                    formatC(min.val, digits = 2, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark), 
+                    ". To change this, enter a value in \'Start point\'.")
                 equal.intervals.start = min.val        
             }
             if (is.null(equal.intervals.end)) {
                 warning("The end point for the combined categories has been set to the maximum value of ", 
-                    formatC(max.val, digits = 2), ". To change this, enter a value in \'End point\'.")
+                    formatC(max.val, digits = 2, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark), 
+                    ". To change this, enter a value in \'End point\'.")
                 equal.intervals.end = max.val        
             }
             if (min.val < equal.intervals.start) {
