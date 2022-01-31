@@ -92,7 +92,7 @@ MergeRangeCategories = function(input.data,
     if (sum(non.number) > 0) {
         no.number.labels = label.data[non.number, "original.labels"]
         no.number.label.text = paste0("\'", no.number.labels[1], "\'")
-        if (length(no.number.label.text) > 1) {
+        if (length(no.number.labels) > 1) {
             no.number.label.text = paste0(paste0("\'", no.number.labels[1:2], "\'"), collapse = " and ")
         }
         warning("Some labels do not contain numbers and will not be combined. Such labels include ", no.number.label.text)
