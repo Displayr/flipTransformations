@@ -460,54 +460,9 @@ NiceNumericCuts <- function(input.data,
     }
 
     
-
+    colnames(new.factors) = colnames(original.data)
     return(new.factors)
 }
-
-# # Merge breaks by combining the smallest level with the smallest level to either side
-# # until the target number of levels remains
-# reduceBreaksToTargetNumber <- function(raw.data, breaks, target.levels = 3, right = TRUE) {
-
-#     # Compute the initial distribution of responses
-#     new.factor = cut(raw.data, breaks = breaks, right = right, include.lowest = TRUE)
-#     counts = table(new.factor)
-
-#     # Does anything need to be merged?
-#     # If min number not set, just check number of target levels
-#     if (length(counts) <= target.levels) {
-#         return(list("cuts" = breaks, "counts" = counts))
-#     }
-
-#     while (length(counts) > target.levels) {
-#         smallest.category = names(counts[(counts == min(counts))])[1]
-#         ind = which(names(counts) == smallest.category)
-#         if(ind == length(counts)) {
-#             # At the upper end, always merging left
-#             counts[ind-1] = counts[ind-1] + counts[ind]
-#             counts = counts[-ind]
-#             breaks = breaks[-ind]
-#         } else if (ind == 1) {
-#             # At the bottom end, always merging right
-#             counts[2] = counts[2] + counts[1]
-#             counts = counts[-1]
-#             breaks = breaks[-2]
-#         } else {
-#             # In the middle, merge into the smaller of the
-#             # two surrounding categories
-#             merge.above = counts[ind + 1] < counts[ind - 1]
-#             if (merge.above) {
-#                 counts[ind+1] = counts[ind+1] + counts[ind]
-#                 breaks = breaks[-(ind+1)]
-#                 counts = counts[-ind]
-#             } else {
-#                 counts[ind-1] = counts[ind-1] + counts[ind]
-#                 breaks = breaks[-ind]
-#                 counts = counts[-ind]
-#             }
-#         }
-#     }
-#     return(list("cuts" = breaks, "counts" = counts))
-# }
 
 
 # Loop through a given set of interval labels
@@ -700,40 +655,3 @@ tidyIntervalLabel <- function(label,
 
 
 
-
-
-# #' @importFrom Hmisc escapeRegex
-# factorLabelsAsNumeric <- function(labels, grouping.mark = ",", decimals.mark = ".") {
-#     grouping.mark = escapeRegex(grouping.mark)
-#     decimals.mark = escapeRegex(decimals.mark)
-#     extract.numbers.from.label <- function (x, grouping.mark = ",", decimals.mark = "\\.") {
-#         x = gsub(grouping.mark, "", x)
-#         x = gsub(decimals.mark, "\\.", x)
-#         return(as.numeric(unlist(regmatches(x, gregexpr("(?>-)*[[:digit:]]+\\.*[[:digit:]]*", x, perl=TRUE)))))
-#     }
-#     values.in.labels = lapply(labels, FUN = extract.numbers.from.label, grouping.mark = grouping.mark)
-
-#     # Check what we can do with these
-#     lens = unlist(lapply(values.in.labels, FUN = length))
-#     if (any(lens == 0)) {
-#         offending.labels = labels[lens == 0]
-#         if (length(offending.labels) > 3) offending.labels = offending.labels[1:3]
-#         warning("Some category labels do not appear to contain numbers. These categories will be assigned a value of NA. These labels include: ", paste0(offending.labels, collapse = ", "))
-#     }
-
-#     if (any(lens > 1)) {
-#         offending.labels = labels[lens > 1]
-#         if (length(offending.labels) > 3) offending.labels = offending.labels[1:3]
-#         warning("Some category labels appear to contain more than one number, and additional numbers cannot be used to form numeric groupings. Only the first number in each has been used. These labels include: ", paste0(offending.labels, collapse = ", "))
-#     }
-
-#     get.first.number = function (values) {
-#         if (length(values) == 0) {
-#             return(NA) 
-#         } else {
-#             return(values[1])
-#         }
-#     }
-#     return(vapply(values.in.labels, FUN = get.first.number, FUN.VALUE = numeric(1)))
-
-# }

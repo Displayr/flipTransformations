@@ -292,6 +292,10 @@ MergeRangeCategories = function(input.data,
                                to = label.data$new.labels)
     }
     
+    if (is.data.frame(input.data)) {
+        colnames(new.factor) = colnames(input.data)
+    }   
+
     return(new.factor)
 }
 
