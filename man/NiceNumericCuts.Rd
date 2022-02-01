@@ -8,7 +8,7 @@ methods.}
 NiceNumericCuts(
   input.data,
   method = "tidy.intervals",
-  num.categories = 5,
+  num.categories = 2,
   right = TRUE,
   round.input.data = FALSE,
   decimals = 1,

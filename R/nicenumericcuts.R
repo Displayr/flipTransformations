@@ -72,7 +72,7 @@
 #' @export
 NiceNumericCuts <- function(input.data,
                            method = "tidy.intervals",
-                           num.categories = 5,
+                           num.categories = 2,
                            right = TRUE,
                            round.input.data = FALSE,
                            decimals = 1,
@@ -151,12 +151,25 @@ NiceNumericCuts <- function(input.data,
                                            FUN.VALUE = numeric(1))
 
                 if (any(number.of.numbers == 0)) {
-                    warning("Some data labels do not contain numbers. These will not be combined.")
+                    cant.use.labels = paste0("\'", levels(x)[number.of.numbers == 0], "\'")
+                    cant.use.text = cant.use.labels[1]
+                    if (length(cant.use.labels) > 1) {
+                        cant.use.text = paste0(cant.use.text[1:2], collapse = " and ")
+                    }
+                    warning("Some data labels do not contain numbers and will not be combined.",
+                            "These labels include ", cant.use.text)
                 }
 
                 if (any(number.of.numbers > 1)) {
-                    warning("Some data labels contain more than one numeric value. ",
-                        "These will be not be combined.")
+                    cant.use.labels = paste0("\'", levels(x)[number.of.numbers > 1], "\'")
+                    cant.use.text = cant.use.labels[1]
+                    if (length(cant.use.labels) > 1) {
+                        cant.use.text = paste0(cant.use.text[1:2], collapse = " and ")
+                    }
+                    warning("Some data labels contain more than one numeric value and ",
+                        "will be not be combined. These labels include ", cant.use.text,
+                        ". If your data labels contain ranges of values, change ",
+                        "\'Labels contain\' to \'Ranges of values\'.")
                 }
 
 

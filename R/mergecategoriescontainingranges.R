@@ -25,7 +25,7 @@
 #' @importFrom plyr mapvalues
 #' @export
 MergeRangeCategories = function(input.data, 
-                                num.categories = 5, 
+                                num.categories = 2, 
                                 method = c("even.proportions", "even.ranges"),
                                 grouping.mark = ",", 
                                 decimals.mark = "\\.", 
@@ -71,9 +71,13 @@ MergeRangeCategories = function(input.data,
     pairs = number.of.numbers == 2
     singles = number.of.numbers == 1
     non.number = number.of.numbers == 0
-    is.ranges = (length(which(singles)) < 3 && length(which(non.number)) < 3 && length(which(pairs)) > 0)
+    is.ranges = (length(which(singles)) < 3 && length(which(pairs)) > 0)
     if (!is.ranges) {
-        stop("Could not detect sufficient numeric data to merge ranges.")
+        stop("Could not detect sufficient numeric data to merge ranges. When combining ",
+            "data whose labels represent ranges, all labels should contain pairs of ",
+            "numbers except for those labels at the higher and lower end of the range.",
+            "In this case there are ", length(which(singles)), "labels which do not ",
+            "pairs of numbers.")
     }
 
 

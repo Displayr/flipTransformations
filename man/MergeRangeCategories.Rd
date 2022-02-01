@@ -7,7 +7,7 @@ labels contain numeric ranges, like 18 to 24 or $2,000 to $3,000,}
 \usage{
 MergeRangeCategories(
   input.data,
-  num.categories = 5,
+  num.categories = 2,
   method = c("even.proportions", "even.ranges"),
   grouping.mark = ",",
   decimals.mark = "\\\\.",

@@ -100,6 +100,7 @@ suffix = " AUD"
 label.decimals = 2
 for (style in styles) {
     this.result = table(suppressWarnings(NiceNumericCuts(beta.left, 
+                            num.categories = 5,
                             label.style = style, 
                             number.prefix = "$", 
                             number.suffix = " AUD", 
@@ -253,14 +254,14 @@ for (data.type in c("factor", "character")) {
 
 # Missing data
 test_that("Missing values preserved", {
-    this.result = suppressWarnings(NiceNumericCuts(counts.data))
+    this.result = suppressWarnings(NiceNumericCuts(counts.data, num.categories = 5))
     expect_equal(length(which(is.na(this.result))), length(which(is.na(counts.data))))
 })
 
 # Multiple variables
 test_that("Multiple variables in data frame handled",{
     my.df = data.frame(counts.data, beta.left)
-    this.result = suppressWarnings(NiceNumericCuts(my.df))
+    this.result = suppressWarnings(NiceNumericCuts(my.df, num.categories = 5))
     expect_equal(dim(this.result), dim(my.df))
     expect_equal(levels(this.result[, 1]), levels(this.result[, 2]))
     expect_equal(length(which(is.na(this.result[, 1]))), length(which(is.na(this.result[, 1]))))

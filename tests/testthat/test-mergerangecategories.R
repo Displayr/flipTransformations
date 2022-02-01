@@ -108,8 +108,11 @@ for (method in c("even.proportions", "even.ranges")) {
 
 # Inappropriate data
 
-test_that("Error on inappropriate ranges", {
-    expect_error(MergeRangeCategories(cola.exercise.frequency), regexp = "Could not detect")
+test_that("Warning on inappropriate ranges", {
+    test.warnings = capture_warnings(MergeRangeCategories(cola.exercise.frequency, num.categories = 5))
+    expected.warnings = c("Some labels do not contain numbers and will not be combined. Such labels include 'Every or nearly every day' and 'Once a week'",
+        "There is insufficient numeric information in the data labels to determine how to combine these categories into 5 categories. No merging has been done.")
+    expect_setequal(test.warnings, expected.warnings)
 })
 
 # Missing data
