@@ -7,7 +7,7 @@ methods.}
 \usage{
 NiceNumericCuts(
   input.data,
-  method = "tidy.intervals",
+  method = c("tidy.intervals", "percentiles", "equal.width", "custom"),
   num.categories = 2,
   right = TRUE,
   round.input.data = FALSE,
@@ -41,8 +41,8 @@ the data. Options are \code{tidy.intervals}, \code{percentiles},
 
 \item{num.categories}{An integer sepcifying the number of categories for
 the new factor. This does not apply for \code{percentiles} or for
-\code{Custom} because in those cases the number of categories is
-imlpied by the \code{percents} and \code{custom.breaks} argumens
+\code{custom} because in those cases the number of categories is
+implied by the \code{percents} and \code{custom.breaks} arguments
 respectively.}
 
 \item{right}{A boolean value specifying that when determining breaks
@@ -117,6 +117,9 @@ mark when inferring numeric information from factor labels.}
 
 \item{decimals.mark}{A character to be used as the decimals-grouping
 mark when inferring numeric information from factor labels.}
+}
+\value{
+A data frame containing the new factor variables as columns.
 }
 \description{
 Create factor variables from numeric variables using one of a variety of

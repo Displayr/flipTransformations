@@ -2,15 +2,14 @@
 % Please edit documentation in R/mergecategoriescontainingranges.R
 \name{MergeRangeCategories}
 \alias{MergeRangeCategories}
-\title{Create factor new factor variables from existing factors whose
-labels contain numeric ranges, like 18 to 24 or $2,000 to $3,000,}
+\title{Automatically combine factor levels whose levels represent ranges.}
 \usage{
 MergeRangeCategories(
   input.data,
   num.categories = 2,
   method = c("even.proportions", "even.ranges"),
   grouping.mark = ",",
-  decimals.mark = "\\\\.",
+  decimals.mark = ".",
   lower.bound = NULL,
   upper.bound = NULL
 )
@@ -20,7 +19,8 @@ MergeRangeCategories(
 to be merged.}
 
 \item{num.categories}{An integer indicating the number of categories
-in the new factors.}
+in the new factors, excluding any levels that do not contain range
+information.}
 
 \item{method}{A character indicating how the merging is to be performed.
 The available options are \code{"even.proportions"} and 
@@ -37,11 +37,16 @@ in the input data. Usually a period.}
 numeric ranges when the number is not explicitly included in the 
 level labels. For example, when the lowest level is "Under 18", you
 may wish to specify that the lowest possible value in this level
-is 12, 15, 0, etc. This helps when you wish to}
+is 12, 15, 0, etc. Default value of NULL means that the lowest
+level with numeric values will not be combined.}
 
 \item{upper.bound}{As above, for the higher end of the range.}
 }
+\value{
+A data frame containing the new factor variables as columns.
+}
 \description{
-Create factor new factor variables from existing factors whose
+Create new factor variables from existing factors whose
 labels contain numeric ranges, like 18 to 24 or $2,000 to $3,000,
+which are as even as possible.
 }
