@@ -267,3 +267,51 @@ test_that("Multiple variables in data frame handled",{
     expect_equal(length(which(is.na(this.result[, 1]))), length(which(is.na(this.result[, 1]))))
     expect_equal(length(which(is.na(this.result[, 2]))), length(which(is.na(this.result[, 2]))))
 })
+
+
+# Equal-width with intervals give same result as specifying number of categories
+
+test_that("Equal width with inervals", {
+    test.case == "counts.data"
+    start = 0
+    end = 200
+    ncat = 5
+    with.num.cat = table(NiceNumericCuts(get0(test.case),
+                                        method = "equal.width",
+                                        num.categories = ncat,
+                                        equal.intervals.start = start,
+                                        equal.intervals.end = end,
+                                        label.style = "interval.notation",
+                                        label.decimals = 0))
+    with.interval = table(NiceNumericCuts(get0(test.case),
+                                        method = "equal.width",
+                                        equal.intervals.start = start,
+                                        equal.intervals.end = end,
+                                        label.style = "interval.notation",
+                                        equal.intervals.increment = 40,
+                                        label.decimals = 0))
+    expect_equal(with.num.cat, with.interval)
+})
+
+
+# Always include end points
+
+test_that("Always include end points", {
+    test.case = "counts.data"
+    breaks.all = "0, 10, 20, 50, 100, 200"
+    breaks.partial = "10, 20, 50, 100"
+    with.all = table(NiceNumericCuts(get0(test.case),
+                                        method = "custom",
+                                        custom.breaks = breaks.all,
+                                        label.decimals = 0,
+                                        custom.always.includes.endpoints = FALSE,
+                                        open.end = FALSE))
+    with.force.include = table(NiceNumericCuts(get0(test.case),
+                                        method = "custom",
+                                        custom.breaks = breaks.partial,
+                                        label.decimals = 0,
+                                        custom.always.includes.endpoints = TRUE,
+                                        open.end = FALSE))
+
+    expect_equal(with.all, with.force.include)
+})

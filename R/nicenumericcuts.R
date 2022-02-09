@@ -49,9 +49,17 @@
 #'      range when using \code{method} of \code{equal.width}.
 #' @param equal.intervals.end A numeric value indicating the end of the
 #'      range when using \code{method} of \code{equal.width}.
+#' @param equal.intervals.increment A numeric value specifying the width of
+#'      the increments when using \code{method} of \code{equal.width}. This
+#'      value is optional, and overrides \code{num.categories} as the number
+#'      of categories is determined using the start, end, and increment.
 #' @param custom.breaks A character containing a comma-seprated list of 
 #'      numeric values to be used as custom break points when the 
-#'      \code{method} is \code{Custom}.
+#'      \code{method} is \code{custom}.
+#' @param custom.always.includes.endpoints A logical value indicating whether,
+#'      when \code{method} is \code{custom}, the endpoints are always included.
+#'      If \code{FALSE}, the endpoints for the cuts are determined by the
+#'      \code{custom.breaks} only. 
 #' @param percents A single numeric value, or a character containing a comma
 #'      -separated list of numeric values to be used when the \code{method}
 #'      of \code{percentiles} is used. Values should be between 0 and 100.
@@ -89,7 +97,9 @@ NiceNumericCuts <- function(input.data,
                            closed.top.string = " and over",
                            equal.intervals.start = 0,
                            equal.intervals.end = 100,
+                           equal.intervals.increment = NULL,
                            custom.breaks = NULL,
+                           custom.always.includes.endpoints = FALSE,
                            percents = NULL,
                            quantile.type = 7,
                            factors.use.labels = TRUE,
@@ -328,6 +338,11 @@ NiceNumericCuts <- function(input.data,
 
     } else {
         if (method == "equal.width") {
+            if (!is.null(equal.intervals.increment)) {
+                equal.intervals.increment <- as.numeric(equal.intervals.increment)
+            } else {
+                equal.intervals.increment <- NA
+            }
             if (is.null(equal.intervals.start)) {
                 warning("The start point for the combined categories has been set to the minimum value of ", 
                     formatC(min.val, digits = 2, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark), 
@@ -365,20 +380,38 @@ NiceNumericCuts <- function(input.data,
             } else {
                 end <- as.numeric(end)
             }
+            if (is.na(equal.intervals.increment)) {
+                cuts <- seq(start, end, length.out = num.categories + 1)    
+            } else {
+                cuts <- seq(start, end, by = equal.intervals.increment)
+                if (cuts[length(cuts)] != end) {
+                    warning("The range of values cannot be evenly divided by the increment of ", 
+                        equal.intervals.increment, ". Please check the value of the Increment ",
+                        "setting.")
+                }    
+            }
             
-            cuts <- seq(start, end, length.out = num.categories + 1)
         } else if (method == "custom") {
             if (is.character(custom.breaks)) {
                 cuts <- as.numeric(ConvertCommaSeparatedStringToVector(custom.breaks))    
             } else {
                 cuts <- custom.breaks
             }
+
             if (any(is.na(cuts))) {
                 stop("Some of the break points could not be interpreted as numbers. ",
                     "Please ensure Category Boundaries contains a comma-seperated list of numbers.")
             }
+            
+            
+            if (custom.always.includes.endpoints) {
+                cuts <- c(min.val, cuts, max.val)
+            }
+            cuts <- unique(cuts)
+            
             start <- min(cuts)
             end <- max(cuts)
+
             if (min.val < start) {
                 n.lower <- length(which(raw.data < start))
                 warning(n.lower, " values in the data are less than the start point of ", start, 

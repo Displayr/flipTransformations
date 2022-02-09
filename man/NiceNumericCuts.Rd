@@ -23,7 +23,9 @@ NiceNumericCuts(
   closed.top.string = " and over",
   equal.intervals.start = 0,
   equal.intervals.end = 100,
+  equal.intervals.increment = NULL,
   custom.breaks = NULL,
+  custom.always.includes.endpoints = FALSE,
   percents = NULL,
   quantile.type = 7,
   factors.use.labels = TRUE,
@@ -96,9 +98,19 @@ range when using \code{method} of \code{equal.width}.}
 \item{equal.intervals.end}{A numeric value indicating the end of the
 range when using \code{method} of \code{equal.width}.}
 
+\item{equal.intervals.increment}{A numeric value specifying the width of
+the increments when using \code{method} of \code{equal.width}. This
+value is optional, and overrides \code{num.categories} as the number
+of categories is determined using the start, end, and increment.}
+
 \item{custom.breaks}{A character containing a comma-seprated list of 
 numeric values to be used as custom break points when the 
-\code{method} is \code{Custom}.}
+\code{method} is \code{custom}.}
+
+\item{custom.always.includes.endpoints}{A logical value indicating whether,
+when \code{method} is \code{custom}, the endpoints are always included.
+If \code{FALSE}, the endpoints for the cuts are determined by the
+\code{custom.breaks} only.}
 
 \item{percents}{A single numeric value, or a character containing a comma
 -separated list of numeric values to be used when the \code{method}
