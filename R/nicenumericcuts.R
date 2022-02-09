@@ -95,8 +95,8 @@ NiceNumericCuts <- function(input.data,
                            closed.bottom.string = " and below",
                            open.top.string = "More than ",
                            closed.top.string = " and over",
-                           equal.intervals.start = 0,
-                           equal.intervals.end = 100,
+                           equal.intervals.start = NULL,
+                           equal.intervals.end = NULL,
                            equal.intervals.increment = NULL,
                            custom.breaks = NULL,
                            custom.always.includes.endpoints = FALSE,
@@ -111,16 +111,20 @@ NiceNumericCuts <- function(input.data,
 
     # Protect against empty strings supplied
     # by Displayr UI
-    if(nzchar(equal.intervals.start)) {
-        equal.intervals.start <- as.numeric(equal.intervals.start)
-    } else {
-        equal.intervals.start <- NULL
+    if (!is.null(equal.intervals.start)) {
+        if(nzchar(equal.intervals.start)) {
+            equal.intervals.start <- as.numeric(equal.intervals.start)
+        } else {
+            equal.intervals.start <- NULL
+        }    
     }
-
-    if(nzchar(equal.intervals.end)) {
-        equal.intervals.end <- as.numeric(equal.intervals.end)    
-    } else {
-        equal.intervals.end <- NULL
+    
+    if (!is.null(equal.intervals.end)) {
+        if(nzchar(equal.intervals.end)) {
+            equal.intervals.end <- as.numeric(equal.intervals.end)    
+        } else {
+            equal.intervals.end <- NULL
+        }
     }
 
 
