@@ -271,7 +271,7 @@ test_that("Multiple variables in data frame handled",{
 
 # Equal-width with intervals give same result as specifying number of categories
 
-test_that("Equal width with inervals", {
+test_that("Equal width with intervals", {
     test.case == "counts.data"
     start = 0
     end = 200
@@ -292,7 +292,6 @@ test_that("Equal width with inervals", {
                                         label.decimals = 0))
     expect_equal(with.num.cat, with.interval)
 })
-
 
 # Always include end points
 
