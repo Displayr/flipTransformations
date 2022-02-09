@@ -2,7 +2,7 @@
 % Please edit documentation in R/asnumeric.R
 \name{AsNumeric}
 \alias{AsNumeric}
-\title{Coerce categorical data to numeric}
+\title{Coerce categorical data to numeric or logical to integer}
 \usage{
 AsNumeric(x, binary = TRUE, name = NULL, remove.first = FALSE)
 }
