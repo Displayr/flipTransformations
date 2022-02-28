@@ -373,7 +373,7 @@ NiceNumericCuts <- function(input.data,
             } else {
                 cuts <- seq(start, end, by = equal.intervals.increment)
                 if (cuts[length(cuts)] < end) {
-                    cuts = c(cuts, cuts[length(cuts)] + increment)
+                    cuts = c(cuts, cuts[length(cuts)] + equal.intervals.increment)
                 }    
             }
             

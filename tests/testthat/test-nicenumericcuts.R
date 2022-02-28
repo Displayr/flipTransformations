@@ -272,7 +272,7 @@ test_that("Multiple variables in data frame handled",{
 # Equal-width with intervals give same result as specifying number of categories
 
 test_that("Equal width with intervals", {
-    test.case == "counts.data"
+    test.case = "counts.data"
     start = 0
     end = 200
     ncat = 5
@@ -291,6 +291,20 @@ test_that("Equal width with intervals", {
                                         equal.intervals.increment = 40,
                                         label.decimals = 0))
     expect_equal(with.num.cat, with.interval)
+})
+
+# Increment setting ensures entire range covered
+
+test_that("Increment setting covers entire range", {
+    test.case = "counts.data"
+    result = NiceNumericCuts(get0(test.case), 
+                             method = "equal.width",
+                             equal.intervals.start = 0,
+                             equal.intervals.end = 200,
+                             label.style = "interval.notation",
+                             equal.intervals.increment = 30)
+    expect_equal(sum(is.na(result)), sum(is.na(get0(test.case))))
+
 })
 
 # Always include end points
