@@ -95,12 +95,12 @@ NiceNumericCuts <- function(input.data,
                            closed.bottom.string = " and below",
                            open.top.string = "More than ",
                            closed.top.string = " and over",
-                           equal.intervals.start = NULL,
-                           equal.intervals.end = NULL,
-                           equal.intervals.increment = NULL,
-                           custom.breaks = NULL,
+                           equal.intervals.start = "",
+                           equal.intervals.end = "",
+                           equal.intervals.increment = "",
+                           custom.breaks = "",
                            custom.always.includes.endpoints = FALSE,
-                           percents = NULL,
+                           percents = "",
                            quantile.type = 7,
                            factors.use.labels = TRUE,
                            grouping.mark = ",", 
@@ -111,28 +111,24 @@ NiceNumericCuts <- function(input.data,
 
     # Protect against empty strings supplied
     # by Displayr UI
-    if (!is.null(equal.intervals.start)) {
-        if(nzchar(equal.intervals.start)) {
-            equal.intervals.start <- as.numeric(equal.intervals.start)
-        } else {
-            equal.intervals.start <- NULL
-        }    
-    }
+    if(nzchar(equal.intervals.start)) {
+        equal.intervals.start <- as.numeric(equal.intervals.start)
+    } else {
+        equal.intervals.start <- NA
+    }    
     
-    if (!is.null(equal.intervals.end)) {
-        if(nzchar(equal.intervals.end)) {
-            equal.intervals.end <- as.numeric(equal.intervals.end)    
-        } else {
-            equal.intervals.end <- NULL
-        }
+    if(nzchar(equal.intervals.end)) {
+        equal.intervals.end <- as.numeric(equal.intervals.end)    
+    } else {
+        equal.intervals.end <- NA
     }
 
 
-    if (method == "custom" && is.null(custom.breaks)) {
+    if (method == "custom" && !nzchar(custom.breaks)) {
         stop("No custom breakpoints have been entered for the custom intervals.")
     }
 
-    if (method == "percentile" && is.null(custom.breaks)) {
+    if (method == "percentile" && !nzchar(percents)) {
         stop("No percentages have been entered for the percentiles.")
     }
 
@@ -342,34 +338,22 @@ NiceNumericCuts <- function(input.data,
 
     } else {
         if (method == "equal.width") {
-            if (!is.null(equal.intervals.increment)) {
+            if (nzchar(equal.intervals.increment)) {
                 equal.intervals.increment <- as.numeric(equal.intervals.increment)
             } else {
                 equal.intervals.increment <- NA
             }
-            if (is.null(equal.intervals.start)) {
-                warning("The start point for the combined categories has been set to the minimum value of ", 
-                    formatC(min.val, digits = 2, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark), 
-                    ". To change this, enter a value in \'Start point\'.")
+            if (is.na(equal.intervals.start)) {
                 equal.intervals.start = min.val        
             }
-            if (is.null(equal.intervals.end)) {
-                warning("The end point for the combined categories has been set to the maximum value of ", 
-                    formatC(max.val, digits = 2, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark), 
-                    ". To change this, enter a value in \'End point\'.")
+            if (is.na(equal.intervals.end)) {
                 equal.intervals.end = max.val        
             }
             if (min.val < equal.intervals.start) {
                 n.lower = length(which(raw.data < equal.intervals.start))
-                warning(n.lower, " values in the data are less than the start point of ", equal.intervals.start, 
-                ". These will be assigned a missing value. Consider setting the Start point setting to ", 
-                floor(min.val), " or lower.")
             }
             if (max.val > equal.intervals.end) {
                 n.higher = length(which(raw.data > equal.intervals.end))
-                warning(n.higher, " values in the data are greater than the end point of ", equal.intervals.end, 
-                ". These will be assigned a missing value. Consider setting the End point setting to ", 
-                ceiling(max.val), " or greater.")
             } 
             start <- equal.intervals.start
             end <- equal.intervals.end
@@ -388,14 +372,13 @@ NiceNumericCuts <- function(input.data,
                 cuts <- seq(start, end, length.out = num.categories + 1)    
             } else {
                 cuts <- seq(start, end, by = equal.intervals.increment)
-                if (cuts[length(cuts)] != end) {
-                    warning("The range of values cannot be evenly divided by the increment of ", 
-                        equal.intervals.increment, ". Please check the value of the Increment ",
-                        "setting.")
+                if (cuts[length(cuts)] < end) {
+                    cuts = c(cuts, cuts[length(cuts)] + increment)
                 }    
             }
             
         } else if (method == "custom") {
+
             if (is.character(custom.breaks)) {
                 cuts <- as.numeric(ConvertCommaSeparatedStringToVector(custom.breaks))    
             } else {
@@ -418,13 +401,9 @@ NiceNumericCuts <- function(input.data,
 
             if (min.val < start) {
                 n.lower <- length(which(raw.data < start))
-                warning(n.lower, " values in the data are less than the start point of ", start, 
-                ". These will be assigned a missing value. Consider setting the samllest value in \'Break points\' to ", floor(min.val))
             }
             if (max.val > end) {
                 n.higher <- length(which(raw.data > end))
-                warning(n.higher, " values in the data are greater than the end point of ", end, 
-                ". These will be assigned a missing value. Consider setting the largest value in \'Break points\' to ", ceiling(max.val))
             } 
         } else if (method == "tidy.intervals") {
 
