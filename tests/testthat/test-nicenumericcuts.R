@@ -99,12 +99,14 @@ prefix = "$"
 suffix = " AUD"
 label.decimals = 2
 for (style in styles) {
-    this.result = table(suppressWarnings(NiceNumericCuts(beta.left, 
+    this.result = table(suppressWarnings(NiceNumericCuts(beta.left,
                             num.categories = 5,
-                            label.style = style, 
-                            number.prefix = "$", 
-                            number.suffix = " AUD", 
+                            label.style = style,
+                            number.prefix = "$",
+                            number.suffix = " AUD",
                             label.decimals = 2)))
+    print(str(this.result))
+    message(str(this.result))
     test_that(paste0("Label styles and customization: ", style), {
         expect_equal(this.result, label.style.tests[[style]])
     })
@@ -121,7 +123,7 @@ load("tidy.intervals.results.rda")
 for(open.or.closed in c("open", "closed")) {
     open.ends = open.or.closed == "open"
     for (ncats in c("six", "ten")) {
-        if (ncats == "six") { 
+        if (ncats == "six") {
             num.categories = 6
         } else if (ncats == "ten") {
             num.categories = 10
@@ -164,9 +166,9 @@ for (style in c("percentiles", "tidy.labels")) {
                 this.result = this.result / sum(this.result) * 100
                 test_that(paste0("Percentile results: ", paste0(c(test.case, percent.spec, side, style), collapse = ", ")), {
                     expect_equal(this.result, percentile.results[[test.case]][[percent.spec]][[side]][[style]])
-                })   
+                })
             }
-             
+
         }
     }
 }
@@ -185,7 +187,7 @@ for (test.case in test.cases) {
     } else if (test.case == "normal.small.range") {
         start = -10
         end = 25
-        ncat = 7    
+        ncat = 7
     } else if (test.case == "beta.left") {
         start = 15
         end = 50
@@ -203,7 +205,7 @@ for (test.case in test.cases) {
                                         label.style = "interval.notation",
                                         label.decimals = 0))
     test_that(paste0("Equal width results: ", test.case), {
-        expect_equal(this.result, equal.width.results[[test.case]]) 
+        expect_equal(this.result, equal.width.results[[test.case]])
     })
 }
 
@@ -215,7 +217,7 @@ for (test.case in test.cases) {
     } else if (test.case == "normal.high.range") {
         breaks = "40, 100, 180"
     } else if (test.case == "normal.small.range") {
-        breaks = "-10,0,10,25"    
+        breaks = "-10,0,10,25"
     } else if (test.case == "beta.left") {
         breaks = "15,20,25,30,50"
     } else if (test.case == "sparse.integers") {
@@ -227,7 +229,7 @@ for (test.case in test.cases) {
                                         label.decimals = 0,
                                         open.end = FALSE))
     test_that(paste0("Custom interval results: ", test.case), {
-        expect_equal(this.result, custom.intervals.results[[test.case]]) 
+        expect_equal(this.result, custom.intervals.results[[test.case]])
     })
 }
 
@@ -242,11 +244,11 @@ for (data.type in c("factor", "character")) {
             test.data = as.character(test.data)
         }
         this.result = suppressWarnings(table(NiceNumericCuts(test.data,
-                                      num.categories = 5, 
-                                      grouping.mark = ".", 
+                                      num.categories = 5,
+                                      grouping.mark = ".",
                                       decimals.mark = ",")))
         expect_equal(this.result, euro.format.results[[data.type]])
-        # euro.format.results[[data.type]] = this.result 
+        # euro.format.results[[data.type]] = this.result
     })
 }
 
@@ -297,7 +299,7 @@ test_that("Equal width with intervals", {
 
 test_that("Increment setting covers entire range", {
     test.case = "counts.data"
-    result = NiceNumericCuts(get0(test.case), 
+    result = NiceNumericCuts(get0(test.case),
                              method = "equal.width",
                              equal.intervals.start = 0,
                              equal.intervals.end = 200,
