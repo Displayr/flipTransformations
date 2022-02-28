@@ -5,6 +5,11 @@ data(phone, package = "flipExampleData")
 data(burger.brand.tracking, package = "flipExampleData")
 data(ilock, package = "flipExampleData")
 
+# Helper function to account for shifting attributes in tables in r devel
+checkNiceNumericCuts <- function(current.result, saved.result) {
+   expect_equal(as.vector(current.result), as.vector(saved.result))
+   expect_equal(names(current.result), names(saved.result))
+}
 
 # Test cases
 # Phone count of SMS messages sent
@@ -105,12 +110,10 @@ for (style in styles) {
                             number.prefix = "$",
                             number.suffix = " AUD",
                             label.decimals = 2)))
-    print(str(this.result))
-    message(str(this.result))
-    print(str(label.style.tests[[style]]))
-    message(str(label.style.tests[[style]]))
+
+
     test_that(paste0("Label styles and customization: ", style), {
-        expect_equal(this.result, label.style.tests[[style]])
+        checkNiceNumericCuts(this.result, label.style.tests[[style]])
     })
     # label.style.tests[[style]] = this.result
 }
@@ -139,7 +142,7 @@ for(open.or.closed in c("open", "closed")) {
                                                      open.ends = open.ends)))
 
             test_that(test.name, {
-                expect_equal(this.result, tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]])
+                checkNiceNumericCuts(this.result, tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]])
             })
             # tidy.intervals.results[[open.or.closed]][[ncats]][[test.case]] = this.result
         }
@@ -167,7 +170,7 @@ for (style in c("percentiles", "tidy.labels")) {
                                               label.style = style)))
                 this.result = this.result / sum(this.result) * 100
                 test_that(paste0("Percentile results: ", paste0(c(test.case, percent.spec, side, style), collapse = ", ")), {
-                    expect_equal(this.result, percentile.results[[test.case]][[percent.spec]][[side]][[style]])
+                    checkNiceNumericCuts(this.result, percentile.results[[test.case]][[percent.spec]][[side]][[style]])
                 })
             }
 
@@ -207,7 +210,7 @@ for (test.case in test.cases) {
                                         label.style = "interval.notation",
                                         label.decimals = 0))
     test_that(paste0("Equal width results: ", test.case), {
-        expect_equal(this.result, equal.width.results[[test.case]])
+        checkNiceNumericCuts(this.result, equal.width.results[[test.case]])
     })
 }
 
@@ -231,7 +234,7 @@ for (test.case in test.cases) {
                                         label.decimals = 0,
                                         open.end = FALSE))
     test_that(paste0("Custom interval results: ", test.case), {
-        expect_equal(this.result, custom.intervals.results[[test.case]])
+        checkNiceNumericCuts(this.result, custom.intervals.results[[test.case]])
     })
 }
 
@@ -249,7 +252,7 @@ for (data.type in c("factor", "character")) {
                                       num.categories = 5,
                                       grouping.mark = ".",
                                       decimals.mark = ",")))
-        expect_equal(this.result, euro.format.results[[data.type]])
+        checkNiceNumericCuts(this.result, euro.format.results[[data.type]])
         # euro.format.results[[data.type]] = this.result
     })
 }
@@ -294,7 +297,7 @@ test_that("Equal width with intervals", {
                                         label.style = "interval.notation",
                                         equal.intervals.increment = 40,
                                         label.decimals = 0))
-    expect_equal(with.num.cat, with.interval)
+    checkNiceNumericCuts(with.num.cat, with.interval)
 })
 
 # Increment setting ensures entire range covered
@@ -330,5 +333,5 @@ test_that("Always include end points", {
                                         custom.always.includes.endpoints = TRUE,
                                         open.end = FALSE))
 
-    expect_equal(with.all, with.force.include)
+    checkNiceNumericCuts(with.all, with.force.include)
 })
