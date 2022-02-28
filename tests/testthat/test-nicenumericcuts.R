@@ -107,6 +107,8 @@ for (style in styles) {
                             label.decimals = 2)))
     print(str(this.result))
     message(str(this.result))
+    print(str(label.style.tests[[style]]))
+    message(str(label.style.tests[[style]]))
     test_that(paste0("Label styles and customization: ", style), {
         expect_equal(this.result, label.style.tests[[style]])
     })
