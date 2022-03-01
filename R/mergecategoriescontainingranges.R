@@ -184,7 +184,7 @@ MergeRangeCategories <- function(input.data,
     # when the categories are initially out of order. For example
     # if the first two labels are "18 to 24" and "Under 18".
     sort.values = label.data$first.value
-    for (j in seq_len(label.data)) {
+    for (j in seq_len(nrow(label.data))) {
         if (grepl("lower", label.data[j, "label.character"])) {
             sort.values[j] = sort.values[j] - 0.00001
         } else if (grepl("upper", label.data[j, "label.character"])) {

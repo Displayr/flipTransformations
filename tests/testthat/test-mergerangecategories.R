@@ -138,7 +138,7 @@ test_that("Labels identified correctly for DS-3964", {
     expect_equal(table(MergeRangeCategories(test.case.3964)), result.3964) 
 })
 
-test_that("Interval phases being processed correctly" {
+test_that("Interval phases being processed correctly", {
     expect_equal(identifyClosedOrOpenBoundariesFromText("less than"), "lower boundary open")
     expect_equal(identifyClosedOrOpenBoundariesFromText("more than"), "upper boundary open")
     expect_equal(identifyClosedOrOpenBoundariesFromText("and under"), "lower boundary closed")
