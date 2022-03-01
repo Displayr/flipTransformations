@@ -10,8 +10,8 @@ MergeRangeCategories(
   method = c("even.proportions", "even.ranges"),
   grouping.mark = ",",
   decimals.mark = ".",
-  lower.bound = NULL,
-  upper.bound = NULL
+  lower.bound = "",
+  upper.bound = ""
 )
 }
 \arguments{
@@ -37,8 +37,8 @@ in the input data. Usually a period.}
 numeric ranges when the number is not explicitly included in the 
 level labels. For example, when the lowest level is "Under 18", you
 may wish to specify that the lowest possible value in this level
-is 12, 15, 0, etc. Default value of NULL means that the lowest
-level with numeric values will not be combined.}
+is 12, 15, 0, etc. Default value of "" means that an estimate will
+be used based on the width of the next highest range.}
 
 \item{upper.bound}{As above, for the higher end of the range.}
 }

@@ -23,8 +23,8 @@
 #'      numeric ranges when the number is not explicitly included in the 
 #'      level labels. For example, when the lowest level is "Under 18", you
 #'      may wish to specify that the lowest possible value in this level
-#'      is 12, 15, 0, etc. Default value of NULL means that the lowest
-#'      level with numeric values will not be combined.
+#'      is 12, 15, 0, etc. Default value of "" means that an estimate will
+#'      be used based on the width of the next highest range.
 #' @param upper.bound As above, for the higher end of the range.
 #'
 #'
@@ -37,8 +37,8 @@ MergeRangeCategories <- function(input.data,
                                 method = c("even.proportions", "even.ranges"),
                                 grouping.mark = ",", 
                                 decimals.mark = ".", 
-                                lower.bound = NULL, 
-                                upper.bound = NULL) {
+                                lower.bound = "", 
+                                upper.bound = "") {
 
     method = match.arg(method)
 
@@ -47,6 +47,7 @@ MergeRangeCategories <- function(input.data,
     } else {
         raw.data <- input.data
     }
+
 
     if (num.categories >= length(unique(raw.data))) {
         warning("The number of categories requested is", num.categories,
@@ -176,7 +177,22 @@ MergeRangeCategories <- function(input.data,
                           index = 2)
     label.data$first.value <- first.value
     label.data$second.value <- second.value
-    label.data <- label.data[order(label.data$first.value), ]
+
+    # Disambiguate first.value when sorting to ensure that 
+    # open-ended labels are sorted correctly. Otherwise causes
+    # a problem when same number appears twice in labels and
+    # when the categories are initially out of order. For example
+    # if the first two labels are "18 to 24" and "Under 18".
+    sort.values = label.data$first.value
+    for (j in seq_len(nrow(label.data))) {
+        if (grepl("lower", label.data[j, "label.character"])) {
+            sort.values[j] = sort.values[j] - 0.00001
+        } else if (grepl("upper", label.data[j, "label.character"])) {
+            sort.values[j] = sort.values[j] + 0.00001
+        }
+    }
+
+    label.data <- label.data[order(sort.values), ]
 
     # If we sort labels by the first value, and the second value is out of order
     # it implies inconsistency.
@@ -198,15 +214,40 @@ MergeRangeCategories <- function(input.data,
     # with user-supplied values if supplied
     if (is.na(label.data[1, "second.value"])) {
         label.data[1, "second.value"] <- label.data[1, "first.value"]
-        if (!is.null(lower.bound)) {
+        if (nzchar(lower.bound)) {
             label.data[1, "first.value"] <- as.numeric(lower.bound)
         } else {
-            label.data[1, "first.value"] <- NA
+            lower.interp <- label.data[1, "second.value"] - (label.data[2, "second.value"] - label.data[2, "first.value"])
+            if (is.na(lower.interp) | lower.interp < 0) {
+                lower.interp <- 0
+            }
+            label.data[1, "first.value"] <- lower.interp
+            if (method == "even.ranges") {
+                warning("The lower value for ", 
+                     label.data[1, "label"], 
+                     " has been set to ",
+                     lower.interp,
+                     ". To change this, enter a new value in INPUT DATA LABELS > Start of Range")    
+            }
+              
         }
     }
 
-    if (is.na(label.data[nrow(label.data), "second.value"]) && !is.null(upper.bound)) { 
-        label.data[nrow(label.data), "second.value"] <- as.numeric(upper.bound)
+    if (is.na(label.data[nrow(label.data), "second.value"])) {
+        if (nzchar(upper.bound)) { 
+            label.data[nrow(label.data), "second.value"] <- as.numeric(upper.bound)
+        } else {
+            last.index = nrow(label.data) - 1
+            upper.interp = label.data[nrow(label.data), "first.value"] + (label.data[last.index, "second.value"] - label.data[last.index, "first.value"])
+            if (method == "even.ranges") {
+                warning("The upper value for ",
+                     label.data[1, "label"], 
+                     " has been set to ",
+                     upper.interp,
+                     ". To change this, enter a new value in INPUT DATA LABELS > End of Range")    
+            }
+             
+        }
     }
 
 
@@ -218,7 +259,6 @@ MergeRangeCategories <- function(input.data,
     merge.data <- label.data[, c("ID", "original.labels", "counts", "range")]
     if (method[1] == "even.proportions") {
         values = merge.data$counts
-        # n.cats = num.categories - length(which(non.number))
     } else if (method[1] == "even.ranges") {
         no.range <- is.na(merge.data$range)
         
@@ -236,7 +276,6 @@ MergeRangeCategories <- function(input.data,
                 "Such labels include ", no.range.label.text)
             
         }
-        # n.cats = num.categories - length(which(no.range)) - length(which(non.number))
         merge.data <- merge.data[!no.range, ]
         values <- merge.data$range
 
@@ -253,6 +292,7 @@ MergeRangeCategories <- function(input.data,
                                           values = values, 
                                           target.number = num.categories)
 
+    
     for (j in seq_along(merge.solution)) {
         current.ids <- strsplit(merge.solution[j], "\\.")[[1]]
         matches <- label.data$ID %in% current.ids
@@ -422,10 +462,10 @@ identifyClosedOrOpenBoundariesFromText <- function(label) {
     global.closed.phrases <- c("or equal")
     
     lower.boundary.open.phrases <- c("less than", "under", "fewer than", "lower than", "below", "<", "smaller than", "younger than")
-    lower.boundary.closed.phrases <- c( "up to", "<=", "and less", "and under", "and lower", "and below", "and smaller")
+    lower.boundary.closed.phrases <- c(paste0(c("and ", "or "), rep(c("less", "under", "lower", "below", "smaller", "younger", "fewer"), each = 2)), c( "up to", "<="))
 
-    upper.boundary.open.phrases <- c("greater than", "over", "more than", "above", ">", "larger than", "older than")
-    upper.boundary.closed.phrases <- c("and above", "and over", "and greater", "or more", "or over", "or above", ">=")
+    upper.boundary.open.phrases <- c("greater than", "over", "more than", "above", ">", "larger than", "older than", "bigger than")
+    upper.boundary.closed.phrases <- c(paste0(c("and ", "or "), rep(c("above", "greater", "more", "over", "older", "bigger", "larger"), each = 2)), ">=")
 
     lower.label <- tolower(label)
 
