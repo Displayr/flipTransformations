@@ -111,18 +111,9 @@ NiceNumericCuts <- function(input.data,
 
     # Protect against empty strings supplied
     # by Displayr UI
-    if(nzchar(equal.intervals.start)) {
-        equal.intervals.start <- as.numeric(equal.intervals.start)
-    } else {
-        equal.intervals.start <- NA
-    }    
-    
-    if(nzchar(equal.intervals.end)) {
-        equal.intervals.end <- as.numeric(equal.intervals.end)    
-    } else {
-        equal.intervals.end <- NA
-    }
+    equal.intervals.start <- if(nzchar(equal.intervals.start)) as.numeric(equal.intervals.start) else NA
 
+    equal.intervals.end <- if(nzchar(equal.intervals.end)) as.numeric(equal.intervals.end) else NA
 
     if (method == "custom" && !nzchar(custom.breaks)) {
         stop("No custom breakpoints have been entered for the custom intervals.")

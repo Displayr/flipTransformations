@@ -184,10 +184,10 @@ MergeRangeCategories <- function(input.data,
     # when the categories are initially out of order. For example
     # if the first two labels are "18 to 24" and "Under 18".
     sort.values = label.data$first.value
-    for (j in 1L:nrow(label.data)) {
-        if (grepl( "lower", label.data[j, "label.character"])) {
+    for (j in seq_len(label.data)) {
+        if (grepl("lower", label.data[j, "label.character"])) {
             sort.values[j] = sort.values[j] - 0.00001
-        } else if (grepl("uppper", label.data[j, "label.character"])) {
+        } else if (grepl("upper", label.data[j, "label.character"])) {
             sort.values[j] = sort.values[j] + 0.00001
         }
     }
@@ -227,7 +227,7 @@ MergeRangeCategories <- function(input.data,
                      label.data[1, "label"], 
                      " has been set to ",
                      lower.interp,
-                     ". To change this, enter a new value in NPUT DATA LABELS > Start of Range")    
+                     ". To change this, enter a new value in INPUT DATA LABELS > Start of Range")    
             }
               
         }
@@ -244,7 +244,7 @@ MergeRangeCategories <- function(input.data,
                      label.data[1, "label"], 
                      " has been set to ",
                      upper.interp,
-                     ". To change this, enter a new value in NPUT DATA LABELS > End of Range")    
+                     ". To change this, enter a new value in INPUT DATA LABELS > End of Range")    
             }
              
         }
@@ -462,7 +462,7 @@ identifyClosedOrOpenBoundariesFromText <- function(label) {
     global.closed.phrases <- c("or equal")
     
     lower.boundary.open.phrases <- c("less than", "under", "fewer than", "lower than", "below", "<", "smaller than", "younger than")
-    lower.boundary.closed.phrases <- c(paste0(c("and ", "or "), rep(c("less", "under", "lower", "below", "smaller", "younger", "fewer")), each = 2), c( "up to", "<="))
+    lower.boundary.closed.phrases <- c(paste0(c("and ", "or "), rep(c("less", "under", "lower", "below", "smaller", "younger", "fewer"), each = 2)), c( "up to", "<="))
 
     upper.boundary.open.phrases <- c("greater than", "over", "more than", "above", ">", "larger than", "older than", "bigger than")
     upper.boundary.closed.phrases <- c(paste0(c("and ", "or "), rep(c("above", "greater", "more", "over", "older", "bigger", "larger"), each = 2)), ">=")
