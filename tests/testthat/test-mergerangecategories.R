@@ -106,14 +106,6 @@ for (method in c("even.proportions", "even.ranges")) {
     })
 }
 
-# Inappropriate data
-
-test_that("Warning on inappropriate ranges", {
-    test.warnings = capture_warnings(MergeRangeCategories(cola.exercise.frequency, num.categories = 5))
-    expected.warnings = c("Some labels do not contain numbers and will not be combined. Such labels include 'Every or nearly every day' and 'Once a week'",
-        "There is insufficient numeric information in the data labels to determine how to combine these categories into 5 categories. No merging has been done.")
-    expect_setequal(test.warnings, expected.warnings)
-})
 
 # Missing data
 
@@ -122,10 +114,10 @@ test_that("Missing data preserved", {
 })
 
 
-# DS-3694 Not detecting labels properly, causing bad labels. 
-# Also tests that range detection still works when initial 
+# DS-3694 Not detecting labels properly, causing bad labels.
+# Also tests that range detection still works when initial
 # factor has levels out of order.
-test.case.3964 = factor(rep(c("Less than 18 years", 
+test.case.3964 = factor(rep(c("Less than 18 years",
                               "18 to 24 years",
                               "25 to 34 years",
                               "35 to 44 years",
@@ -135,12 +127,12 @@ test.case.3964 = factor(rep(c("Less than 18 years",
 
 load("result.2964.rda")
 test_that("Labels identified correctly for DS-3964", {
-    expect_equal(table(MergeRangeCategories(test.case.3964)), result.3964) 
+    expect_equal(table(MergeRangeCategories(test.case.3964)), result.3964)
 })
 
 test_that("Interval phases being processed correctly", {
     expect_equal(identifyClosedOrOpenBoundariesFromText("less than"), "lower boundary open")
     expect_equal(identifyClosedOrOpenBoundariesFromText("more than"), "upper boundary open")
     expect_equal(identifyClosedOrOpenBoundariesFromText("and under"), "lower boundary closed")
-    expect_equal(identifyClosedOrOpenBoundariesFromText("or more"), "upper boundary closed")    
+    expect_equal(identifyClosedOrOpenBoundariesFromText("or more"), "upper boundary closed")
 })

@@ -110,7 +110,6 @@ MergeRangeCategories <- function(input.data,
         if (length(no.number.labels) > 1) {
             no.number.label.text <- paste0(paste0("\'", no.number.labels[1:2], "\'"), collapse = " and ")
         }
-        warning("Some labels do not contain numbers and will not be combined. Such labels include ", no.number.label.text)
     }
 
 
@@ -222,14 +221,6 @@ MergeRangeCategories <- function(input.data,
                 lower.interp <- 0
             }
             label.data[1, "first.value"] <- lower.interp
-            if (method == "even.ranges") {
-                warning("The lower value for ", 
-                     label.data[1, "label"], 
-                     " has been set to ",
-                     lower.interp,
-                     ". To change this, enter a new value in INPUT DATA LABELS > Start of Range")    
-            }
-              
         }
     }
 
@@ -238,15 +229,7 @@ MergeRangeCategories <- function(input.data,
             label.data[nrow(label.data), "second.value"] <- as.numeric(upper.bound)
         } else {
             last.index = nrow(label.data) - 1
-            upper.interp = label.data[nrow(label.data), "first.value"] + (label.data[last.index, "second.value"] - label.data[last.index, "first.value"])
-            if (method == "even.ranges") {
-                warning("The upper value for ",
-                     label.data[1, "label"], 
-                     " has been set to ",
-                     upper.interp,
-                     ". To change this, enter a new value in INPUT DATA LABELS > End of Range")    
-            }
-             
+            upper.interp = label.data[nrow(label.data), "first.value"] + (label.data[last.index, "second.value"] - label.data[last.index, "first.value"])   
         }
     }
 
@@ -268,12 +251,6 @@ MergeRangeCategories <- function(input.data,
             if (length(no.range.labels) > 1) {
                 no.range.label.text <- paste0(paste0("\'", no.range.labels[1:2], "\'"), collapse = " and ")
             }
-            warning("Some labels only contain a single value, and so the range ",
-                "of values represented by these labels cannot be determined. These ",
-                "categories will not be merged. For labels which appear as the ",
-                "first or last categories, you can supply INPUT DATA LABELS > Start ",
-                "of range and INPUT DATA LABELS > End of Range to overcome this.",
-                "Such labels include ", no.range.label.text)
             
         }
         merge.data <- merge.data[!no.range, ]
