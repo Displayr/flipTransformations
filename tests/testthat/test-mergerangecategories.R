@@ -11,6 +11,7 @@ burger.income = burger.brand.tracking$C4
 burger.age = burger.brand.tracking$S1
 phone.age = phone$q4
 cola.exercise.frequency = cola$Q28
+cola.age = cola$Q3
 ilock.income = ilock$Q7
 ilock.income[ilock.income %in% c("Don’t know", "I refuse to answer this question")] = NA
 ilock.income = droplevels(ilock.income)
@@ -135,4 +136,8 @@ test_that("Interval phases being processed correctly", {
     expect_equal(identifyClosedOrOpenBoundariesFromText("more than"), "upper boundary open")
     expect_equal(identifyClosedOrOpenBoundariesFromText("and under"), "lower boundary closed")
     expect_equal(identifyClosedOrOpenBoundariesFromText("or more"), "upper boundary closed")
+})
+
+test_that("Ambiguous ranges not ignored DS-3693", {
+    expect_equal(length(levels(MergeRangeCategories(cola.age, method = "even.ranges"))), 2)
 })
