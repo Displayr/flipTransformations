@@ -230,9 +230,9 @@ MergeRangeCategories <- function(input.data,
         } else {
             last.index = nrow(label.data) - 1
             upper.interp = label.data[nrow(label.data), "first.value"] + (label.data[last.index, "second.value"] - label.data[last.index, "first.value"])   
+            label.data[nrow(label.data), "second.value"] <- upper.interp
         }
     }
-
 
     # Compute ranges for open-ended labels at top and bottom
     label.data$range <- label.data[, "second.value"] - label.data[, "first.value"]
