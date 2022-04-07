@@ -16,7 +16,7 @@ ilock.income = ilock$Q7
 ilock.income[ilock.income %in% c("Don’t know", "I refuse to answer this question")] = NA
 ilock.income = droplevels(ilock.income)
 
-
+test_that("ilock", {
 test.cases = c("burger.income", "burger.age", "phone.age", "ilock.income")
 error.cases = c("cola.exercise.frequency")
 # Methods
@@ -106,7 +106,7 @@ for (method in c("even.proportions", "even.ranges")) {
         expect_equal(this.result, euro.results[[method]])
     })
 }
-
+})
 
 # Missing data
 
