@@ -211,8 +211,17 @@ FactorToNumeric <- function(x, binary = TRUE, name = NULL, remove.first = TRUE)
 FactorToIndicators <- function(variable, name = NULL)
 {
     if (is.null(name))
-        name = Names(variable)
-    result <- stats::model.matrix( ~ variable - 1)
+        name <- Names(variable)
+    if (length(levels(variable)) == 1) { 
+        # When only a single level, model.matrix will fail.
+        # Instead, create a single-column matrix where all
+        # non-na values are set to 1. 
+        result <- matrix(as.numeric(!is.na(variable)), ncol = 1)
+        result[is.na(variable)] <- NA
+
+    } else {
+        result <- stats::model.matrix( ~ variable - 1)    
+    }
     levs <- levels(variable)
     colnames(result) <- paste0(name, ".", 1:nlevels(variable))
     result <- as.data.frame(result)
