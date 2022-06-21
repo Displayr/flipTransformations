@@ -81,3 +81,9 @@ test_that("asNumericWarning messages", {
     expect_equal(flipTransformations:::asNumericWarning(NULL, to.factor.levels = FALSE),
                  paste0(message.head, " "))
 })
+
+test_that("Single level factor", {
+    vals <- c(1,1,1,1,1,1, NA, NA)
+    ff <- factor(vals, levels = 1)
+    expect_equal(FactorToIndicators(ff), data.frame("ff.1" = vals))
+})
