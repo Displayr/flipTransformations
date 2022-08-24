@@ -138,7 +138,7 @@ removeSUMColumns <- function(df)
 numbersFromCategoricalVariableSets <- function(x)
 {
     vv <- attr(x, "variablevalues")
-    duplicate.levels <- vapply(vv, FUN = \(y) anyDuplicated(names(y)), FUN.VALUE = numeric(1))
+    duplicate.levels <- vapply(vv, FUN = function(y) anyDuplicated(names(y)), FUN.VALUE = numeric(1))
     if (!all(duplicate.levels == 0))
         stop("The variable(s) that you have selected have duplicate category labels. ",
              "You should edit the category labels to remove duplicates before using this feature.")
