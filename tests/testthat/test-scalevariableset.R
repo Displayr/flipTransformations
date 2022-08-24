@@ -204,3 +204,44 @@ test_that("PickOneMulti with merge, hide, NET",
     expect_equal(attributes(x)[!names(attributes(x)) %in% attr.to.rm],
                  attributes(out.AN)[!names(attributes(out.AN)) %in% attr.to.rm])
 })
+
+test_that("DS-3898 Duplicate factor levels produce wrong answer",
+{
+    # Pick One - Multi Variable set where the category labels are duplicated
+    test.case <- structure(list(X = structure(c(NA, 4L, 3L, 4L, 3L, 3L, NA, 4L, 
+4L, 3L, 2L, 2L, 1L, 3L, 3L, 5L, 3L, 4L, 4L, 5L), levels = c("A", 
+"B", "C", "B", "A"), class = c("ordered", "factor")), Y = structure(c(NA, 
+3L, 5L, 5L, 4L, 3L, NA, 4L, 1L, 3L, 4L, 2L, 3L, 4L, 3L, 4L, 4L, 
+4L, 4L, 5L), levels = c("A", "B", "C", "B", "A"), class = c("ordered", 
+"factor"))), row.names = c(302L, 273L, 103L, 43L, 951L, 698L, 
+2L, 600L, 999L, 54L, 688L, 592L, 522L, 617L, 586L, 833L, 941L, 
+357L, 139L, 74L), questiontype = "PickOneMulti", question = "Question", dataset = "Final(Panel)-BrandHook - T2 Growth - [A-41336]_22Aug2022.sav", span = list(
+    rows = structure(list(c("Label 1", "Label 2", "Label 3", 
+    "Label 4", "Label 5", "Label 6", "Label 7", "Label 8", "Label 9", 
+    "Label 10", "Label 11", "Label 12")), class = "data.frame", names = "", row.names = c(NA, 
+    12L)), columns = structure(list(c("Missing data", "A", "B", 
+    "C", "B", "A")), class = "data.frame", names = "", row.names = c(NA, 
+    6L))), values = c(A = 1, B = 2, C = 3, B = 4, A = 5), sourcevalues = c(A = 1, 
+B = 2, C = 3, B = 4, A = 5), variablevalues = list(c(A = 1, B = 2, 
+C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, 
+B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5
+), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, 
+B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, 
+B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5
+), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, 
+B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5)), variablesourcevalues = list(
+    c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, 
+    B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, 
+    B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, 
+    A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, 
+    C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5
+    ), c(A = 1, B = 2, C = 3, B = 4, A = 5), c(A = 1, B = 2, 
+    C = 3, B = 4, A = 5), c(A = 1, B = 2, C = 3, B = 4, A = 5
+    ), c(A = 1, B = 2, C = 3, B = 4, A = 5)), codeframe = list(
+    A = 1, B = 2, C = 3, B = 4, A = 5, NET = c(1, 2, 3, 4, 5)), secondarycodeframe = list(
+    `Label 1` = 0L, `Label 2` = 1L, `Label 3` = 2L, `Label 4` = 3L, 
+    `Label 5` = 4L, `Label 6` = 5L, `Label 7` = 6L, `Label 8` = 7L, 
+    `Label 9` = 8L, `Label 10` = 9L, `Label 11` = 10L, `Label 12` = 11L), transposed = TRUE, class = "data.frame")
+
+    expect_error(ScaleVariableSet(test.case, type = 'standardize', within.case = TRUE))
+})
