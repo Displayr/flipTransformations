@@ -248,30 +248,33 @@ NiceNumericCuts <- function(input.data,
                  "Please enter a single number or a comma-seperated list of numbers.")
         }
         if (length(percents) == 1) {
-            if (100 %% percents != 0) {
-                stop("The entered percentage ", 
-                     percents, 
-                     " does not divide evenly into 100%. ",
-                     "Try setting \'Number of categories\' to 5, 10, 20, etc")
-            } else {
                 percents <- seq(0, 100, by = percents)
-            } 
         } else {
             percents <- c(0, percents, 100)
             percents <- sort(percents)
         }
         percents <- unique(percents)
         percents <- percents / 100
-        qq <- quantile(raw.data, probs = percents, 
-                      na.rm = TRUE, include.lowest = TRUE, 
+        qq <- quantile(raw.data, probs = percents,
+                      na.rm = TRUE, include.lowest = TRUE,
                       type = quantile.type)
         
         if (anyDuplicated(qq) > 0) {
             warning("Some percentiles are empty in the range you have specified and will not be shown.");
         }
         
+        # Include -Infinity in cuts if the smallest data point is the upper bound
+        # of a quantile. Ensures that that data point is the upper value of the first cut
+        # rather than being the starting value of the first cut. Only becomes an
+        # issue if the cuts are being performed with the closed boundary of each
+        # cut being the uppper (or "right") side of the interval. DS-3835.
+
+        if (length(which(qq == min(raw.data, na.rm = TRUE))) > 1 && right)
+            qq <- c(-Inf, qq)
+
         # Remove duplicate cut points
         qq <- qq[!duplicated(qq, fromLast = TRUE)]
+        
 
         if (label.style == "percentiles") {
             lower.labels <- names(qq)[-length(qq)]
@@ -325,7 +328,7 @@ NiceNumericCuts <- function(input.data,
                                  from = levels(new.factors[[1]]), 
                                  to = new.labels)
         }
-        new.factors <- as.data.frame(new.factors)    
+        new.factors <- as.data.frame(new.factors)
 
     } else {
         if (method == "equal.width") {
@@ -335,20 +338,20 @@ NiceNumericCuts <- function(input.data,
                 equal.intervals.increment <- NA
             }
             if (is.na(equal.intervals.start)) {
-                equal.intervals.start = min.val        
+                equal.intervals.start <- min.val
             }
             if (is.na(equal.intervals.end)) {
-                equal.intervals.end = max.val        
+                equal.intervals.end <- max.val
             }
             if (min.val < equal.intervals.start) {
-                n.lower = length(which(raw.data < equal.intervals.start))
+                n.lower <- length(which(raw.data < equal.intervals.start))
             }
             if (max.val > equal.intervals.end) {
-                n.higher = length(which(raw.data > equal.intervals.end))
+                n.higher <- length(which(raw.data > equal.intervals.end))
             } 
             start <- equal.intervals.start
             end <- equal.intervals.end
-            if (nchar(start) == 0) { 
+            if (nchar(start) == 0) {
                 start <- min.val
             } else {
                 start <- as.numeric(start)
@@ -360,14 +363,13 @@ NiceNumericCuts <- function(input.data,
                 end <- as.numeric(end)
             }
             if (is.na(equal.intervals.increment)) {
-                cuts <- seq(start, end, length.out = num.categories + 1)    
+                cuts <- seq(start, end, length.out = num.categories + 1)
             } else {
                 cuts <- seq(start, end, by = equal.intervals.increment)
                 if (cuts[length(cuts)] < end) {
-                    cuts = c(cuts, cuts[length(cuts)] + equal.intervals.increment)
-                }    
+                    cuts <- c(cuts, cuts[length(cuts)] + equal.intervals.increment)
+                }
             }
-            
         } else if (method == "custom") {
 
             if (is.character(custom.breaks)) {
@@ -381,12 +383,10 @@ NiceNumericCuts <- function(input.data,
                     "Please ensure Category Boundaries contains a comma-seperated list of numbers.")
             }
             
-            
             if (custom.always.includes.endpoints) {
                 cuts <- c(min.val, cuts, max.val)
             }
             cuts <- unique(cuts)
-            
             start <- min(cuts)
             end <- max(cuts)
 
@@ -395,7 +395,7 @@ NiceNumericCuts <- function(input.data,
             }
             if (max.val > end) {
                 n.higher <- length(which(raw.data > end))
-            } 
+            }
         } else if (method == "tidy.intervals") {
 
             cuts <- pretty(raw.data, n = num.categories)
@@ -409,30 +409,30 @@ NiceNumericCuts <- function(input.data,
         } else {
             stop("Method ", method, " is not recognized. Use one of: tidy.intervals, equal.width, percentiles, or custom.")
         }
-        new.factors <- as.data.frame(lapply(input.data, 
-                                           FUN = cut, 
-                                           breaks = cuts, 
-                                           right = right, 
-                                           include.lowest = TRUE, 
-                                           labels = NULL, 
+        new.factors <- as.data.frame(lapply(input.data,
+                                           FUN = cut,
+                                           breaks = cuts,
+                                           right = right,
+                                           include.lowest = TRUE,
+                                           labels = NULL,
                                            dig.lab = 4))
         new.labels <- tidyIntervalLabels(levels(new.factors[[1]]),
-                                            raw.data = raw.data, 
-                                            decimals = label.decimals, 
-                                            style = label.style, 
+                                            raw.data = raw.data,
+                                            decimals = label.decimals,
+                                            style = label.style,
                                             integer.data = all.integers,
                                             open.ended = open.ends,
-                                            prefix = number.prefix, 
+                                            prefix = number.prefix,
                                             suffix = number.suffix,
                                             open.bottom.string = open.bottom.string,
                                             closed.bottom.string = closed.bottom.string,
                                             open.top.string = open.top.string,
                                             closed.top.string = closed.top.string,
-                                            grouping.mark = grouping.mark, 
-                                            decimals.mark = decimals.mark)                                        
-        new.factors <- as.data.frame(lapply(new.factors, 
-                                           FUN = mapvalues, 
-                                           from = levels(new.factors[[1]]), 
+                                            grouping.mark = grouping.mark,
+                                            decimals.mark = decimals.mark)
+        new.factors <- as.data.frame(lapply(new.factors,
+                                           FUN = mapvalues,
+                                           from = levels(new.factors[[1]]),
                                            to = new.labels))
     }
 
@@ -446,16 +446,15 @@ NiceNumericCuts <- function(input.data,
                 if (is.factor(original.data[, j])) {
                     level.list <- c(level.list, as.character(levels(droplevels(original.data[missings, j]))))
                 } else {
-                    level.list <- c(level.list, unique(as.character(original.data[missings, j])))    
+                    level.list <- c(level.list, unique(as.character(original.data[missings, j])))
                 }
                 levels(new.factors[, j]) <- level.list
                 new.factors[missings, j] <- as.character(original.data[missings, j])
             }
 
-        }    
+        }
     }
 
-    
     colnames(new.factors) <- colnames(original.data)
     return(new.factors)
 }
@@ -466,19 +465,19 @@ NiceNumericCuts <- function(input.data,
 # of the form [x , y], (x, y], [x,y), (x,y)
 # extract the numbers and create new labels
 # based on requested style.
-tidyIntervalLabels <- function(labels, 
-                               raw.data, 
-                               decimals = NULL, 
-                               style = "tidy.labels", 
-                               integer.data = FALSE, 
-                               prefix = "", 
-                               suffix = "", 
+tidyIntervalLabels <- function(labels,
+                               raw.data,
+                               decimals = NULL,
+                               style = "tidy.labels",
+                               integer.data = FALSE,
+                               prefix = "",
+                               suffix = "",
                                open.ended = FALSE,
                                open.bottom.string = "Less than ",
                                closed.bottom.string = " and below",
                                open.top.string = "More than ",
                                closed.top.string = " and over",
-                               grouping.mark = ",", 
+                               grouping.mark = ",",
                                decimals.mark = "."
                                ) {
     new.labels <- labels
@@ -494,7 +493,7 @@ tidyIntervalLabels <- function(labels,
             next.val <-  getValuesInInterval(labels[k+1])[1]
         }
 
-        new.labels[k] <- tidyIntervalLabel(labels[k], 
+        new.labels[k] <- tidyIntervalLabel(labels[k],
                                           raw.data = raw.data,
                                           decimals = decimals,
                                           style = style,
@@ -510,7 +509,7 @@ tidyIntervalLabels <- function(labels,
                                           closed.top.string = closed.top.string,
                                           previous.val = previous.val,
                                           next.val = next.val,
-                                          grouping.mark = grouping.mark, 
+                                          grouping.mark = grouping.mark,
                                           decimals.mark = decimals.mark)
     }
     return(new.labels)
@@ -519,8 +518,8 @@ tidyIntervalLabels <- function(labels,
 # Extract upper and lower values from interval labels
 # produced by the cut() function (see above).
 getValuesInInterval <- function(label) {
-    bounds = strsplit(label, ",")[[1]]
-    bounds = as.numeric(gsub("\\(|\\)|\\[|\\]", "", bounds))
+    bounds <- strsplit(label, ",")[[1]]
+    bounds <- as.numeric(gsub("\\(|\\)|\\[|\\]", "", bounds))
     return(bounds)
 }
 
@@ -528,13 +527,13 @@ getValuesInInterval <- function(label) {
 # desired style, taking into account whether the
 # label is first or last in the sequence, and which
 # values directly precede or follow this label.
-tidyIntervalLabel <- function(label, 
-                              raw.data, 
-                              decimals = 2, 
-                              style = "tidy.labels", 
-                              integer.data = FALSE, 
-                              prefix = "", 
-                              suffix = "", 
+tidyIntervalLabel <- function(label,
+                              raw.data,
+                              decimals = 2,
+                              style = "tidy.labels",
+                              integer.data = FALSE,
+                              prefix = "",
+                              suffix = "",
                               open.ended = FALSE,
                               first.label = FALSE,
                               last.label = FALSE,
@@ -542,7 +541,7 @@ tidyIntervalLabel <- function(label,
                               closed.bottom.string = " and below",
                               open.top.string = "More than ",
                               closed.top.string = " and over",
-                              grouping.mark = ",", 
+                              grouping.mark = ",",
                               decimals.mark = ".",
                               previous.val = NULL,
                               next.val = NULL) {
@@ -558,7 +557,7 @@ tidyIntervalLabel <- function(label,
 
     # Determine whether boundar intervals are open or closed
     upper.is.open <- grepl(")", upper, fixed = TRUE)
-    lower.is.open <- grepl("(", lower, fixed = TRUE)  
+    lower.is.open <- grepl("(", lower, fixed = TRUE)
 
     # Tidy up data values when using
     # "tidy.labels" option including
@@ -575,8 +574,8 @@ tidyIntervalLabel <- function(label,
                     lower.num <- previous.val
                 } else {
                     lower.num <- min(raw.data[raw.data > lower.num])
-                } 
-            }     
+                }
+            }
         }
         if (upper.is.open) {
             if (integer.data) {
@@ -587,14 +586,18 @@ tidyIntervalLabel <- function(label,
                     upper.num <- next.val
                 } else {
                     upper.num <- max(raw.data[raw.data < upper.num])
-                }      
+                }
             }
         }
     }
 
     # Format desired number of decimal places
-    lower.num <- formatC(lower.num, digits = decimals, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark) 
-    upper.num <- formatC(upper.num, digits = decimals, format = "f", big.mark = grouping.mark, decimal.mark = decimals.mark)
+    lower.num <- formatC(lower.num, digits = decimals,
+                         format = "f", big.mark = grouping.mark,
+                         decimal.mark = decimals.mark)
+    upper.num <- formatC(upper.num, digits = decimals,
+                         format = "f", big.mark = grouping.mark, 
+                         decimal.mark = decimals.mark)
 
 
     # Add prefix and suffix
@@ -621,8 +624,8 @@ tidyIntervalLabel <- function(label,
         # Only add inequality signs when boundary is open
         # except for first and last label if user wants
         # open-ended labels
-        lower.ineq = ifelse(lower.is.open, "> ", "")
-        upper.ineq = ifelse(upper.is.open, "< ", "")
+        lower.ineq <- ifelse(lower.is.open, "> ", "")
+        upper.ineq <- ifelse(upper.is.open, "< ", "")
         if (first.label && open.ended) {
             upper.ineq <- ifelse(upper.is.open, "< ", "<=")
             new.label <- paste0(upper.ineq, upper.string)
@@ -630,16 +633,16 @@ tidyIntervalLabel <- function(label,
             lower.ineq <- ifelse(lower.is.open, "> ", ">=")
             new.label <- paste0(lower.ineq, lower.string)
         } else {
-            new.label <- ifelse(upper.num == lower.num, 
-                               lower.string, 
+            new.label <- ifelse(upper.num == lower.num,
+                               lower.string,
                                paste0(lower.ineq, lower.string, " to ", upper.ineq, upper.string))
         }
     } else if (style == "interval.notation") {
         lower.symbol <- ifelse(lower.is.open, "(", "[")
         upper.symbol <- ifelse(upper.is.open, ")", "]")
-        new.label <- ifelse(upper.num == lower.num, 
-                           paste0("[", lower.string, "]"), 
-                           paste0(lower.symbol, lower.string, "," , 
+        new.label <- ifelse(upper.num == lower.num,
+                           paste0("[", lower.string, "]"),
+                           paste0(lower.symbol, lower.string, "," ,
                            upper.string, upper.symbol))
     } else {
         stop("Label style ", style, "not recognized. Use one of: tidy.labels, inequality.notation, interval.notation")
@@ -648,6 +651,3 @@ tidyIntervalLabel <- function(label,
     return(new.label)
 
 }
-
-
-

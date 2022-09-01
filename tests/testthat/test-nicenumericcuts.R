@@ -134,8 +134,8 @@ for(open.or.closed in c("open", "closed")) {
             num.categories = 10
         }
         for (test.case in test.cases) {
-            test.name = paste0("Tidy intervals results: ", paste0(c(open.or.closed, ncats, test.case), collapse = ", "))
-            this.result = table(suppressWarnings(NiceNumericCuts(get0(test.case),
+            test.name <- paste0("Tidy intervals results: ", paste0(c(open.or.closed, ncats, test.case), collapse = ", "))
+            this.result <- table(suppressWarnings(NiceNumericCuts(get0(test.case),
                                                      method = "tidy.intervals",
                                                      num.categories = num.categories,
                                                      label.decimals = 2,
@@ -156,20 +156,23 @@ load("percentile.results.rda")
 for (style in c("percentiles", "tidy.labels")) {
     for (percent.spec in c("single.value", "multiple.values")) {
         if (percent.spec == "single.value") {
-            percents = 10
+            percents <- 10
         } else if (percent.spec == "multiple.values") {
-            percents = "25, 50, 75, 100"
+            percents <- "25, 50, 75, 100"
         }
         for (side in c("right", "left")) {
-            right = side == "right"
+            right <- side == "right"
             for (test.case in test.cases) {
-                this.result = suppressWarnings(table(NiceNumericCuts(get0(test.case),
+                this.result <- suppressWarnings(table(NiceNumericCuts(get0(test.case),
                                               method = "percentiles",
                                               percents = percents,
                                               right = right,
                                               label.style = style)))
-                this.result = this.result / sum(this.result) * 100
-                test_that(paste0("Percentile results: ", paste0(c(test.case, percent.spec, side, style), collapse = ", ")), {
+                this.result <- this.result / sum(this.result) * 100
+                test_that(paste0("Percentile results: ",
+                                 paste0(c(test.case, percent.spec, side, style),
+                                 collapse = ", ")),
+                {
                     checkNiceNumericCuts(this.result, percentile.results[[test.case]][[percent.spec]][[side]][[style]])
                 })
             }
