@@ -8,13 +8,13 @@ test_that("ProcessAndStackDataForRegression", {
     subset <- data.to.stack$subset
     weights <- data.to.stack$weights
     interaction <- data.to.stack$interaction
-    exlude.vars.warning  <- "‘None of these’ have been removed from the set of predictor variables in ‘q5’ since they don't appear in the set of outcome variables in ‘Brand attitude scores’"
+    exlude.vars.warning  <- "'None of these' have been removed from the set of predictor variables in 'q5' since they don't appear in the set of outcome variables in 'Brand attitude scores'"
     expect_warning(stacked <- ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                 formula = NULL, 
                                                 interaction = interaction,
                                                 subset = subset, 
                                                 weights = weights),
-                    "'None of these' have been removed")
+                    exclude.vars.warning)
     expect_equal(as.character(stacked$formula),
                 c("~", "Y", "X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9"))
     expect_equal(stacked$data, cola.stacked)
