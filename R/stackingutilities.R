@@ -498,3 +498,143 @@ updateStackedFormula <- function(data, formula)
                               env = environment(formula))
     return(new.formula)
 }
+
+
+#' Stacks several text variables and an existing categorization 
+#' in a consisten manner for text analysis functions.
+StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
+    
+    text <- as.data.frame(text, optional = TRUE)
+    
+    n.text.vars <- ncol(text)
+
+    
+    # If text variables supplied as list of text vars instead of TextMulti
+    # then tidy names and add attributes.
+    if (is.null(attr(text, "codeframe"))) {
+        text.names <- flipFormat::TidyLabels(colnames(text))
+        colnames(text) <- text.names
+        attr(text, "codeframe") <- fakeCodeFrame(text.names)
+        attr(text, "questiontype") <- "TextMulti"
+    }
+
+    if (is.null(existing.categorization)) { 
+        # No existing categorization to match against.
+        # Stack the text and the filter and weight
+        st <- stack(lapply(text, as.vector))
+        inds <- paste0(rownames(st), ".", st[, "ind"])
+        input.data = list(text = st[, "values"],
+                          existing = NULL,
+                          subset = if (length(subset) == 1) subset else rep(subet, times = n.text.vars),
+                          weights = rep(weights, times = n.text.vars),
+                          inds = inds)
+    } else if (attr(existing.categorization, "questiontype") == "PickAnyGrid") {
+        
+        text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
+        text.names <- names(attr(text, "codeframe"))        
+        stacking = flipRegression:::processAndStackData(list(Y = text, X = existing.categorization), 
+                                                        formula = NULL, 
+                                                        interaction = NULL, 
+                                                        subset = subset, 
+                                                        weights = weights)
+        colnames(stacking$data) <- vapply(stacking$data, 
+                                          FUN = function (x) attr(x, "label"), 
+                                          FUN.VALUE = character(1))
+        text <- stacking$data[, 1]
+        existing <- stacking$data[, 2:length(stacking$data)]
+        colnames(existing) <- flipFormat::TidyLabels(colnames(existing))
+        input.data = list(text = text,
+                            existing = existing,
+                            subset = stacking$subset,
+                            weights = stacking$weights,
+                            inds = rownames(stacking$data))
+    } else if (attr(existing.categorization, "questiontype") == "PickOneMulti") {
+        text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
+        
+        # Reorder the variables in the categorization to match those
+        # of the text.
+        m <- match(colnames(existing.categorization), colnames(text))
+        existing.categorization <- existing.categorization[, m]
+        
+        st <- stack(lapply(text, as.vector))
+        inds <- paste0(rownames(st), ".", st[, "ind"])
+        input.data = list(text = st[, "values"],
+                            existing = unlist(existing.categorization),
+                            subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
+                            weights = rep(weights, times = n.text.vars),
+                            inds = inds)
+    }
+}
+
+# This function tries to modify the labels of a collection of
+# text variables, or variables within a TextMulti set to match
+# those of a PickOneMulti or PickAnyGrid.
+# The reason for its existence is that there are common label
+# tidying patterns that are applied to grids in Displayr
+# which mean that text labels may not ititially match. That is
+# labels on the code frames of grid questions commonly have
+# aditional common prefix and suffix text removed.
+prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.question) {
+    categorical.codeframe.labels <- names(attr(categorical.question, "codeframe"))
+    categorical.secondary.codeframe.labels <- names(attr(categorical.question, "secondarycodeframe"))
+    text.labels <- colnames(text)
+
+    if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
+        # No matches for the text labels anywhere
+        # Remove common prefixes
+        text.labels <- flipFormat::TidyLabels(text.labels)
+    }
+
+    if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
+        # Still No matches for the text labels anywhere
+        # Remove common suffixes
+        text.labels <- RemoveCommonSuffixText(text.labels)
+    }
+
+    if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
+        stop(paste0("Unable to match the labels from the Text variables to the labels of ", 
+                    attr(categorical.question, "question"), 
+                    ". Please modify the labels so that the text variables may be matched."))
+    }
+
+    # Update labels and return
+    attr(text, "codeframe") <- fakeCodeFrame(text.labels)
+    colnames(text) <- text.labels
+    text
+}
+
+# Generates a vector which mimics the "codeframe"
+# attribute for a Displayr variable/variable set.
+# This is an integer vector named according to
+# 'labels'.
+fakeCodeFrame <- function(labels) {
+    fake.codes <- 1:length(labels)
+    names(fake.codes) <- labels
+    fake.codes
+}
+
+# Function to identify and remove the common text
+# from ends of the supplied labels. This is useful
+# when trying to match labels to labels from
+# variable sets in Displayr where redundant text
+# is often removed from labels.
+RemoveCommonSuffixText <- function(labels) {
+    library(stringi)
+    reversed.labels <- stri_reverse(labels)
+    common <- LongestCommonPrefix(reversed.labels)
+    pattern <- paste0("^", common)
+    reversed.labels <- gsub(pattern, "", reversed.labels)
+    labels <- stri_reverse(reversed.labels)
+}
+
+# From https://stackoverflow.com/questions/28273716/r-implementation-for-finding-the-longest-common-starting-substrings-in-a-set-of
+LongestCommonPrefix <- function(x) {
+    # sort the vector
+    x <- sort(x)
+    # split the first and last element by character
+    d_x <- strsplit(x[c(1,length(x))],"")
+    # search for the first not common element and so, get the last matching one
+    der_com <- match(FALSE, do.call("==", d_x)) - 1
+    # if there is no matching element, return an empty vector, else return the common part
+    ifelse(der_com==0 , return(character(0)), return(substr(x[1], 1, der_com)))
+}

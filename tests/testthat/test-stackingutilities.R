@@ -37,3 +37,22 @@ test_that("ProcessAndStackDataForRegression", {
                                                  weights = weights),
                 "Size of variables doesn't agree")
 })
+
+
+test_that("StackTextAndCategorization", {
+    data.to.stack <- readRDS("text.analysis.stacking.rds")
+
+    # No errors
+    # Text - Multi with Binary - Grid
+    expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
+                                            existing.categorization = data.to.stack$binary.grid))
+    # Text - Multi with Nominal - Multi
+    expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
+                                            existing.categorization = data.to.stack$nominal.multi))
+    # Several text variables with Binary - Grid
+    expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
+                                            existing.categorization = data.to.stack$binary.grid))
+    # Several text variables with Nominal - Multi
+    expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
+                                            existing.categorization = data.to.stack$nominal.multi))
+})
