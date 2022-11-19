@@ -504,8 +504,13 @@ updateStackedFormula <- function(data, formula)
 #' in a consisten manner for text analysis functions.
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
     
+    if (is.list(text) && length(text == 1))
+        return(list(text = text, 
+                    existing.categorization = existing.categorization,
+                    subset = subset,
+                    weights = weights))
+
     text <- as.data.frame(text, optional = TRUE)
-    
     n.text.vars <- ncol(text)
 
     
