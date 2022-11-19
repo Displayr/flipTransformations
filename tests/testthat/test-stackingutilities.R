@@ -45,14 +45,18 @@ test_that("StackTextAndCategorization", {
     # No errors
     # Text - Multi with Binary - Grid
     expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
-                                            existing.categorization = data.to.stack$binary.grid))
+                                            existing.categorization = data.to.stack$binary.grid),
+                NA)
     # Text - Multi with Nominal - Multi
     expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
-                                            existing.categorization = data.to.stack$nominal.multi))
+                                            existing.categorization = data.to.stack$nominal.multi),
+                NA)
     # Several text variables with Binary - Grid
     expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
-                                            existing.categorization = data.to.stack$binary.grid))
+                                            existing.categorization = data.to.stack$binary.grid),
+                NA)
     # Several text variables with Nominal - Multi
     expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
-                                            existing.categorization = data.to.stack$nominal.multi))
+                                            existing.categorization = data.to.stack$nominal.multi),
+                NA)
 })
