@@ -8,7 +8,7 @@ test_that("ProcessAndStackDataForRegression", {
     subset <- data.to.stack$subset
     weights <- data.to.stack$weights
     interaction <- data.to.stack$interaction
-    exclude.vars.warning  <- "The variable(s): 'None of these' have been removed from the set of predictor variables in 'q5' since they don't appear in the set of outcome variables in 'Brand attitude scores'"
+    exclude.vars.warning  <- "have been removed"
     expect_warning(stacked <- ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                 formula = NULL, 
                                                 interaction = interaction,
@@ -44,9 +44,12 @@ test_that("StackTextAndCategorization", {
 
     # No errors
     # Text - Multi with Binary - Grid
-    expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
+    expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
                                             existing.categorization = data.to.stack$binary.grid),
                 NA)
+    expect_equal(length(stacked$text), 1800)
+    
+    expect_equal(nrow(stacked$existing), 1800)
     # Text - Multi with Nominal - Multi
     expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
                                             existing.categorization = data.to.stack$nominal.multi),
