@@ -21,7 +21,8 @@ Imports:
     utils,
     Hmisc,
     plyr,
-    stringr
+    stringr,
+    verbs
 Remotes:
     Displayr/flipExampleData,
     Displayr/flipFormat,
