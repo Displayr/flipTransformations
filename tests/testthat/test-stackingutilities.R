@@ -8,7 +8,7 @@ test_that("ProcessAndStackDataForRegression", {
     subset <- data.to.stack$subset
     weights <- data.to.stack$weights
     interaction <- data.to.stack$interaction
-    exlude.vars.warning  <- "'None of these' have been removed from the set of predictor variables in 'q5' since they don't appear in the set of outcome variables in 'Brand attitude scores'"
+    exclude.vars.warning  <- "'None of these' have been removed from the set of predictor variables in 'q5' since they don't appear in the set of outcome variables in 'Brand attitude scores'"
     expect_warning(stacked <- ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                 formula = NULL, 
                                                 interaction = interaction,
