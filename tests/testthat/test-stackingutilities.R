@@ -20,12 +20,12 @@ test_that("ProcessAndStackDataForRegression", {
     expect_equal(stacked$data, cola.stacked)
 
     # Can run on data only
-    expect_error(ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
+    expect_error(suppressWarnings(ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                  formula = NULL, 
                                                  interaction = NULL,
                                                  subset = NULL, 
                                                  weights = NULL),
-                NA)
+                NA))
     
     # Mismatched data
     wrong.cases <- unstacked.data

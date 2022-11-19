@@ -14,7 +14,6 @@
 #' @param subset An optional vector specifying a subset of observations to be
 #'   used in the fitting process.
 #' @param weights An optional vector of sampling weights.
-#' @importFrom verbs Sum
 #' @export
 ProcessAndStackDataForRegression <- function(unstacked.data, formula, interaction, subset, weights)
 {
@@ -241,7 +240,6 @@ validateDataForStacking <- function(data)
 # The stacking requires names of the grid data.frame to be in the form predictor, outcome (comma separated)
 # If metadata available in the codeframe, the names are uniquely identified
 # If metadata is unavailable, no commas allowed in names to avoid ambiguity.
-#' @importFrom verbs Sum
 validateNamesInGrid <- function(data)
 {
     outcome.names <- getMultiOutcomeNames(data[["Y"]])
@@ -263,7 +261,7 @@ validateNamesInGrid <- function(data)
              " which don't appear in the labels of the grid of predictor variables.")
     # Check if is a clear match (no clash of predictor names with outcome names) and no codeframe available,
     # then 'transpose' the grid labels, i.e. outcome, predictor labels changed to predictor, outcome
-    dimensions.matching <- Sum(any.matches, remove.missing = FALSE)
+    dimensions.matching <- sum(any.matches)
     if (dimensions.matching == 1 && any.matches[1] && is.null(attr(data[["X"]], "codeframe")))
         names(data[["X"]]) <- paste0(grid.names[[2]], ", ", grid.names[[1]])
     # Throw error for ambiguous cases, i.e. outcome labels appear in both grid label dimensions.
