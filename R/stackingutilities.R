@@ -492,6 +492,7 @@ getMultiOutcomeNames <- function(data)
         names(data)
 }
 
+#' @importFrom stats as.formula
 updateStackedFormula <- function(data, formula)
 {
     new.formula <- as.formula(paste0("Y ~ ", paste0("X", 1:(ncol(data) - 1), collapse = " + ")),
@@ -499,12 +500,58 @@ updateStackedFormula <- function(data, formula)
     return(new.formula)
 }
 
+#' Throw warning to the user that there are some codes used in a data reduction that are not seen
+#' elsewhere in the codeframe, e.g. a NET has code A and B and the code A is seen in the codeframe
+#' but the code B is not seen elsewhere in the codeframe. So removing the data reduction will lose
+#' the information about code B.
+#' @param reduction.list List that contains two elements, \itemize{
+#'  \item nets Character vector of net(s) that exhibit this situation
+#'  \item variable.type Character vector stating the variable set structure that this applies to.
+#' e.g. The predictor grid or outcome variables. Could be a single element or vector with two elements
+#' if both outcome and predictor grids are affected.
+#' }
+#' @noRd
+throwCodeReductionWarning <- function(reduction.list)
+{
+    nets <- reduction.list[["nets"]]
+    variable.type <- reduction.list[["variable.type"]]
+    net.name.txt <- paste0(sQuote(nets, q = FALSE))
+    if (length(nets) > 1)
+        net.name.txt <- paste0(": (", paste0(net.name.txt, collapse = "; "), ")")
+    net.txt <- ngettext(length(nets), "a NET, ", "NETs")
+    variable.type.and <- paste0(paste0(variable.type, collapse = " and "), " variables")
+    variable.type.or <- paste0(paste0(variable.type, collapse = " or "), " variables")
+    net.txt.2 <- ngettext(length(nets), "this NET was", "these NETs were")
+    net.txt.3 <- ngettext(length(nets), "this NET", "any of these NETs")
+    warning("NETs are removed from this analysis unless all their source values are mutually exclusive ",
+            "to other codes. The ", variable.type.and, " have ", net.txt, net.name.txt, " that contains ",
+            "source values that partially overlap with other codes. Consequently, ", net.txt.2, " not used in ",
+            "the analysis. If you wish ", net.txt.3, " to be used in the analysis then please modify the ",
+            variable.type.or, " via the Table view options appropriately.")
+}
 
 #' Stacks several text variables and an existing categorization 
 #' in a consisten manner for text analysis functions.
+#' 
+#' @param text A data frame containing one or more character vectors. Typically
+#' these start their life as variables in a Text - Multi variable set in Displayr
+#' or are several related Text variable sets.
+#' @param existing.categorization A data frame containing the corresponding
+#' categories. This could be a data frame of factor variables (a single-response 
+#' categorization), or a data frame of binary numeric variables (a multiple-response
+#' categorization). This can be NULL if no existing categorization is to be used
+#' in the analysis.
+#' @param subset A boolean vector indicating the subset of cases that the user
+#' wishes to include later in a classification of the text. Usually comes from QFilter.
+#' This will be expanded to align with the stacked data.
+#' @param weights A numeric vector of case weights for later us in the analysis.
+#' This will be expanded to align with the stacked data.
+#' @importFrom utils stack
+#' @importFrom flipFormat TidyLabels
 #' @export
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
     
+    # One text variable, nothing to stack
     if (is.list(text) && length(text) == 1)
         return(list(text = text, 
                     existing.categorization = existing.categorization,
@@ -514,11 +561,10 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
     text <- as.data.frame(text, optional = TRUE)
     n.text.vars <- ncol(text)
 
-    
     # If text variables supplied as list of text vars instead of TextMulti
     # then tidy names and add attributes.
     if (is.null(attr(text, "codeframe"))) {
-        text.names <- flipFormat::TidyLabels(colnames(text))
+        text.names <- TidyLabels(colnames(text))
         colnames(text) <- text.names
         attr(text, "codeframe") <- fakeCodeFrame(text.names)
         attr(text, "questiontype") <- "TextMulti"
@@ -531,44 +577,42 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         inds <- paste0(rownames(st), ".", st[, "ind"])
         input.data = list(text = st[, "values"],
                           existing = NULL,
-                          subset = if (length(subset) == 1) subset else rep(subet, times = n.text.vars),
+                          subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
                           weights = rep(weights, times = n.text.vars),
                           inds = inds)
-    } else if (attr(existing.categorization, "questiontype") == "PickAnyGrid") {
-        
+    } else {
         text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
-        text.names <- names(attr(text, "codeframe"))        
-        stacking = ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
-                                                        formula = NULL, 
-                                                        interaction = NULL, 
-                                                        subset = subset, 
-                                                        weights = weights)
-        colnames(stacking$data) <- vapply(stacking$data, 
-                                          FUN = function (x) attr(x, "label"), 
-                                          FUN.VALUE = character(1))
-        text <- stacking$data[, 1]
-        existing <- stacking$data[, 2:length(stacking$data)]
-        colnames(existing) <- flipFormat::TidyLabels(colnames(existing))
-        input.data = list(text = text,
-                            existing = existing,
-                            subset = stacking$subset,
-                            weights = stacking$weights,
-                            inds = rownames(stacking$data))
-    } else if (attr(existing.categorization, "questiontype") == "PickOneMulti") {
-        text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
-        
-        # Reorder the variables in the categorization to match those
-        # of the text.
-        m <- match(colnames(existing.categorization), colnames(text))
-        existing.categorization <- existing.categorization[, m]
-        
-        st <- stack(lapply(text, as.vector))
-        inds <- paste0(rownames(st), ".", st[, "ind"])
-        input.data = list(text = st[, "values"],
-                            existing = unlist(existing.categorization),
-                            subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
-                            weights = rep(weights, times = n.text.vars),
-                            inds = inds)
+        if (attr(existing.categorization, "questiontype") == "PickAnyGrid") {
+            text.names <- names(attr(text, "codeframe"))        
+            stacking = ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
+                                                            formula = NULL, 
+                                                            interaction = NULL, 
+                                                            subset = subset, 
+                                                            weights = weights)
+            colnames(stacking$data) <- vapply(stacking$data, 
+                                            FUN = function (x) attr(x, "label"), 
+                                            FUN.VALUE = character(1))
+            text <- stacking$data[, 1]
+            existing <- stacking$data[, 2:length(stacking$data)]
+            colnames(existing) <- TidyLabels(colnames(existing))
+            input.data = list(text = text,
+                                existing = existing,
+                                subset = stacking$subset,
+                                weights = stacking$weights,
+                                inds = rownames(stacking$data))
+        } else if (attr(existing.categorization, "questiontype") == "PickOneMulti") {
+            # Reorder the variables in the categorization to match those
+            # of the text.
+            m <- match(colnames(existing.categorization), colnames(text))
+            existing.categorization <- existing.categorization[, m]
+            st <- stack(lapply(text, as.vector))
+            inds <- paste0(rownames(st), ".", st[, "ind"])
+            input.data = list(text = st[, "values"],
+                                existing = unlist(existing.categorization),
+                                subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
+                                weights = rep(weights, times = n.text.vars),
+                                inds = inds)
+        }
     }
     input.data
 }
@@ -595,7 +639,7 @@ prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.ques
     if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
         # Still No matches for the text labels anywhere
         # Remove common suffixes
-        text.labels <- RemoveCommonSuffixText(text.labels)
+        text.labels <- removeCommonSuffixText(text.labels)
     }
 
     if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
@@ -625,17 +669,17 @@ fakeCodeFrame <- function(labels) {
 # when trying to match labels to labels from
 # variable sets in Displayr where redundant text
 # is often removed from labels.
-RemoveCommonSuffixText <- function(labels) {
-    library(stringi)
+#' @importFrom stringi stri_reverse
+removeCommonSuffixText <- function(labels) {
     reversed.labels <- stri_reverse(labels)
-    common <- LongestCommonPrefix(reversed.labels)
+    common <- longestCommonPrefix(reversed.labels)
     pattern <- paste0("^", common)
     reversed.labels <- gsub(pattern, "", reversed.labels)
     labels <- stri_reverse(reversed.labels)
 }
 
 # From https://stackoverflow.com/questions/28273716/r-implementation-for-finding-the-longest-common-starting-substrings-in-a-set-of
-LongestCommonPrefix <- function(x) {
+longestCommonPrefix <- function(x) {
     # sort the vector
     x <- sort(x)
     # split the first and last element by character
@@ -646,6 +690,15 @@ LongestCommonPrefix <- function(x) {
     ifelse(der_com==0 , return(character(0)), return(substr(x[1], 1, der_com)))
 }
 
+#' Unstack a data frame which corresponds to a categorization of mulitple
+#' text variables in Displayr.
+#' 
+#' @param categorization The data frame to be unstacked. Its columns are factors
+#' for a single-response categorization (Pick One - Multi) or binary numeric
+#' vectors for a multiple-response categorization (Pick Any - Grid)
+#' @param inds A character vector whose entries are of the form "<casenumber>.<variablename>"
+#' such as would be produced by the \code{stack} function. Usually would be 
+#' generated by when originally stacking the text data via \code{StackTextAndCategorization}
 #' @export
 UnstackCategorization <- function(categorization, inds) {
     # inds of the form "<casenumber>.<variablename>"

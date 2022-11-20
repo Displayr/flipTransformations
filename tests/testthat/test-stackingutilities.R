@@ -39,29 +39,49 @@ test_that("ProcessAndStackDataForRegression", {
 })
 
 
-test_that("StackTextAndCategorization", {
-    data.to.stack <- readRDS("text.analysis.stacking.rds")
-    stacked.predicted.multi <- readRDS("stacked.predicted.categorization.multi.rds")
-    stacked.predicted.multi <- stacked.predicted.multi$predicted
-    stacked.predicted.single <- readRDS("stacked.predicted.categorization.single.rds")
-    stacked.predicted.single <- stacked.predicted.single$predicted
-    # No errors
-    # Text - Multi with Binary - Grid
-    expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
-                                            existing.categorization = data.to.stack$binary.grid),
-                NA)
-    expect_equal(length(stacked$text), 1800)
-    expect_equal(nrow(stacked$existing), 1800)
-    # Text - Multi with Nominal - Multi
-    expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
-                                            existing.categorization = data.to.stack$nominal.multi),
-                NA)
-    # Several text variables with Binary - Grid
-    expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
-                                            existing.categorization = data.to.stack$binary.grid),
-                NA)
-    # Several text variables with Nominal - Multi
-    expect_error(StackTextAndCategorization(text = data.to.stack$multiple.text, 
-                                            existing.categorization = data.to.stack$nominal.multi),
-                NA)
-})
+
+# Test Stacking and Unstacking of Text and Categorization
+data.to.stack <- readRDS("text.analysis.stacking.rds")
+stacked.predicted.multi <- readRDS("stacked.predicted.categorization.multi.rds")
+stacked.predicted.multi <- stacked.predicted.multi$predicted
+stacked.predicted.single <- readRDS("stacked.predicted.categorization.single.rds")
+stacked.predicted.single <- stacked.predicted.single$predicted
+existings <- c("NULL", "binary.grid", "nominal.multi")
+texts <- c("text.multi", "multiple.text")
+weights <- subset <- rep(1, nrow(data.to.stack$text.multi))
+for (text.case in texts) {
+    for (existing.case in existings) {
+        existing <- if (existing.case == "NULL") NULL else data.to.stack[[existing.case]]
+        text <- data.to.stack[[text.case]]
+        test_that(paste0("StackTextAndCategorization: ", text.case, " : ", existing.case), {
+            expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
+                                    existing.categorization = existing,
+                                    weights = weights,
+                                    subset = subset),
+            NA)
+
+            # Correct dimensions
+            expect_equal(length(stacked$text), 1800)
+            expect_equal(length(stacked$weights), 1800)
+            expect_equal(length(stacked$subset), 1800)
+            expect_equal(length(stacked$inds), 1800)
+            if (existing.case == "binary.grid") {
+                expect_equal(nrow(stacked$existing), 1800)
+            } else if (existing.case == "nominal.multi") {
+                expect_equal(length(stacked$existing), 1800)
+            }
+
+            # Can unstack predicted categorization using the inds
+            # obtained during stacking
+            if (!is.null(existing)) {
+                stacked.predicted <- if (existing.case == "binary.grid") stacked.predicted.multi else stacked.predicted.single
+                expect_error(unstacked <- UnstackCategorization(stacked.predicted, stacked$inds), NA)
+                expect_equal(nrow(unstacked), 600)
+            }
+            
+
+        })
+    }
+}
+
+
