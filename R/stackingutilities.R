@@ -570,6 +570,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
                             weights = rep(weights, times = n.text.vars),
                             inds = inds)
     }
+    input.data
 }
 
 # This function tries to modify the labels of a collection of
@@ -643,4 +644,17 @@ LongestCommonPrefix <- function(x) {
     der_com <- match(FALSE, do.call("==", d_x)) - 1
     # if there is no matching element, return an empty vector, else return the common part
     ifelse(der_com==0 , return(character(0)), return(substr(x[1], 1, der_com)))
+}
+
+#' @export
+UnstackCategorization <- function(categorization, inds) {
+    # inds of the form "<casenumber>.<variablename>"
+    # extract variable names
+    split.inds = vapply(inds, FUN = function (x) strsplit(x, "\\.")[[1]][2], FUN.VALUE = character(1))
+    var.names = unique(split.inds)
+    print(var.names)
+    unstacked = lapply(var.names, FUN = function (v, inds) categorization[inds == v, ], inds = split.inds)
+    unstacked = do.call(cbind, unstacked)
+    colnames(unstacked) = paste0(rep(var.names, each = ncol(categorization)), ": ", colnames(unstacked))
+    unstacked  
 }
