@@ -547,7 +547,7 @@ throwCodeReductionWarning <- function(reduction.list)
 #' @param weights A numeric vector of case weights for later us in the analysis.
 #' This will be expanded to align with the stacked data.
 #' @importFrom utils stack
-#' @importFrom flipFormat TidyLabels
+#' @importFrom flipFormat TidyLabels ExtractCommonPrefix
 #' @export
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
     
@@ -556,7 +556,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         if (!is.null(existing.categorization) && 
             ! attr(existing.categorization, "questiontype") %in% c("PickOne", "PickAny"))
             stop("The existing categorization should be a Nominal/Ordinal or Binary - Multi variable set")
-        return(list(text = text,
+        return(list(text = text[[1]],
                     existing.categorization = existing.categorization,
                     subset = subset,
                     weights = weights))
@@ -564,26 +564,28 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
 
     if (!is.null(existing.categorization) && 
         ! attr(existing.categorization, "questiontype") %in% c("PickOneMulti", "PickAnyGrid"))
-        stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")    
+        stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")
 
-    text <- as.data.frame(text, optional = TRUE)
-    n.text.vars <- ncol(text)
-
-    # If text variables supplied as list of text vars instead of TextMulti
-    # then tidy names and add attributes.
-    if (is.null(attr(text, "codeframe"))) {
+    if (!is.data.frame(text)) {
+        text <- as.data.frame(text, optional = TRUE)
         text.names <- TidyLabels(colnames(text))
         colnames(text) <- text.names
         attr(text, "codeframe") <- fakeCodeFrame(text.names)
         attr(text, "questiontype") <- "TextMulti"
+        question.names <- vapply(text, FUN = function(x) attr(x, "question"), FUN.VALUE = character(1))
+        text.label <- ExtractCommonPrefix(question.names)
+    } else {
+        text.label <- attr(text, "question")
     }
+    
+    n.text.vars <- ncol(text)
 
     if (is.null(existing.categorization)) { 
         # No existing categorization to match against.
         # Stack the text and the filter and weight
         st <- stack(lapply(text, as.vector))
         inds <- paste0(rownames(st), ".", st[, "ind"])
-        input.data = list(text = st[, "values"],
+        input.data <- list(text = st[, "values"],
                           existing = NULL,
                           subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
                           weights = rep(weights, times = n.text.vars),
@@ -591,8 +593,8 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
     } else {
         text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
         if (attr(existing.categorization, "questiontype") == "PickAnyGrid") {
-            text.names <- names(attr(text, "codeframe"))        
-            stacking = ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
+            text.names <- names(attr(text, "codeframe"))
+            stacking <- ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
                                                             formula = NULL, 
                                                             interaction = NULL, 
                                                             subset = subset, 
@@ -603,7 +605,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
             text <- stacking$data[, 1]
             existing <- stacking$data[, 2:length(stacking$data)]
             colnames(existing) <- TidyLabels(colnames(existing))
-            input.data = list(text = text,
+            input.data <- list(text = text,
                                 existing = existing,
                                 subset = stacking$subset,
                                 weights = stacking$weights,
@@ -615,13 +617,14 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
             existing.categorization <- existing.categorization[, m]
             st <- stack(lapply(text, as.vector))
             inds <- paste0(rownames(st), ".", st[, "ind"])
-            input.data = list(text = st[, "values"],
+            input.data <- list(text = st[, "values"],
                                 existing = unlist(existing.categorization),
                                 subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
                                 weights = rep(weights, times = n.text.vars),
                                 inds = inds)
         }
     }
+    attr(input.data$text, "label") <- text.label
     input.data
 }
 
