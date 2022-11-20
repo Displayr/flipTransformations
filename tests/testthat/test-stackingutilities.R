@@ -43,7 +43,8 @@ test_that("StackTextAndCategorization", {
     data.to.stack <- readRDS("text.analysis.stacking.rds")
     stacked.predicted.multi <- readRDS("stacked.predicted.categorization.multi.rds")
     stacked.predicted.multi <- stacked.predicted.multi$predicted
-
+    stacked.predicted.single <- readRDS("stacked.predicted.categorization.single.rds")
+    stacked.predicted.single <- stacked.predicted.single$predicted
     # No errors
     # Text - Multi with Binary - Grid
     expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
@@ -52,7 +53,7 @@ test_that("StackTextAndCategorization", {
     expect_equal(length(stacked$text), 1800)
     expect_equal(nrow(stacked$existing), 1800)
     # Text - Multi with Nominal - Multi
-    expect_error(StackTextAndCategorization(text = data.to.stack$text.multi, 
+    expect_error(stacked <- StackTextAndCategorization(text = data.to.stack$text.multi, 
                                             existing.categorization = data.to.stack$nominal.multi),
                 NA)
     # Several text variables with Binary - Grid

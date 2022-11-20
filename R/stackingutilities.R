@@ -538,7 +538,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         
         text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
         text.names <- names(attr(text, "codeframe"))        
-        stacking = flipRegression:::processAndStackData(list(Y = text, X = existing.categorization), 
+        stacking = ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
                                                         formula = NULL, 
                                                         interaction = NULL, 
                                                         subset = subset, 
@@ -650,11 +650,19 @@ LongestCommonPrefix <- function(x) {
 UnstackCategorization <- function(categorization, inds) {
     # inds of the form "<casenumber>.<variablename>"
     # extract variable names
-    split.inds = vapply(inds, FUN = function (x) strsplit(x, "\\.")[[1]][2], FUN.VALUE = character(1))
-    var.names = unique(split.inds)
-    print(var.names)
-    unstacked = lapply(var.names, FUN = function (v, inds) categorization[inds == v, ], inds = split.inds)
-    unstacked = do.call(cbind, unstacked)
-    colnames(unstacked) = paste0(rep(var.names, each = ncol(categorization)), ": ", colnames(unstacked))
+    split.inds <- vapply(inds, FUN = function (x) strsplit(x, "\\.")[[1]][2], FUN.VALUE = character(1))
+    var.names <- unique(split.inds)
+    single.response <- is.factor(categorization)
+    unstacked <- lapply(var.names, 
+                       FUN = function (v, inds, single.response) if (single.response) categorization[inds == v] else categorization[inds == v, ], 
+                       inds = split.inds,
+                       single.response = single.response)
+    if (single.response) {
+        names(unstacked) <- var.names
+        unstacked <- as.data.frame(unstacked, optional = TRUE)
+    } else {
+        unstacked <- do.call(cbind, unstacked)
+        colnames(unstacked) <- paste0(rep(var.names, each = NCOL(categorization)), ": ", colnames(unstacked))
+    }                   
     unstacked  
 }
