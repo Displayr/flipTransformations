@@ -552,11 +552,19 @@ throwCodeReductionWarning <- function(reduction.list)
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
     
     # One text variable, nothing to stack
-    if (is.list(text) && length(text) == 1)
-        return(list(text = text, 
+    if (is.list(text) && length(text) == 1) {
+        if (!is.null(existing.categorization) && 
+            ! attr(existing.categorization, "questiontype") %in% c("PickOne", "PickAny"))
+            stop("The existing categorization should be a Nominal/Ordinal or Binary - Multi variable set")
+        return(list(text = text,
                     existing.categorization = existing.categorization,
                     subset = subset,
                     weights = weights))
+    }
+
+    if (!is.null(existing.categorization) && 
+        ! attr(existing.categorization, "questiontype") %in% c("PickOneMulti", "PickAnyGrid"))
+        stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")    
 
     text <- as.data.frame(text, optional = TRUE)
     n.text.vars <- ncol(text)
