@@ -573,7 +573,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         attr(text, "codeframe") <- fakeCodeFrame(text.names)
         attr(text, "questiontype") <- "TextMulti"
         question.names <- vapply(text, FUN = function(x) attr(x, "question"), FUN.VALUE = character(1))
-        text.label <- ExtractCommonPrefix(question.names)
+        text.label <- ExtractCommonPrefix(question.names)$common.prefix
     } else {
         text.label <- attr(text, "question")
     }
