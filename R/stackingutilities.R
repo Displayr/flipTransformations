@@ -689,16 +689,20 @@ removeCommonSuffixText <- function(labels) {
     labels <- stri_reverse(reversed.labels)
 }
 
-# From https://stackoverflow.com/questions/28273716/r-implementation-for-finding-the-longest-common-starting-substrings-in-a-set-of
 longestCommonPrefix <- function(x) {
     # sort the vector
     x <- sort(x)
     # split the first and last element by character
-    d_x <- strsplit(x[c(1,length(x))],"")
+    chars <- strsplit(x[c(1, length(x))], "")
+    # Find shortest string length
+    n.shortest <- length(chars[[1L]])
     # search for the first not common element and so, get the last matching one
-    der_com <- match(FALSE, do.call("==", d_x)) - 1
-    # if there is no matching element, return an empty vector, else return the common part
-    ifelse(der_com==0 , return(character(0)), return(substr(x[1], 1, der_com)))
+    if (length(chars[[2L]]) != n.shortest)
+        chars[[2L]] <- chars[[2L]][1:n.shortest]
+    common.prefix.length <- which.max(!chars[[1]] == chars[[2]]) - 1L
+    if (common.prefix.length == 0L)
+        return(character(0L))
+    substr(x[1], 1L, common.prefix.length)
 }
 
 #' Unstack a data frame which corresponds to a categorization of mulitple
