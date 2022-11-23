@@ -551,20 +551,21 @@ throwCodeReductionWarning <- function(reduction.list)
 #' @export
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
     
-    # One text variable, nothing to stack
-    if (is.list(text) && length(text) == 1) {
-        if (!is.null(existing.categorization) && 
-            ! attr(existing.categorization, "questiontype") %in% c("PickOne", "PickAny"))
-            stop("The existing categorization should be a Nominal/Ordinal or Binary - Multi variable set")
-        return(list(text = text[[1]],
-                    existing.categorization = existing.categorization,
-                    subset = subset,
-                    weights = weights))
-    }
 
-    if (!is.null(existing.categorization) && 
-        ! attr(existing.categorization, "questiontype") %in% c("PickOneMulti", "PickAnyGrid"))
-        stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")
+    has.existing.categorization <- !is.null(existing.categorization)
+    single.text.variable <- is.list(text) && length(text) == 1L
+    question.type <- if (has.existing.categorization) attr(existing.categorization, "questiontype")
+    if (has.existing.categorization) {
+        if (single.text.variable && !question.type %in% c("PickOne", "PickAny"))
+            stop("The existing categorization should be a Nominal/Ordinal or Binary - Multi variable set")
+        if (!single.text.variable && !question.type %in% c("PickOneMulti", "PickAnyGrid"))
+            stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")
+    }
+    if (single.text.variable) 
+        return(list(text = text[[1]],
+                        existing.categorization = existing.categorization,
+                        subset = subset,
+                        weights = weights))
 
     if (!is.data.frame(text)) {
         text <- as.data.frame(text, optional = TRUE)
@@ -572,7 +573,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         colnames(text) <- text.names
         attr(text, "codeframe") <- fakeCodeFrame(text.names)
         attr(text, "questiontype") <- "TextMulti"
-        question.names <- vapply(text, FUN = function(x) attr(x, "question"), FUN.VALUE = character(1))
+        question.names <- vapply(text, FUN = attr, FUN.VALUE = character(1), which = "question")
         text.label <- ExtractCommonPrefix(question.names)$common.prefix
     } else {
         text.label <- attr(text, "question")
@@ -580,44 +581,44 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
     
     n.text.vars <- ncol(text)
 
-    if (is.null(existing.categorization)) { 
+    if (!has.existing.categorization) {
         # No existing categorization to match against.
         # Stack the text and the filter and weight
         st <- stack(lapply(text, as.vector))
-        inds <- paste0(rownames(st), ".", st[, "ind"])
-        input.data <- list(text = st[, "values"],
+        inds <- paste0(rep(1:length(text), ncol(text)), ".", st[["ind"]])
+        input.data <- list(text = st[["values"]],
                           existing = NULL,
                           subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
                           weights = rep(weights, times = n.text.vars),
                           inds = inds)
     } else {
         text <- prepareTextVariableLabelsForStackingWithGrids(text, existing.categorization)
-        if (attr(existing.categorization, "questiontype") == "PickAnyGrid") {
+        if (question.type == "PickAnyGrid") {
             text.names <- names(attr(text, "codeframe"))
-            stacking <- ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization), 
-                                                            formula = NULL, 
-                                                            interaction = NULL, 
-                                                            subset = subset, 
-                                                            weights = weights)
+            stacking <- ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization),
+                                                         formula = NULL, 
+                                                         interaction = NULL, 
+                                                         subset = subset, 
+                                                         weights = weights)
             colnames(stacking$data) <- vapply(stacking$data, 
-                                            FUN = function (x) attr(x, "label"), 
-                                            FUN.VALUE = character(1))
+                                              FUN = function (x) attr(x, "label"), 
+                                              FUN.VALUE = character(1))
             text <- stacking$data[, 1]
             existing <- stacking$data[, 2:length(stacking$data)]
             colnames(existing) <- TidyLabels(colnames(existing))
             input.data <- list(text = text,
-                                existing = existing,
-                                subset = stacking$subset,
-                                weights = stacking$weights,
-                                inds = rownames(stacking$data))
-        } else if (attr(existing.categorization, "questiontype") == "PickOneMulti") {
+                               existing = existing,
+                               subset = stacking$subset,
+                               weights = stacking$weights,
+                               inds = rownames(stacking$data))
+        } else if (question.type == "PickOneMulti") {
             # Reorder the variables in the categorization to match those
             # of the text.
             m <- match(colnames(existing.categorization), colnames(text))
             existing.categorization <- existing.categorization[, m]
             st <- stack(lapply(text, as.vector))
-            inds <- paste0(rownames(st), ".", st[, "ind"])
-            input.data <- list(text = st[, "values"],
+            inds <- paste0(rep(1:length(text), ncol(text)), ".", st[["ind"]])
+            input.data <- list(text = st[["values"]],
                                 existing = unlist(existing.categorization),
                                 subset = if (length(subset) == 1) subset else rep(subset, times = n.text.vars),
                                 weights = rep(weights, times = n.text.vars),
@@ -636,6 +637,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
 # which mean that text labels may not ititially match. That is
 # labels on the code frames of grid questions commonly have
 # aditional common prefix and suffix text removed.
+#' @importFrom flipFormat TidyLabels
 prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.question) {
     categorical.codeframe.labels <- names(attr(categorical.question, "codeframe"))
     categorical.secondary.codeframe.labels <- names(attr(categorical.question, "secondarycodeframe"))
@@ -644,7 +646,7 @@ prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.ques
     if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
         # No matches for the text labels anywhere
         # Remove common prefixes
-        text.labels <- flipFormat::TidyLabels(text.labels)
+        text.labels <- TidyLabels(text.labels)
     }
 
     if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
@@ -669,10 +671,9 @@ prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.ques
 # attribute for a Displayr variable/variable set.
 # This is an integer vector named according to
 # 'labels'.
+#' @importFrom stats setNames
 fakeCodeFrame <- function(labels) {
-    fake.codes <- 1:length(labels)
-    names(fake.codes) <- labels
-    fake.codes
+    setNames(1:length(labels), labels)
 }
 
 # Function to identify and remove the common text

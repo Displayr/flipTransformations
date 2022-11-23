@@ -8,32 +8,37 @@ test_that("ProcessAndStackDataForRegression", {
     subset <- data.to.stack$subset
     weights <- data.to.stack$weights
     interaction <- data.to.stack$interaction
-    exclude.vars.warning  <- "have been removed"
+    exclude.vars.warning  <- paste0("The variable(s): ",
+                                    sQuote("None of these"),
+                                    " have been removed from the set of predictor variables in ",
+                                    sQuote("q5"), 
+                                    " since they don't appear in the set of outcome variables in ",
+                                    sQuote("Brand attitude scores"))
     expect_warning(stacked <- ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                 formula = NULL, 
                                                 interaction = interaction,
                                                 subset = subset, 
                                                 weights = weights),
-                    exclude.vars.warning)
+                    exclude.vars.warning, fixed = TRUE)
     expect_equal(as.character(stacked$formula),
                 c("~", "Y", "X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9"))
     expect_equal(stacked$data, cola.stacked)
 
     # Can run on data only
-    expect_error(suppressWarnings(ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
+    expect_warning(ProcessAndStackDataForRegression(unstacked.data = unstacked.data, 
                                                  formula = NULL, 
                                                  interaction = NULL,
                                                  subset = NULL, 
                                                  weights = NULL),
-                NA))
+                exclude.vars.warning, fixed = TRUE)
     
     # Mismatched data
     wrong.cases <- unstacked.data
     wrong.cases$Y <- wrong.cases$Y[-1, ]
-    expect_error(ProcessAndStackDataForRegression(unstacked.data = wrong.cases, 
-                                                 formula = NULL, 
+    expect_error(ProcessAndStackDataForRegression(unstacked.data = wrong.cases,
+                                                 formula = NULL,
                                                  interaction = interaction,
-                                                 subset = subset, 
+                                                 subset = subset,
                                                  weights = weights),
                 "Size of variables doesn't agree")
 })
@@ -108,7 +113,6 @@ for (text.case in texts) {
                         expect_equal(stacked.match, unstacked.match)
                     }
                 }
-                
             }
 
             # Can unstack predicted categorization using the inds
@@ -141,4 +145,38 @@ test_that("Text Stacking Errors when mismatched names", {
                  "Unable to match the labels from the Text variables to the labels of Spontaneous Awareness: Spontaneous Awareness: 1st mention - Categorized2. Please modify the labels so that the text variables may be matched.")
 })
 
-#SINGLE VARIABLE INPUT
+test_that("No stacking when single text", {
+    single.nominal <- data.to.stack$nominal.multi[1]
+    attr(single.nominal, "questiontype") <- "PickOne"
+    single.stack <- StackTextAndCategorization(data.to.stack$text.multi[1], 
+                                            existing.categorization = single.nominal)
+    expect_equal(single.stack$text,
+                 data.to.stack$text.multi[[1]])
+    expect_equal(single.stack$existing.categorization,
+                 single.nominal)
+
+    err.msg <- "The existing categorization should be a Nominal/Ordinal or Binary - Multi variable set"
+    expect_error(StackTextAndCategorization(data.to.stack$text.multi[1], 
+                                            existing.categorization = data.to.stack$nominal.multi),
+                 err.msg)
+    expect_error(StackTextAndCategorization(data.to.stack$text.multi[1], 
+                                            existing.categorization = data.to.stack$binary.grid),
+                 err.msg)
+    
+    err.msg <- "The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set"
+    expect_error(StackTextAndCategorization(data.to.stack$text.multi, 
+                                            existing.categorization = single.nominal),
+                 err.msg)
+})
+
+
+test_that("Variables matched correctly for PickOneMuli", {
+    nominal.multi <- data.to.stack$nominal.multi
+    nominal.multi.reversed <- nominal.multi[c(3, 2, 1)]
+    nominal.multi.reversed <- CopyAttributes(nominal.multi.reversed, nominal.multi)
+    stacked <- StackTextAndCategorization(data.to.stack$text.multi,
+                                            existing.categorization = nominal.multi)
+    stacked.reversed <- StackTextAndCategorization(data.to.stack$text.multi,
+                                            existing.categorization = nominal.multi.reversed)
+    expect_equal(stacked, stacked.reversed)
+})
