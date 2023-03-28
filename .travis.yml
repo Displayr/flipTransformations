@@ -12,17 +12,22 @@ before_install:
   - export R_REMOTES_NO_ERRORS_FROM_WARNINGS="true"
   - sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
   - sudo apt-get -qq update
-  - sudo apt-get install -y libgdal-dev libproj-dev python-protobuf libprotoc-dev  libprotobuf-dev libv8-dev librsvg2-dev libmpfr-dev libnlopt-dev
+  - sudo apt-get install -y libgdal-dev libproj-dev python-protobuf libprotoc-dev libprotobuf-dev libv8-dev librsvg2-dev libmpfr-dev libnlopt-dev libharfbuzz-dev libfribidi-dev
   - sudo add-apt-repository -y ppa:cran/libgit2
   - sudo apt-get -qq update
   - sudo apt-get install libgit2-dev
+  - mkdir -p ~/.R/
+  - echo "CXXFLAGS = `R CMD config CXXFLAGS` -g0 -flto -w" >> ~/.R/Makevars
+  - echo "CXX14FLAGS = -w -O3" >> ~/.R/Makevars
+  - sudo apt-get install -y r-cran-rcppeigen
   - rcode="options('testthat.progress.max_fails' = Inf); "
   - rcode+="tfile <- tempfile(); capture.output(res<-devtools::test(), file = tfile); out <- readLines(tfile); cat(out, sep = '\n'); "
   - rcode+="line.fail <- max(grep('FAIL', out)); "
   - rcode+="tmp <- unlist(strsplit(split='[[:space:]]+', out[line.fail])); "
   - rcode+="pos.fail <- grep('FAIL', tmp); n.fail <- as.numeric(tmp[pos.fail+1]); "
-  - rcode+="res <- as.data.frame(res); out <- data.frame(file = unlist(res[['file']]), warning = unlist(res[['warning']])); "
-  - rcode+="write.csv(out, file='test_results.csv'); "
+  - rcode+="res <- as.data.frame(res);"
+  - rcode+="out <- data.frame(fail = res[['failed']] + res[['error']], file = unlist(res[['file']]), warning = unlist(res[['warning']])); "
+  - rcode+="write.csv(out, file='test_results.csv', row.names = FALSE); "
   - rcode+="quit(status = !identical(n.fail, 0), save='no');"
   - Rscript tools/travis_run_before_install.R
 
@@ -47,7 +52,7 @@ notifications:
     rooms:
       - displayr:FTgSTNHC2rpanhJMGTKMwZXM#github-notifications
     template:
-      - "Build <%{build_url}|#%{build_number}> %{result} in %{repository_name}@%{branch} by %{author}: <%{compare_url}|%{commit_message}>"
+      - "Build <%{build_url}|#%{build_number}> %{result} in %{repository_name}@%{branch} by %{author}: <%{compare_url}|%{commit_subject}>"
     on_success: change
     on_failure: always
 
@@ -57,3 +62,5 @@ notifications:
 after_success:
   - Rscript -e "require(flipDevTools); NotifyWarnings(); TriggerDownstreamBuilds()"
   - travis_wait Rscript -e "flipDevTools::CheckCoverage()"
+after_failure:
+  - Rscript -e "require(flipDevTools); NotifyWarnings()"
