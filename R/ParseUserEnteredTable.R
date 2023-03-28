@@ -43,6 +43,8 @@ ParseUserEnteredTable <- function(raw.matrix,
 {
     if (all(raw.matrix == ""))
         stop("no data has been entered")
+    if (!is.null(dimnames(raw.matrix)))
+        return(raw.matrix)
 
     m <- removeEmptyRowsAndColumns(raw.matrix, drop = FALSE)
     m <- extractTableTitle(m)
