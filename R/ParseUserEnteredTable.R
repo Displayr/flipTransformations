@@ -43,8 +43,19 @@ ParseUserEnteredTable <- function(raw.matrix,
 {
     if (all(raw.matrix == ""))
         stop("no data has been entered")
-    if (!is.null(dimnames(raw.matrix)))
-        return(raw.matrix)
+
+    keep.col.names <- FALSE
+    keep.row.names <- FALSE
+    old.col.names <- colnames(raw.matrix)
+    old.row.names <- rownames(raw.matrix)
+    if (!is.null(old.col.names) && any(is.na(suppressWarnings(as.numeric(old.col.names))))) {
+        keep.col.names <- TRUE
+        want.col.names <- FALSE
+    }
+    if (!is.null(old.row.names) && any(is.na(suppressWarnings(as.numeric(old.row.names))))) {
+        keep.row.names <- TRUE
+        want.row.names <- FALSE
+    }
 
     m <- removeEmptyRowsAndColumns(raw.matrix, drop = FALSE)
     m <- extractTableTitle(m)
@@ -71,6 +82,11 @@ ParseUserEnteredTable <- function(raw.matrix,
     attr(res, "col.names.given") <- NULL
     attr(res, "row.column.names") <- row.col.title
     attr(res, "title") <- m.title
+
+    if (keep.col.names)
+        colnames(res) <- tail(old.col.names, ncol(res))
+    if (keep.row.names)
+        rownames(res) <- tail(old.row.names, nrow(res))
     return(res)
 }
 
