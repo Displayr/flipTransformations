@@ -32,6 +32,7 @@
 #' the first row is all numeric, but the \code{[1,1]} entry is not, the output
 #' matrix will have row names, but no column names.
 #'     to extract both row and column names from the resulting matrix
+#' @importFrom utils tail
 #' @export
 ParseUserEnteredTable <- function(raw.matrix,
                                   warn = TRUE,
