@@ -488,3 +488,48 @@ test_that("Character matrices are conservatively treated",
     expect_equal(dim(res), c(4, 1))
 })
 
+test_that("Character matrix with column names",
+{
+    tb <- structure(c("Macau", "Qatar", "Singapore", "Australia", "Hong Kong",
+        "New Zealand", "Israel", "Japan", "United Arab Emirates", "South Korea",
+        "Brunei", "Kuwait", "Taiwan", "Bahrain", "Saudi Arabia", "Oman",
+        "Palau", "Seychelles", "Maldives", "Lebanon", "Turkey", "Malaysia",
+        "Mauritius", "Kazakhstan", "China", "Nauru", "Turkmenistan",
+        "Thailand", "Suriname", "Fiji", "Jordan", "Iran", "Iraq", "Samoa",
+        "Tonga", "Azerbaijan", "Sri Lanka", "Indonesia", "Armenia", "Mongolia",
+        "Tuvalu", "Marshall Islands", "Micronesia", "Vanuatu", "Philippines",
+        "Bhutan", "Papua New Guinea", "Laos", "Vietnam", "East Timor",
+        "Solomon Islands", "India", "Kiribati", "Bangladesh", "Pakistan",
+        "Myanmar", "Kyrgyzstan", "Nepal", "Tajikistan", "Afghanistan",
+        "Yemen", "77451", "60804", "57713", "55707", "46109", "41593",
+        "40258", "38440", "37226", "29891", "29712", "27319", "24577",
+        "24029", "21120", "17973", "17096", "15686", "12527", "11409",
+        "10512", " 9813", " 9794", " 8841", " 8643", " 8575", " 6643",
+        " 6591", " 5746", " 5740", " 5678", " 5305", " 5088", " 4253",
+        " 4177", " 4141", " 4084", " 3876", " 3861", " 3640", " 3638",
+        " 3625", " 3200", " 3094", " 2976", " 2903", " 2861", " 2542",
+        " 2354", " 2104", " 2081", " 1983", " 1721", " 1602", " 1541",
+        " 1264", " 1144", "  834", "  824", "  588", "  551"),
+        dim = c(61L, 2L), dimnames = list(c("3", "7", "9", "11", "16", "21",
+        "22", "25", "26", "30", "31", "33", "36", "37", "40", "44", "47", "53",
+        "62", "64", "67", "70", "71", "74", "75", "76", "86", "87", "93",
+        "94", "95", "98", "100", "111", "112", "113", "115", "118", "119",
+        "120", "121", "122", "126", "128", "129", "130", "131", "134",
+        "136", "139", "140", "143", "146", "150", "151", "159", "161",
+        "166", "168", "180", "181"), c("Country", "GDP USD")))
+    res <- ParseUserEnteredTable(tb)
+    expect_equal(dimnames(res), list(c("Macau", "Qatar", "Singapore",
+        "Australia", "Hong Kong", "New Zealand", "Israel", "Japan",
+        "United Arab Emirates", "South Korea", "Brunei", "Kuwait", "Taiwan",
+        "Bahrain", "Saudi Arabia", "Oman", "Palau", "Seychelles", "Maldives",
+        "Lebanon", "Turkey", "Malaysia", "Mauritius", "Kazakhstan", "China",
+        "Nauru", "Turkmenistan", "Thailand", "Suriname", "Fiji", "Jordan",
+        "Iran", "Iraq", "Samoa", "Tonga", "Azerbaijan", "Sri Lanka", "Indonesia",
+        "Armenia", "Mongolia", "Tuvalu", "Marshall Islands", "Micronesia",
+        "Vanuatu", "Philippines", "Bhutan", "Papua New Guinea", "Laos", "Vietnam",
+        "East Timor", "Solomon Islands", "India", "Kiribati", "Bangladesh",
+        "Pakistan", "Myanmar", "Kyrgyzstan", "Nepal", "Tajikistan", "Afghanistan",
+        "Yemen"), "GDP USD"))
+    expect_equal(is.numeric(res), TRUE)
+})
+

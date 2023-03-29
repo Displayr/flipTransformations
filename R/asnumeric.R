@@ -55,6 +55,13 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
         x.tmp <- AsDateTime(x, on.parse.failure = "silent")
         if (!any(is.na(x.tmp)))
             x <- x.tmp
+        else {
+            x.tmp <- suppressWarnings(as.numeric(x))
+            if (!any(is.na(x.tmp))) {
+                x.tmp <- CopyAttributes(x.tmp, x)
+                return (x.tmp)
+            }
+        }
     }
     if (inherits(x, "Date") || inherits(x, "POSIXct") || inherits(x, "POSIXt"))
     {
