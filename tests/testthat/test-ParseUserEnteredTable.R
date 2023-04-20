@@ -533,3 +533,12 @@ test_that("Character matrix with column names",
     expect_equal(is.numeric(res), TRUE)
 })
 
+test_that("Character matrix with NAs", {
+    xx <- structure(c("0.68", NA, "0.67", NA, "0.69", ".89", "0.64", ".88"),
+        dim = c(2L, 4L), dimnames = list(c("OES", "GES"),
+        c("2020","2021", "2022", "2023")))
+    res <- ParseUserEnteredTable(xx)
+    expect_equal(is.numeric(res), TRUE)
+    expect_equal(dimnames(res), dimnames(xx))
+})
+

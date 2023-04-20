@@ -163,7 +163,7 @@ asNumeric <- function(t, nrow = 1, ncol = 1, drop = FALSE, warn = FALSE)
     is.percentage <- isTRUE(attr(out, "statistic") == "%")
 
     # If could not convert
-    if (any(is.na(out) & !isMissing(v)))
+    if (any(is.na(out) & !isMissing(v) & !is.na(v)))
     {
         if (warn)
             warning("The entered data could not be interpreted.", call. = FALSE)

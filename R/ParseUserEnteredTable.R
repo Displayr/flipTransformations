@@ -57,6 +57,14 @@ ParseUserEnteredTable <- function(raw.matrix,
         keep.row.names <- TRUE
         want.row.names <- FALSE
     }
+    if (keep.row.names || keep.col.names) {
+        # If table already has dimnames then maybe no parsing is needed
+        res <- asNumeric(raw.matrix, nrow(raw.matrix), ncol(raw.matrix))
+        if (is.numeric(res)) {
+            dimnames(res) <- dimnames(raw.matrix)
+            return(res)
+        }
+    }
 
     m <- removeEmptyRowsAndColumns(raw.matrix, drop = FALSE)
     m <- extractTableTitle(m)
