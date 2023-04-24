@@ -10,6 +10,9 @@ parameters:
     plugins-branch:
         type: string
         default: ""
+    triggered-packages:
+        type: string
+        default: ""
 
 jobs:
   r-release:
@@ -19,9 +22,16 @@ jobs:
     environment:
         REMOTE_DEPS: <<pipeline.parameters.remote-deps>>
         PLUGINS_BRANCH: <<pipeline.parameters.plugins-branch>>
+        TRIGGER_MESSAGE: <<pipeline.parameters.trigger-message>>
+        TRIGGERED_PACKAGES: <<pipeline.parameters.triggered-packages>>
 
     steps:
       - checkout
+
+      - when:
+          condition: <<pipeline.parameters.trigger-message>>
+          steps:
+            - run: echo "<<pipeline.parameters.trigger-message>>"
 
       # create a unique env var for the cache. Unfortunately normal env vars
       # are not picked up by the cache, therefore this workaround is needed.
