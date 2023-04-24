@@ -1,11 +1,24 @@
-## tic Circle CI template: linux-deploy
-## revision date: 2022-08-28
 version: 2.1
+
+parameters:
+    trigger-message:
+        type: string
+        default: ""
+    remote-deps:
+        type: string
+        default: ""
+    plugins-branch:
+        type: string
+        default: ""
+
 jobs:
   r-release:
     machine:
         image: ubuntu-2204:current
     resource_class: small
+    environment:
+        REMOTE_DEPS: <<pipeline.parameters.remote-deps>>
+        PLUGINS_BRANCH: <<pipeline.parameters.plugins-branch>>
 
     steps:
       - checkout
@@ -37,7 +50,7 @@ jobs:
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
             sudo tee -a $R_HOME/etc/Rprofile.site
             R -q -e 'remotes::install_github("Displayr/flipDevTools")'
-            R -q -e 'options(warn = 2); devtools::install_deps(dependencies = TRUE)'
+            R -q -e 'options(warn = 2); flipDevTools::InstallDeps(dependencies = TRUE)'
 
       - save_cache:
           key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
@@ -62,6 +75,10 @@ jobs:
 
       - store_artifacts:
           path: testthat.xml
+
+      - run:
+          name: "Trigger reverse dependencies"
+          command: R -e 'flipDevTools::TriggerRevDepPipelines()'
 
 workflows:
   build-and-check-R-package:
