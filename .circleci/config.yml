@@ -1,5 +1,17 @@
 version: 2.1
 
+# @param trigger-message: A summary message of what triggered the pipeline to run
+# set when triggering pipelines in flipDevTools::TriggerRevDepPipelines() step
+# @param remote-deps: A comma-separated string of GitHub refs, which can
+# be used to install specific branches of dependencies; used by both
+# flipDevTools::InstallDeps() and TriggerRevDepPipelines;
+# e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
+# @param plugins-branch String specifying a branch of the Displayr/Plugins
+# repo to trigger a build in (if the workflow is a success), the default "" does not
+# trigger a build in Plugins
+# @param triggered-packages: A comma-separated string of reverse depenendency
+# packages which have already been triggered, i.e. should be excluded (not triggered)
+# by TriggerRevDepPipelines() in the Trigger reverse dependencies step
 parameters:
     trigger-message:
         type: string
