@@ -28,7 +28,7 @@ Remotes:
     Displayr/flipExampleData,
     Displayr/flipFormat,
     Displayr/flipTime,
-    Displayr/flipU
+    Displayr/flipU@DS-4393
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Depends: 
