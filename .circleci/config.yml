@@ -11,7 +11,8 @@ version: 2.1
 # trigger a build in Plugins
 # @param triggered-packages: A comma-separated string of reverse depenendency
 # packages which have already been triggered, i.e. should be excluded (not triggered)
-# by TriggerRevDepPipelines() in the Trigger reverse dependencies step
+# by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
+# automatically by that function to ensure each package is triggered at most once.
 parameters:
     trigger-message:
         type: string
