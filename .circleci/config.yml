@@ -27,11 +27,31 @@ parameters:
         type: string
         default: ""
 
-jobs:
-  r-release:
+executors:
+  default:
     machine:
         image: ubuntu-2204:current
     resource_class: small
+
+workflows:
+  build-and-check-R-package:
+    jobs:
+      - build-and-check-package:
+          context:
+            - r_packages
+      - deploy-package:
+          requires:
+            - build-and-check-package
+          context:
+            - r_packages
+          filters:
+            branches:
+              only:
+                - master
+
+jobs:
+  build-and-check-package:
+    executor: default
     environment:
         REMOTE_DEPS: <<pipeline.parameters.remote-deps>>
         PLUGINS_BRANCH: <<pipeline.parameters.plugins-branch>>
@@ -50,13 +70,13 @@ jobs:
       # are not picked up by the cache, therefore this workaround is needed.
       # See https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
       - run: echo "$(Rscript -e 'cat(format(getRversion()))')" > /tmp/R_version
-      - run: echo "v1" > /tmp/cache_vers  # Increment this to invalidate cache
+      - run: echo "v2" > /tmp/cache_vers  # Increment this to invalidate cache
       - restore_cache:
           key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
 
       # install deps and check pkg ---------------------------------------------
       - run:
-          name: "[r-release] Install dependencies"
+          name: "Install dependencies"
           command: |
             sudo apt update -qq
             sudo apt install -y software-properties-common dirmngr
@@ -67,6 +87,8 @@ jobs:
             sudo apt update && sudo apt install -y ccache pandoc libgit2-dev libharfbuzz-dev \
             libfribidi-dev libprotoc-dev libprotobuf-dev libv8-dev librsvg2-dev libmpfr-dev \
             libnlopt-dev libgdal-dev libproj-dev r-base r-cran-devtools
+            sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
+            tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
             echo -e 'options(Ncpus = 4, repos = structure(c(CRAN = "https://cloud.r-project.org/")))' > $HOME/.Rprofile
             export R_HOME=`R RHOME`
@@ -100,12 +122,30 @@ jobs:
           path: testthat.xml
 
       - run:
+          name: Build source and binary package
+          command: |
+            R CMD build --no-build-vignettes .
+            R CMD INSTALL --build .
+            mkdir built && cp *.tar.gz built/
+
+      - run:
           name: "Trigger reverse dependencies"
           command: R -e 'flipDevTools::TriggerRevDepPipelines()'
 
-workflows:
-  build-and-check-R-package:
-    jobs:
-      - r-release:
-          context:
-            - r_packages
+      - persist_to_workspace:
+          root: .
+          paths:
+            - built/
+
+  deploy-package:
+    executor: default
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
+      - run:
+          name: "Deploy package to drat Repository (Azure container)"
+          command: R -e 'flipDevTools::DeployPackage()'
