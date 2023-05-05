@@ -40,10 +40,20 @@ workflows:
           context:
             - r_packages
           pre-steps:
-            # install deps and check pkg ---------------------------------------------
+            # Create a unique env var for the cache. Unfortunately normal env vars
+            # are not picked up by the cache, therefore this workaround is needed.
+            # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
+            - run:
+                name: Setup cache
+                command: |
+                  mkdir tmp && echo "^tmp" >> .Rbuildignore
+                  echo "$(Rscript -e 'cat(format(getRversion()))')" > ./tmp/R_version
+                  echo "v4" > ./tmp/cache_vers  # Increment this to invalidate cache
+            - restore_cache:
+                key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
             # https://discuss.circleci.com/t/caching-apt-get-packages/9076
             - run:
-                name: "Install apt dependencies"
+                name: "Download apt dependencies"
                 command: |
                   sudo apt-get install software-properties-common dirmngr grub-efi-amd64-signed shim-signed
                   sudo mv /etc/apt/sources.list.d /etc/apt/sources.list.d.save
@@ -68,9 +78,6 @@ workflows:
                       # Making sure our user has ownership, in order to cache
                       sudo chown -R ubuntu:ubuntu ../vendor/apt
                     fi
-                    # Install all packages in the cache; https://askubuntu.com/a/1454102
-                    sudo rm /var/cache/debconf/config.dat
-                    sudo dpkg -i ../vendor/apt/archives/*.deb
                   fi
       - deploy-package:
           requires:
@@ -99,21 +106,15 @@ jobs:
           steps:
             - run: echo "<<pipeline.parameters.trigger-message>>"
 
-      # create a unique env var for the cache. Unfortunately normal env vars
-      # are not picked up by the cache, therefore this workaround is needed.
-      # See https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
-      - run:
-          name: Setup cache
-          command: |
-            mkdir tmp && echo "^tmp" >> .Rbuildignore
-            echo "$(Rscript -e 'cat(format(getRversion()))')" > ./tmp/R_version
-            echo "v3" > ./tmp/cache_vers  # Increment this to invalidate cache
-      - restore_cache:
-          key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
 
       - run:
-          name: "Install R dependencies"
+          name: "Install dependencies"
           command: |
+            # Install all packages in the cache; https://askubuntu.com/a/1454102
+            if [[ ! -e /usr/bin/R ]]; then
+              sudo rm /var/cache/debconf/config.dat
+              sudo dpkg -i ../vendor/apt/archives/*.deb
+            fi
             sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
