@@ -110,6 +110,8 @@ jobs:
       - run:
           name: "Install R dependencies"
           command: |
+            sudo rm /var/cache/debconf/config.dat
+            sudo dpkg -i ../vendor/apt/archives/*.deb
             sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
