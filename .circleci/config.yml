@@ -69,7 +69,7 @@ jobs:
       # create a unique env var for the cache. Unfortunately normal env vars
       # are not picked up by the cache, therefore this workaround is needed.
       # See https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
-      -run:
+      - run:
           name: Setup cache
           command: |
             mkdir tmp && echo "^tmp" >> .Rbuildignore
