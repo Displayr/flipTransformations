@@ -110,8 +110,6 @@ jobs:
       - run:
           name: "Install R dependencies"
           command: |
-            sudo rm /var/cache/debconf/config.dat
-            sudo dpkg -i ../vendor/apt/archives/*.deb
             sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
@@ -162,6 +160,8 @@ jobs:
           root: .
           paths:
             - built/
+            - /tmp/cache_vers
+            - /tmp/R_version
 
   deploy-package:
     executor: default
@@ -175,8 +175,8 @@ jobs:
       - run:
           name: "Set environment variables"
           command: |
-            echo "$(R -q -e 'cat(format(getRversion()))')" > /tmp/R_version
-            echo "v3" > /tmp/cache_vers  # Increment this to invalidate cache
+            sudo rm /var/cache/debconf/config.dat
+            sudo dpkg -i ../vendor/apt/archives/*.deb
             sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
