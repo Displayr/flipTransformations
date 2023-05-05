@@ -76,7 +76,7 @@ jobs:
             echo "$(Rscript -e 'cat(format(getRversion()))')" > ./tmp/R_version
             echo "v3" > ./tmp/cache_vers  # Increment this to invalidate cache
       - restore_cache:
-          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
+          key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
 
       # install deps and check pkg ---------------------------------------------
       # https://discuss.circleci.com/t/caching-apt-get-packages/9076
@@ -125,7 +125,7 @@ jobs:
             R -q -e 'options(warn = 2); flipDevTools::InstallDeps(dependencies = TRUE)'
 
       - save_cache:
-          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
+          key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
           paths:
             - ../R/library
             - ../vendor/apt
