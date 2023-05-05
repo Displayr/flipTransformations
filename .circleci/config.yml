@@ -69,8 +69,12 @@ jobs:
       # create a unique env var for the cache. Unfortunately normal env vars
       # are not picked up by the cache, therefore this workaround is needed.
       # See https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
-      - run: echo "$(Rscript -e 'cat(format(getRversion()))')" > /tmp/R_version
-      - run: echo "v3" > /tmp/cache_vers  # Increment this to invalidate cache
+      -run:
+          name: Setup cache
+          command: |
+            mkdir tmp && echo "^tmp" >> .Rbuildignore
+            echo "$(Rscript -e 'cat(format(getRversion()))')" > ./tmp/R_version
+            echo "v3" > ./tmp/cache_vers  # Increment this to invalidate cache
       - restore_cache:
           key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
 
@@ -160,8 +164,7 @@ jobs:
           root: .
           paths:
             - built/
-            - ../../../tmp/cache_vers
-            - ../../../tmp/R_version
+            - tmp/
 
   deploy-package:
     executor: default
@@ -171,7 +174,7 @@ jobs:
       - attach_workspace:
           at: .
       - restore_cache:
-          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
+          key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
       - run:
           name: "Set environment variables"
           command: |
@@ -181,6 +184,7 @@ jobs:
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
             sudo tee -a $R_HOME/etc/Rprofile.site
+
       - run:
           name: "Deploy package to drat Repository (Azure container)"
           command: R -e 'flipDevTools::DeployPackage()'
