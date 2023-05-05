@@ -160,8 +160,8 @@ jobs:
           root: .
           paths:
             - built/
-            - /tmp/cache_vers
-            - /tmp/R_version
+            - ../../../tmp/cache_vers
+            - ../../../tmp/R_version
 
   deploy-package:
     executor: default
