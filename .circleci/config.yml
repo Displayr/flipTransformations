@@ -39,6 +39,40 @@ workflows:
       - build-and-check-package:
           context:
             - r_packages
+          pre-steps:
+	    # https://discuss.circleci.com/t/caching-apt-get-packages/9076
+	    - sudo mv /etc/apt/sources.list.d /etc/apt/sources.list.d.save
+	    - sudo mkdir /etc/apt/sources.list.d
+	    - |
+	      sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+	      wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | \
+	      sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+	      sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+	      sudo add-apt-repository -y ppa:c2d4u.team/c2d4u4.0+
+
+	    # Make the cache dir if it doesn't exist
+	    - |
+	      if ! [[ -d ../vendor/apt ]]; then
+		mkdir -p ../vendor/apt
+	      fi
+
+	    # Install R if it doesn't exist
+	    - |
+	      if [[ ! -e /usr/bin/R ]]; then
+		if ! [[ -d ../vendor/apt/archives ]]; then
+		  sudo apt-get update && sudo apt-get install --download-only -y ccache pandoc \
+		  libgit2-dev libharfbuzz-dev libfribidi-dev libprotoc-dev libprotobuf-dev \
+		  libv8-dev librsvg2-dev libmpfr-dev libnlopt-dev libgdal-dev libproj-dev \
+		  r-base r-cran-devtools software-properties-common dirmngr
+		  sudo cp -R /var/cache/apt ../vendor/
+		  # Making sure our user has ownership, in order to cache
+		  sudo chown -R ubuntu:ubuntu ../vendor/apt
+		fi
+
+	  # Install all packages in the cache
+        sudo dpkg -i ../vendor/apt/archives/*.deb
+      fi
+
       - deploy-package:
           requires:
             - build-and-check-package
@@ -48,40 +82,6 @@ workflows:
             branches:
               only:
                 - master
-
-  pre:
-    # https://discuss.circleci.com/t/caching-apt-get-packages/9076
-    - sudo mv /etc/apt/sources.list.d /etc/apt/sources.list.d.save
-    - sudo mkdir /etc/apt/sources.list.d
-    - |
-      sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-      wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | \
-      sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-      sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-      sudo add-apt-repository -y ppa:c2d4u.team/c2d4u4.0+
-
-    # Make the cache dir if it doesn't exist
-    - |
-      if ! [[ -d ../vendor/apt ]]; then
-        mkdir -p ../vendor/apt
-      fi
-
-    # Install R if it doesn't exist
-    - |
-      if [[ ! -e /usr/bin/R ]]; then
-        if ! [[ -d ../vendor/apt/archives ]]; then
-          sudo apt-get update && sudo apt-get install --download-only -y ccache pandoc \
-          libgit2-dev libharfbuzz-dev libfribidi-dev libprotoc-dev libprotobuf-dev \
-          libv8-dev librsvg2-dev libmpfr-dev libnlopt-dev libgdal-dev libproj-dev \
-          r-base r-cran-devtools software-properties-common dirmngr
-          sudo cp -R /var/cache/apt ../vendor/
-          # Making sure our user has ownership, in order to cache
-          sudo chown -R ubuntu:ubuntu ../vendor/apt
-        fi
-
-        # Install all packages in the cache
-        sudo dpkg -i ../vendor/apt/archives/*.deb
-      fi
 
 jobs:
   build-and-check-package:
