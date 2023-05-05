@@ -39,8 +39,6 @@ workflows:
       - build-and-check-package:
           context:
             - r_packages
-          pre-steps:
-
       - deploy-package:
           requires:
             - build-and-check-package
