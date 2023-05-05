@@ -170,6 +170,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - restore_cache:
+          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
       - run:
           name: "Set environment variables"
           command: |
@@ -179,8 +181,6 @@ jobs:
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
             sudo tee -a $R_HOME/etc/Rprofile.site
-      - restore_cache:
-          key: R-package-library-{{ checksum "/tmp/cache_vers" }}-{{ checksum "/tmp/R_version" }}
       - run:
           name: "Deploy package to drat Repository (Azure container)"
           command: R -e 'flipDevTools::DeployPackage()'
