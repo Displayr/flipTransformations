@@ -122,7 +122,7 @@ jobs:
             export R_HOME=`R RHOME`
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
             sudo tee -a $R_HOME/etc/Rprofile.site
-            R -q -e 'remotes::install_github("Displayr/flipDevTools")'
+            R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
             R -q -e 'options(warn = 2); flipDevTools::InstallDeps(dependencies = TRUE)'
 
       - save_cache:
@@ -159,7 +159,7 @@ jobs:
 
       - run:
           name: "Trigger reverse dependencies"
-          command: R -e '#flipDevTools::TriggerRevDepPipelines()'
+          command: R -e 'flipDevTools::TriggerRevDepPipelines()'
 
       - persist_to_workspace:
           root: .
@@ -184,8 +184,8 @@ jobs:
             sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
             tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
             echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
-            sudo tee -a $R_HOME/etc/Rprofile.site
+            sudo tee -a `R RHOME`/etc/Rprofile.site
 
       - run:
           name: "Deploy package to drat Repository (Azure container)"
-          command: R -e 'flipDevTools::DeployPackage()'
+          command: R -q -e 'flipDevTools::DeployPackage()'
