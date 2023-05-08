@@ -74,7 +74,7 @@ orbs:
                 e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
               type: string
         steps:
-          run:
+          - run:
             command: |
               # Install all packages in the cache; https://askubuntu.com/a/1454102
               if ! [ -x "$(command -v R)" ]; then
