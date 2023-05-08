@@ -221,7 +221,8 @@ orbs:
           # - update_apt_packages
           - echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
           - restore_cache:
-              key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}            - install_deps:
+              key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
+          - install_deps:
               remote-deps: <<parameters.remote-deps>>
           - save_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
