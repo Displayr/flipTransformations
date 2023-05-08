@@ -268,11 +268,10 @@ workflows:
       - r-packages-orb/build-and-check-package:
           context:
             - r_packages
-          parameters:
-              remote-deps: <<pipeline.parameters.remote-deps>>
-              plugins-branch: <<pipeline.parameters.plugins-branch>>
-              trigger-message: <<pipeline.parameters.trigger-message>>
-              triggered-packages: <<pipeline.parameters.triggered-packages>>
+          remote-deps: <<pipeline.parameters.remote-deps>>
+          plugins-branch: <<pipeline.parameters.plugins-branch>>
+          trigger-message: <<pipeline.parameters.trigger-message>>
+          triggered-packages: <<pipeline.parameters.triggered-packages>>
       - r-packages-orb/deploy-package:
           requires:
             - build-and-check-package
