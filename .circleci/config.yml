@@ -76,21 +76,21 @@ orbs:
         steps:
           run:
             command: |
-            # Install all packages in the cache; https://askubuntu.com/a/1454102
-            if ! [ -x "$(command -v R)" ]; then
-              sudo rm /var/cache/debconf/config.dat
-              sudo dpkg -i ../vendor/apt/archives/*.deb
-            fi
-            sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
-            tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
-            R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
-            echo -e 'options(Ncpus = 4, repos = structure(c(CRAN = "https://cloud.r-project.org/")))' > $HOME/.Rprofile
-            export R_HOME=`R RHOME`
-            echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
-            sudo tee -a $R_HOME/etc/Rprofile.site
-            R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
-            R -q -e 'options(warn = 2); flipDevTools::InstallDeps( \
-            remote.refs = <<paramters.remote-deps>>, dependencies = TRUE)'
+              # Install all packages in the cache; https://askubuntu.com/a/1454102
+              if ! [ -x "$(command -v R)" ]; then
+                sudo rm /var/cache/debconf/config.dat
+                sudo dpkg -i ../vendor/apt/archives/*.deb
+              fi
+              sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
+              tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
+              R -q -e 'if (!dir.exists("~/R/library")) dir.create("~/R/library", recursive = TRUE)'
+              echo -e 'options(Ncpus = 4, repos = structure(c(CRAN = "https://cloud.r-project.org/")))' > $HOME/.Rprofile
+              export R_HOME=`R RHOME`
+              echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
+              sudo tee -a $R_HOME/etc/Rprofile.site
+              R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
+              R -q -e 'options(warn = 2); flipDevTools::InstallDeps( \
+              remote.refs = <<paramters.remote-deps>>, dependencies = TRUE)'
 
       build_package:
         description: "Build source and binary package"
