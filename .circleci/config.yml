@@ -31,9 +31,9 @@ orbs:
   r-packages-orb:
     executors:
       default:
-	machine:
-	    image: ubuntu-2204:current
-	resource_class: small
+        machine:
+            image: ubuntu-2204:current
+        resource_class: small
     commands:
       install_apt_packages:
         description: "Download apt dependencies"
