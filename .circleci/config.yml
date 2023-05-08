@@ -16,7 +16,7 @@ version: 2.1
 parameters:
     trigger-message:
         type: string
-        default: ""
+        default: "Hello World!"
     remote-deps:
         type: string
         default: ""
