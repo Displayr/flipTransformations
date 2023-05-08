@@ -210,8 +210,8 @@ orbs:
                 echo "^tmp" >> .Rbuildignore
                 # echo "$(which R | grep -Fvce '/usr/bin/R')" &&
                 # echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
-                git log --format=%B -n 1 $CIRCLE_SHA1 | \
-                grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
+                # git log --format=%B -n 1 $CIRCLE_SHA1 | \
+                # grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
           # https://discuss.circleci.com/t/caching-apt-get-packages/9076
           - install_apt_packages
           # - update_apt_packages
