@@ -239,7 +239,6 @@ orbs:
           - trigger_reverse_dependencies:
               remote-deps: << parameters.remote-deps >>
               plugins-branch: << parameters.plugins-branch >>
-              trigger-message: << parameters.trigger-message >>
               triggered-packages: << parameters.triggered-packages >>
 
       deploy-package:
