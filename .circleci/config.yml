@@ -39,6 +39,7 @@ orbs:
         description: "Download apt dependencies"
         steps:
           - run:
+              name: "Download apt dependencies"
               command: |
                 sudo mv /etc/apt/sources.list.d /etc/apt/sources.list.d.save
                 sudo mkdir /etc/apt/sources.list.d
@@ -75,6 +76,7 @@ orbs:
             type: string
         steps:
           - run:
+              name: "Install R dependencies"
               command: |
                 # Install all packages in the cache; https://askubuntu.com/a/1454102
                 if ! [ -x "$(command -v R)" ]; then
@@ -89,7 +91,7 @@ orbs:
                 echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
                 sudo tee -a $R_HOME/etc/Rprofile.site
                 R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
-                R -q -e 'options(warn = 2); flipDevTools::InstallDeps( \
+                R -q -e "options(warn = 2); flipDevTools::InstallDeps( \
                 remote.refs = << parameters.remote-deps >>, dependencies = TRUE)'
 
       build_package:
