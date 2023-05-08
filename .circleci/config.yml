@@ -268,6 +268,7 @@ workflows:
   build-and-check-R-package:
     jobs:
       - r-packages-orb/build-and-check-package:
+          name: BuildAndCheckPackage
           context:
             - r_packages
           remote-deps: << pipeline.parameters.remote-deps >>
@@ -276,7 +277,7 @@ workflows:
           triggered-packages: << pipeline.parameters.triggered-packages >>
       - r-packages-orb/deploy-package:
           requires:
-            - build-and-check-package
+            - BuildAndCheckPackage
           context:
             - r_packages
           filters:
