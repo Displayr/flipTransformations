@@ -206,16 +206,16 @@ orbs:
             key: R-package-library-{{ checksum "./tmp/cache_vers" }}
           - run:
             name: Setup cache
-              command: |
-                if ! [[ -d tmp ]]; then
-                  mkdir tmp
-                fi
-                echo "^tmp" >> .Rbuildignore
-                echo "$(which R | grep -Fvce '/usr/bin/R')" &&
-                echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
-                echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
-                git log --format=%B -n 1 $CIRCLE_SHA1 | \
-                grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
+            command: |
+              if ! [[ -d tmp ]]; then
+                mkdir tmp
+              fi
+              echo "^tmp" >> .Rbuildignore
+              echo "$(which R | grep -Fvce '/usr/bin/R')" &&
+              echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
+              echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
+              git log --format=%B -n 1 $CIRCLE_SHA1 | \
+              grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
           # https://discuss.circleci.com/t/caching-apt-get-packages/9076
           - install_apt_packages
           # - update_apt_packages
