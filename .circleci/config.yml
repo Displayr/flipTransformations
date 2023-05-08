@@ -203,7 +203,7 @@ orbs:
           - checkout
           - run: echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
           - restore_cache:
-            key: R-package-library-{{ checksum "./tmp/cache_vers" }}
+            key: apt-library-{{ checksum "./tmp/cache_vers" }}
           - run:
               name: Setup cache
               command: |
@@ -219,16 +219,19 @@ orbs:
           # https://discuss.circleci.com/t/caching-apt-get-packages/9076
           - install_apt_packages
           # - update_apt_packages
-          - echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
+          - run: echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
           - restore_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
           - install_deps:
               remote-deps: <<parameters.remote-deps>>
           - save_cache:
+              key: apt-library-{{ checksum "./tmp/cache_vers" }}
+              paths:
+                - ../vendor/apt
+          - save_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
               paths:
                 - ../R/library
-                - ../vendor/apt
 
           - build_package
           - check_package
