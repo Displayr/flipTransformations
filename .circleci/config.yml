@@ -67,12 +67,12 @@ orbs:
         description: "Install R dependencies"
         parameters:
           remote-deps:
-              description: |
-                A comma-separated string of GitHub refs, which can
-                be used to install specific branches of dependencies; used by both
-                flipDevTools::InstallDeps() and TriggerRevDepPipelines;
-                e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
-              type: string
+            description: |
+              A comma-separated string of GitHub refs, which can
+              be used to install specific branches of dependencies; used by both
+              flipDevTools::InstallDeps() and TriggerRevDepPipelines;
+              e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
+            type: string
         steps:
           - run:
               command: |
@@ -90,7 +90,7 @@ orbs:
                 sudo tee -a $R_HOME/etc/Rprofile.site
                 R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
                 R -q -e 'options(warn = 2); flipDevTools::InstallDeps( \
-                remote.refs = <<paramters.remote-deps>>, dependencies = TRUE)'
+                remote.refs = << parameters.remote-deps >>, dependencies = TRUE)'
 
       build_package:
         description: "Build source and binary package"
@@ -132,25 +132,25 @@ orbs:
         description: "Trigger pipelines of R package reverse dependencies"
         parameters:
           remote-deps:
-              description: |
-                A comma-separated string of GitHub refs, which can
-                be used to install specific branches of dependencies; used by both
-                flipDevTools::InstallDeps() and TriggerRevDepPipelines;
-                e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
-              type: string
+            description: |
+              A comma-separated string of GitHub refs, which can
+              be used to install specific branches of dependencies; used by both
+              flipDevTools::InstallDeps() and TriggerRevDepPipelines;
+              e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
+            type: string
           plugins-branch:
-              description: |
-                String specifying a branch of the Displayr/Plugins
-                repo to trigger a build in (if the workflow is a success), the default "" does not
-                trigger a build in Plugins
-              type: string
+            description: |
+              String specifying a branch of the Displayr/Plugins
+              repo to trigger a build in (if the workflow is a success), the default "" does not
+              trigger a build in Plugins
+            type: string
           triggered-packages:
-              description: |
-                A comma-separated string of reverse depenendency
-                packages which have already been triggered, i.e. should be excluded (not triggered)
-                by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
-                automatically by that function to ensure each package is triggered at most once.
-              type: string
+            description: |
+              A comma-separated string of reverse depenendency
+              packages which have already been triggered, i.e. should be excluded (not triggered)
+              by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
+              automatically by that function to ensure each package is triggered at most once.
+            type: string
         steps:
           - run:
               command: >-
@@ -164,39 +164,39 @@ orbs:
         executor: default
         parameters:
           remote-deps:
-              description: |
-                A comma-separated string of GitHub refs, which can
-                be used to install specific branches of dependencies; used by both
-                flipDevTools::InstallDeps() and TriggerRevDepPipelines;
-                e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
-              default: ""
-              type: string
+            description: |
+              A comma-separated string of GitHub refs, which can
+              be used to install specific branches of dependencies; used by both
+              flipDevTools::InstallDeps() and TriggerRevDepPipelines;
+              e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
+            default: ""
+            type: string
           plugins-branch:
-              description: |
-                String specifying a branch of the Displayr/Plugins
-                repo to trigger a build in (if the workflow is a success), the default "" does not
-                trigger a build in Plugins
-              default: ""
-              type: string
+            description: |
+              String specifying a branch of the Displayr/Plugins
+              repo to trigger a build in (if the workflow is a success), the default "" does not
+              trigger a build in Plugins
+            default: ""
+            type: string
           triggered-packages:
-              description: |
-                A comma-separated string of reverse depenendency
-                packages which have already been triggered, i.e. should be excluded (not triggered)
-                by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
-                automatically by that function to ensure each package is triggered at most once.
-              default: ""
-              type: string
+            description: |
+              A comma-separated string of reverse depenendency
+              packages which have already been triggered, i.e. should be excluded (not triggered)
+              by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
+              automatically by that function to ensure each package is triggered at most once.
+            default: ""
+            type: string
           trigger-message:
-              description: |
-                A summary message of what triggered the pipeline to run
-                set when triggering pipelines in TriggerRevDepPipelines()
-              default: ""
-              type: string
+            description: |
+              A summary message of what triggered the pipeline to run
+              set when triggering pipelines in TriggerRevDepPipelines()
+            default: ""
+            type: string
         steps:
           - when:
-              condition: <<parameters.trigger-message>>
+              condition: << parameters.trigger-message >>
               steps:
-                - run: echo "<<parameters.trigger-message>>"
+                - run: echo "<< parameters.trigger-message >>"
           # Clear cache if "<CLEAR_CACHE>" is present in commit message
           # are not picked up by the cache, therefore this workaround is needed.
           # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
@@ -223,7 +223,7 @@ orbs:
           - restore_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
           - install_deps:
-              remote-deps: <<parameters.remote-deps>>
+              remote-deps: << parameters.remote-deps >>
           - save_cache:
               key: apt-library-{{ checksum "./tmp/cache_vers" }}
               paths:
@@ -237,10 +237,10 @@ orbs:
           - check_package
           - test_package
           - trigger_reverse_dependencies:
-              remote-deps: <<parameters.remote-deps>>
-              plugins-branch: <<parameters.plugins-branch>>
-              trigger-message: <<parameters.trigger-message>>
-              triggered-packages: <<parameters.triggered-packages>>
+              remote-deps: << parameters.remote-deps >>
+              plugins-branch: << parameters.plugins-branch >>
+              trigger-message: << parameters.trigger-message >>
+              triggered-packages: << parameters.triggered-packages >>
 
       deploy-package:
         executor: default
@@ -271,10 +271,10 @@ workflows:
       - r-packages-orb/build-and-check-package:
           context:
             - r_packages
-          remote-deps: <<pipeline.parameters.remote-deps>>
-          plugins-branch: <<pipeline.parameters.plugins-branch>>
-          trigger-message: <<pipeline.parameters.trigger-message>>
-          triggered-packages: <<pipeline.parameters.triggered-packages>>
+          remote-deps: << pipeline.parameters.remote-deps >>
+          plugins-branch: << pipeline.parameters.plugins-branch >>
+          trigger-message: << pipeline.parameters.trigger-message >>
+          triggered-packages: << pipeline.parameters.triggered-packages >>
       - r-packages-orb/deploy-package:
           requires:
             - build-and-check-package
