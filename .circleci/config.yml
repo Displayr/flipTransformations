@@ -201,19 +201,15 @@ orbs:
           # are not picked up by the cache, therefore this workaround is needed.
           # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
           - checkout
-          - run: echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
+          - run: mkdir tmp && echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
           - restore_cache:
               key: apt-library-{{ checksum "./tmp/cache_vers" }}
           - run:
               name: Setup cache
               command: |
-                if ! [[ -d tmp ]]; then
-                  mkdir tmp
-                fi
                 echo "^tmp" >> .Rbuildignore
-                echo "$(which R | grep -Fvce '/usr/bin/R')" &&
-                echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
-                echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
+                # echo "$(which R | grep -Fvce '/usr/bin/R')" &&
+                # echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
                 git log --format=%B -n 1 $CIRCLE_SHA1 | \
                 grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
           # https://discuss.circleci.com/t/caching-apt-get-packages/9076
