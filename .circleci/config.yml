@@ -52,7 +52,7 @@ orbs:
                 mkdir -p ../vendor/apt
               fi
               # Install R if it doesn't exist
-              if [[ ! -e /usr/bin/R ]]; then
+              if ! [ -x "$(command -v R)" ]; then
                 if ! [[ -d ../vendor/apt/archives ]]; then
                   sudo apt-get update && sudo apt-get install --download-only -y ccache pandoc \
                   libgit2-dev libharfbuzz-dev libfribidi-dev libprotoc-dev libprotobuf-dev \
@@ -77,7 +77,7 @@ orbs:
           run:
             command: |
             # Install all packages in the cache; https://askubuntu.com/a/1454102
-            if [[ ! -e /usr/bin/R ]]; then
+            if ! [ -x "$(command -v R)" ]; then
               sudo rm /var/cache/debconf/config.dat
               sudo dpkg -i ../vendor/apt/archives/*.deb
             fi
