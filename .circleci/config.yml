@@ -153,10 +153,11 @@ orbs:
               type: string
         steps:
           - run:
-              command: R -e 'flipDevTools::TriggerRevDepPipelines( \
-              plugins.branch = << parameters.plugins-branch >>, \
-              remote.deps.substitutions = << parameters.remote-deps >>,
-              exclude.pkgs = << parameters.triggered-packages >>)'
+              command: >-
+                R -e 'flipDevTools::TriggerRevDepPipelines(
+                plugins.branch = << parameters.plugins-branch >>, 
+                remote.deps.substitutions = << parameters.remote-deps >>,
+                exclude.pkgs = << parameters.triggered-packages >>)'
 
     jobs:
       build-and-check-package:
@@ -220,8 +221,8 @@ orbs:
           # - update_apt_packages
           - echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
           - restore_cache:
-              key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}            - install_deps
-              REMOTE_DEPS: <<parameters.remote-deps>>
+              key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}            - install_deps:
+              remote-deps: <<parameters.remote-deps>>
           - save_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
               paths:
@@ -232,10 +233,10 @@ orbs:
           - check_package
           - test_package
           - trigger_reverse_dependencies:
-              REMOTE_DEPS: <<parameters.remote-deps>>
-              PLUGINS_BRANCH: <<parameters.plugins-branch>>
-              TRIGGER_MESSAGE: <<parameters.trigger-message>>
-              TRIGGERED_PACKAGES: <<parameters.triggered-packages>>
+              remote-deps: <<parameters.remote-deps>>
+              plugins-branch: <<parameters.plugins-branch>>
+              trigger-message: <<parameters.trigger-message>>
+              triggered-packages: <<parameters.triggered-packages>>
 
       deploy-package:
         executor: default
