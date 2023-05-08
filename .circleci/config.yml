@@ -169,29 +169,29 @@ orbs:
                 be used to install specific branches of dependencies; used by both
                 flipDevTools::InstallDeps() and TriggerRevDepPipelines;
                 e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
-              default: REMOTE_DEPS
-              type: env_var_name
+              default: ""
+              type: string
           plugins-branch:
               description: |
                 String specifying a branch of the Displayr/Plugins
                 repo to trigger a build in (if the workflow is a success), the default "" does not
                 trigger a build in Plugins
-              default: PLUGINS_BRANCH
-              type: env_var_name
+              default: ""
+              type: string
           triggered-packages:
               description: |
                 A comma-separated string of reverse depenendency
                 packages which have already been triggered, i.e. should be excluded (not triggered)
                 by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
                 automatically by that function to ensure each package is triggered at most once.
-              default: TRIGGERED_PACKAGES
-              type: env_var_name
+              default: ""
+              type: string
           trigger-message:
               description: |
                 A summary message of what triggered the pipeline to run
                 set when triggering pipelines in TriggerRevDepPipelines()
-              default: TRIGGER_MESSAGE
-              type: env_var_name
+              default: ""
+              type: string
         steps:
           - when:
               condition: <<parameters.trigger-message>>
