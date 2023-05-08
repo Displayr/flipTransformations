@@ -98,6 +98,7 @@ orbs:
         description: "Build source and binary package"
         steps:
           - run:
+              name: "Build package"
               command: |
                 R CMD build --no-build-vignettes .
                 R CMD INSTALL --build .
@@ -111,8 +112,9 @@ orbs:
         description: "Check R package"
         steps:
           - run:
+              name: "Check R package"
               command: >-
-                R -q -e 'rcmdcheck::rcmdcheck(ifelse(dir.exists("built")
+                R -q -e 'rcmdcheck::rcmdcheck(ifelse(dir.exists("built"),
                 list.files("built", full.names = TRUE)[1], "."),
                 args = c("--no-manual", "--ignore-vignettes", "--no-tests"),
                 build_args = c("--no-build-vignettes", "--no-manual"),
