@@ -37,7 +37,7 @@ orbs:
     commands:
       install_apt_packages:
         description: "Download apt dependencies"
-        - steps:
+        steps:
           run:
             command: |
               sudo mv /etc/apt/sources.list.d /etc/apt/sources.list.d.save
@@ -73,7 +73,7 @@ orbs:
                 flipDevTools::InstallDeps() and TriggerRevDepPipelines;
                 e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
               type: string
-        - steps:
+        steps:
           run:
             command: |
             # Install all packages in the cache; https://askubuntu.com/a/1454102
@@ -94,38 +94,42 @@ orbs:
 
       build_package:
         description: "Build source and binary package"
-        - steps:
-          run:
+        steps:
+          - run:
             command: |
               R CMD build --no-build-vignettes .
               R CMD INSTALL --build .
               mkdir built && cp *.tar.gz built/
-        - persist_to_workspace:
-            root: .
-            paths:
-              - built/
+          - persist_to_workspace:
+              root: .
+              paths:
+                - built/
 
       check_package:
-        - run:
-            name: "Check package"
-            command: >-
-              R -q -e 'rcmdcheck::rcmdcheck(ifelse(dir.exists("built")
-              list.files("built", full.names = TRUE)[1], "."),
-              args = c("--no-manual", "--ignore-vignettes", "--no-tests"),
-              build_args = c("--no-build-vignettes", "--no-manual"),
-              error_on = "warning")'
+        description: "Check R package"
+        steps:
+          - run:
+              command: >-
+                R -q -e 'rcmdcheck::rcmdcheck(ifelse(dir.exists("built")
+                list.files("built", full.names = TRUE)[1], "."),
+                args = c("--no-manual", "--ignore-vignettes", "--no-tests"),
+                build_args = c("--no-build-vignettes", "--no-manual"),
+                error_on = "warning")'
 
       test_package:
-        - run:
-            name: "Run unit tests"
-            no_output_timeout: 80m
-            command: R -e 'q(status = flipDevTools::RunTestsOnCircleCI(), save = "no")'
-        - store_test_results:
-            path: testthat.xml
-        - store_artifacts:
-            path: testthat.xml
+        description: "Run package unit tests"
+        steps:
+          - run:
+              name: "Run unit tests"
+              no_output_timeout: 80m
+              command: R -e 'q(status = flipDevTools::RunTestsOnCircleCI(), save = "no")'
+          - store_test_results:
+              path: testthat.xml
+          - store_artifacts:
+              path: testthat.xml
 
       trigger_reverse_dependencies:
+        description: "Trigger pipelines of R package reverse dependencies"
         parameters:
           remote-deps:
               description: |
@@ -147,12 +151,12 @@ orbs:
                 by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
                 automatically by that function to ensure each package is triggered at most once.
               type: string
-        - run:
-            name: "Trigger reverse dependencies"
-            command: R -e 'flipDevTools::TriggerRevDepPipelines( \
-            plugins.branch = << parameters.plugins-branch >>, \
-            remote.deps.substitutions = << parameters.remote-deps >>,
-            exclude.pkgs = << parameters.triggered-packages >>)'
+        steps:
+          - run:
+              command: R -e 'flipDevTools::TriggerRevDepPipelines( \
+              plugins.branch = << parameters.plugins-branch >>, \
+              remote.deps.substitutions = << parameters.remote-deps >>,
+              exclude.pkgs = << parameters.triggered-packages >>)'
 
     jobs:
       build-and-check-package:
