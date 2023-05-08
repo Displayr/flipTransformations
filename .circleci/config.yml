@@ -92,7 +92,7 @@ orbs:
                 sudo tee -a $R_HOME/etc/Rprofile.site
                 R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
                 R -q -e "options(warn = 2); flipDevTools::InstallDeps( \
-                remote.refs = << parameters.remote-deps >>, dependencies = TRUE)'
+                remote.refs = \"<< parameters.remote-deps >>\", dependencies = TRUE)'
 
       build_package:
         description: "Build source and binary package"
@@ -157,9 +157,9 @@ orbs:
           - run:
               command: >-
                 R -e 'flipDevTools::TriggerRevDepPipelines(
-                plugins.branch = << parameters.plugins-branch >>, 
-                remote.deps.substitutions = << parameters.remote-deps >>,
-                exclude.pkgs = << parameters.triggered-packages >>)'
+                plugins.branch = \"<< parameters.plugins-branch >>\",
+                remote.deps.substitutions = \"<< parameters.remote-deps >>\",
+                exclude.pkgs = \"<< parameters.triggered-packages >>\")'
 
     jobs:
       build-and-check-package:
