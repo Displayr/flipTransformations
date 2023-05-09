@@ -25,7 +25,7 @@ parameters:
         default: ""
     triggered-packages:
         type: string
-        default: "flipChartTests,flipRegression,flipChartTests2,flipChartTests3,flipChartTests4"
+        default: ""
 
 orbs:
   r-packages-orb:
@@ -108,6 +108,7 @@ orbs:
               root: .
               paths:
                 - built/
+                - tmp/
 
       check_package:
         description: "Check R package"
@@ -177,32 +178,7 @@ orbs:
               e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
             default: ""
             type: string
-          plugins-branch:
-            description: |
-              String specifying a branch of the Displayr/Plugins
-              repo to trigger a build in (if the workflow is a success), the default "" does not
-              trigger a build in Plugins
-            default: ""
-            type: string
-          triggered-packages:
-            description: |
-              A comma-separated string of reverse depenendency
-              packages which have already been triggered, i.e. should be excluded (not triggered)
-              by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
-              automatically by that function to ensure each package is triggered at most once.
-            default: ""
-            type: string
-          trigger-message:
-            description: |
-              A summary message of what triggered the pipeline to run
-              set when triggering pipelines in TriggerRevDepPipelines()
-            default: ""
-            type: string
         steps:
-          - when:
-              condition: << parameters.trigger-message >>
-              steps:
-                - run: echo "<< parameters.trigger-message >>"
           # Clear cache if "<CLEAR_CACHE>" is present in commit message
           # are not picked up by the cache, therefore this workaround is needed.
           # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
@@ -238,10 +214,64 @@ orbs:
           - build_package
           - check_package
           - test_package
+
+      trigger-revdeps:
+        executor: default
+        parameters:
+          remote-deps:
+            description: |
+              A comma-separated string of GitHub refs, which can
+              be used to install specific branches of dependencies; used by both
+              flipDevTools::InstallDeps() and TriggerRevDepPipelines;
+              e.g. "Displayr/flipU@DS-4300,cran/survey@4.0"
+            default: ""
+            type: string
+          plugins-branch:
+            description: |
+              String specifying a branch of the Displayr/Plugins
+              repo to trigger a build in (if the workflow is a success), the default "" does not
+              trigger a build in Plugins
+            default: ""
+            type: string
+          triggered-packages:
+            description: |
+              A comma-separated string of reverse depenendency
+              packages which have already been triggered, i.e. should be excluded (not triggered)
+              by TriggerRevDepPipelines() in the Trigger reverse dependencies step; it is updated
+              automatically by that function to ensure each package is triggered at most once.
+            default: ""
+            type: string
+          trigger-message:
+            description: |
+              A summary message of what triggered the pipeline to run
+              set when triggering pipelines in TriggerRevDepPipelines()
+            default: ""
+            type: string
+
+        steps:
+          - when:
+              condition: << parameters.trigger-message >>
+              steps:
+                - run: echo "<< parameters.trigger-message >>"
+          - checkout
+          - attach_workspace:
+              at: .
+          - restore_cache:
+              key: apt-library-{{ checksum "./tmp/cache_vers" }}
+          - restore_cache:
+              key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
+          - run:
+              name: "Set environment variables"
+              command: |
+                sudo rm /var/cache/debconf/config.dat
+                sudo dpkg -i ../vendor/apt/archives/*.deb
+                echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
+                sudo tee -a `R RHOME`/etc/Rprofile.site
           - trigger_reverse_dependencies:
               remote-deps: << parameters.remote-deps >>
               plugins-branch: << parameters.plugins-branch >>
               triggered-packages: << parameters.triggered-packages >>
+
 
       deploy-package:
         executor: default
@@ -274,9 +304,6 @@ workflows:
           context:
             - r_packages
           remote-deps: << pipeline.parameters.remote-deps >>
-          plugins-branch: << pipeline.parameters.plugins-branch >>
-          trigger-message: << pipeline.parameters.trigger-message >>
-          triggered-packages: << pipeline.parameters.triggered-packages >>
       - r-packages-orb/deploy-package:
           requires:
             - BuildAndCheckPackage
@@ -286,3 +313,12 @@ workflows:
             branches:
               only:
                 - master
+      - r-packages-orb/trigger-revdeps:
+          requires:
+            - BuildAndCheckPackage
+          context:
+            - r_packages
+          remote-deps: << pipeline.parameters.remote-deps >>
+          plugins-branch: << pipeline.parameters.plugins-branch >>
+          trigger-message: << pipeline.parameters.trigger-message >>
+          triggered-packages: << pipeline.parameters.triggered-packages >>
