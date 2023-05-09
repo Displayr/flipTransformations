@@ -198,7 +198,7 @@ orbs:
           # are not picked up by the cache, therefore this workaround is needed.
           # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
           - checkout
-          - run: mkdir tmp && echo "v1" > ./tmp/cache_vers  # Increment this to invalidate cache
+          - run: mkdir tmp && echo "v0" > ./tmp/cache_vers  # Increment this to invalidate cache
           - run:
               name: Setup cache
               command: |
