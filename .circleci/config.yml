@@ -40,6 +40,7 @@ orbs:
             auth:
               username: mwmclean
               password: $DOCKERHUB_PAT
+        resource_class: small
       nightly:
         docker:
             - image: dipdevsharedacr.azurecr.io/r-server/nightly:latest
@@ -182,7 +183,7 @@ orbs:
 
     jobs:
       build-and-check-package:
-        executor: default
+        executor: rocker
         parameters:
           remote-deps:
             description: |
@@ -198,8 +199,6 @@ orbs:
           # https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
           - checkout
           - run: mkdir tmp && echo "v1" > ./tmp/cache_vers  # Increment this to invalidate cache
-          - restore_cache:
-              key: apt-library-{{ checksum "./tmp/cache_vers" }}
           - run:
               name: Setup cache
               command: |
@@ -209,17 +208,13 @@ orbs:
                 # git log --format=%B -n 1 $CIRCLE_SHA1 | \
                 # grep -Fe '<CLEAR_CACHE>' > ./tmp/cache_vers  
           # https://discuss.circleci.com/t/caching-apt-get-packages/9076
-          - install_apt_packages
+          # - install_apt_packages
           # - update_apt_packages
           - run: echo "$(R -q -e 'cat(format(getRversion()))')" > ./tmp/R_version
           - restore_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
           - install_deps:
               remote-deps: << parameters.remote-deps >>
-          - save_cache:
-              key: apt-library-{{ checksum "./tmp/cache_vers" }}
-              paths:
-                - ../vendor/apt
           - save_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
               paths:
@@ -230,7 +225,7 @@ orbs:
           - test_package
 
       trigger-revdeps:
-        executor: default
+        executor: rocker
         parameters:
           remote-deps:
             description: |
@@ -271,14 +266,10 @@ orbs:
           - attach_workspace:
               at: .
           - restore_cache:
-              key: apt-library-{{ checksum "./tmp/cache_vers" }}
-          - restore_cache:
               key: R-package-library-{{ checksum "./tmp/cache_vers" }}-{{ checksum "./tmp/R_version" }}
           - run:
               name: "Set environment variables"
               command: |
-                sudo rm /var/cache/debconf/config.dat
-                sudo dpkg -i ../vendor/apt/archives/*.deb
                 echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
                 sudo tee -a `R RHOME`/etc/Rprofile.site
           - trigger_reverse_dependencies:
@@ -288,7 +279,7 @@ orbs:
 
 
       deploy-package:
-        executor: default
+        executor: rocker
 
         steps:
           - checkout
@@ -299,8 +290,6 @@ orbs:
           - run:
               name: "Set environment variables"
               command: |
-                sudo rm /var/cache/debconf/config.dat
-                sudo dpkg -i ../vendor/apt/archives/*.deb
                 sudo bash -c 'cd /usr/local/bin; curl -L https://aka.ms/downloadazcopy-v10-linux | \
                 tar --strip-components=1 --exclude=*.txt -xzvf -; chmod +x azcopy'
                 echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
