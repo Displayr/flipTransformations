@@ -16,7 +16,7 @@ version: 2.1
 parameters:
     trigger-message:
         type: string
-        default: "Hello World!"
+        default: ""
     remote-deps:
         type: string
         default: ""
@@ -25,7 +25,7 @@ parameters:
         default: ""
     triggered-packages:
         type: string
-        default: ""
+        default: "flipChartTests,flipRegression,flipChartTests2,flipChartTests3,flipChartTests4"
 
 orbs:
   r-packages-orb:
@@ -91,8 +91,9 @@ orbs:
                 echo -e ".libPaths(c('$HOME/R/library', '/usr/lib/R/site-library', '/usr/lib/R/library'))" | \
                 sudo tee -a $R_HOME/etc/Rprofile.site
                 R -q -e 'remotes::install_github("Displayr/flipDevTools", upgrade = "never")'
-                R -q -e "options(warn = 2); flipDevTools::InstallDeps( \
-                remote.refs = \"<< parameters.remote-deps >>\", dependencies = TRUE)"
+                R -q -e "options(warn = 2); flipDevTools::InstallDeps(\
+                remote.refs = \"<< parameters.remote-deps >>\", dependencies = TRUE,\
+                upgrade = \"never\")"
 
       build_package:
         description: "Build source and binary package"
@@ -157,6 +158,7 @@ orbs:
             type: string
         steps:
           - run:
+              name: "Triggering pipelines for reverse dependencies"
               command: >-
                 R -e "flipDevTools::TriggerRevDepPipelines(
                 plugins.branch = \"<< parameters.plugins-branch >>\",
