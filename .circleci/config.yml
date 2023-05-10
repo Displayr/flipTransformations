@@ -28,7 +28,7 @@ parameters:
         default: ""
 
 orbs:
-  r-packages: displayr/r-packages@dev:905acce615cf28944a491d89d076bd11401c229b
+  r-packages: displayr/r-packages@dev:7e134a74d071b81b76cef6c63bc1b840371eafd0
 
 workflows:
   build-and-check-R-package:
