@@ -32,7 +32,7 @@ orbs:
 
 jobs:
   test-shell:
-    executor: r-packages/machine
+    executor: r-packages/rocker
     steps:
       - run:
           command: >
@@ -40,7 +40,7 @@ jobs:
             print(x)
           shell:  /usr/bin/env R -q -e "$1"
   test-shell-two:
-    executor: r-packages/machine
+    executor: r-packages/rocker
     steps:
       - run:
           command: >
