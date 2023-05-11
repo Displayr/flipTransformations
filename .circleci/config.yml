@@ -35,18 +35,18 @@ workflows:
     jobs:
       - test-shell:
           steps:
-	    - run:
+            - run:
                 command: >
-		  x = 1
-		  print(x)
-		shell:  /usr/bin/env R -q -e "$1"
+                  x = 1
+                  print(x)
+                shell:  /usr/bin/env R -q -e "$1"
       - test-shell-two:
           steps:
-	    - run:
+            - run:
                 command: >
-		  x = 1
-		  print(x)
-		shell:  /usr/bin/env Rscript "$1"
+                  x = 1
+                  print(x)
+                shell:  /usr/bin/env Rscript "$1"
       - r-packages/build-and-check-package:
           name: BuildAndCheckPackage
           context:
