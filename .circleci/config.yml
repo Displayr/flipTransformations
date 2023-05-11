@@ -30,23 +30,27 @@ parameters:
 orbs:
   r-packages: displayr/r-packages@dev:467983f62ab7ee86420a172bf5a048ecb7a15c39
 
+jobs:
+  test-shell:
+    steps:
+      - run:
+          command: >
+            x = 1
+            print(x)
+          shell:  /usr/bin/env R -q -e "$1"
+  test-shell-two:
+    steps:
+      - run:
+          command: >
+            x = 1
+            print(x)
+          shell:  /usr/bin/env Rscript "$1"
+
 workflows:
   build-and-check-R-package:
     jobs:
-      - test-shell:
-          steps:
-            - run:
-                command: >
-                  x = 1
-                  print(x)
-                shell:  /usr/bin/env R -q -e "$1"
-      - test-shell-two:
-          steps:
-            - run:
-                command: >
-                  x = 1
-                  print(x)
-                shell:  /usr/bin/env Rscript "$1"
+      - test-shell
+      - test-shell-two
       - r-packages/build-and-check-package:
           name: BuildAndCheckPackage
           context:
