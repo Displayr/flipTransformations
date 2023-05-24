@@ -45,13 +45,16 @@ ScaleVariableSet <- function(
             data <- removeSUMColumns(data)
         data.with.values <- as.matrix(data)
     }
-        ## may need to drop NET
-        ## if (NCOL(data.with.values) > 1)
-        ## data.with.values <- data.with.values[, !grepl("^NET$|^SUM$", colnames(data.with.values))]
 
 
     if (within.case)
         data.with.values <- t(data.with.values)
+
+    if (!within.case) {
+        variances = apply(data.with.values, 2, var, na.rm = TRUE)
+        if (any(is.na(variances) | variances == 0))
+            warning("One or more of the input variable(s) has no variation.")
+    }
 
     if (type == "unit")
         out <- apply(data.with.values, 2,
@@ -103,6 +106,8 @@ replaceFactorsWithValues <- function(x)
 #' @noRd
 removeSUMColumns <- function(df)
 {
+    if (NCOL(df) == 1) # No SUM column if single variable
+        return(df)
     qt <- attr(df, "questiontype")
     if (qt == "NumberMulti"){
         return(df[, !colnames(df) %in% "SUM"])
