@@ -251,50 +251,50 @@ test_that("DS-3901: Ensure ScaleVariableSet handles Dates and single variables",
     test.cases <- readRDS(file)
 
     # Date
-    std.res <- ScaleVariableSet(test.cases[[1]], type = "standardize", within.case = FALSE)
+    std.res <- ScaleVariableSet(test.cases[["date"]], type = "standardize", within.case = FALSE)
     expect_equal(mean(std.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(sd(std.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
-    center.res <- ScaleVariableSet(test.cases[[1]], type = "center", within.case = FALSE)
+    center.res <- ScaleVariableSet(test.cases[["date"]], type = "center", within.case = FALSE)
     expect_equal(mean(center.res, na.rm = TRUE), 0, tolerance = 1e-7)
 
-    unit.res <- ScaleVariableSet(test.cases[[1]], type = "unit", within.case = FALSE)
+    unit.res <- ScaleVariableSet(test.cases[["date"]], type = "unit", within.case = FALSE)
     expect_equal(min(unit.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(max(unit.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
     # Variable from a Number - Multi
-    std.res <- ScaleVariableSet(test.cases[[2]], type = "standardize", within.case = FALSE)
+    std.res <- ScaleVariableSet(test.cases[["v.from.number.multi"]], type = "standardize", within.case = FALSE)
     expect_equal(mean(std.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(sd(std.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
-    center.res <- ScaleVariableSet(test.cases[[2]], type = "center", within.case = FALSE)
+    center.res <- ScaleVariableSet(test.cases[["v.from.number.multi"]], type = "center", within.case = FALSE)
     expect_equal(mean(center.res, na.rm = TRUE), 0, tolerance = 1e-7)
 
-    unit.res <- ScaleVariableSet(test.cases[[2]], type = "unit", within.case = FALSE)
+    unit.res <- ScaleVariableSet(test.cases[["v.from.number.multi"]], type = "unit", within.case = FALSE)
     expect_equal(min(unit.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(max(unit.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
     # Variable from Pick One - Multi
-    std.res <- ScaleVariableSet(test.cases[[3]], type = "standardize", within.case = FALSE)
+    std.res <- ScaleVariableSet(test.cases[["v.from.pick.one.multi"]], type = "standardize", within.case = FALSE)
     expect_equal(mean(std.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(sd(std.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
-    center.res <- ScaleVariableSet(test.cases[[3]], type = "center", within.case = FALSE)
+    center.res <- ScaleVariableSet(test.cases[["v.from.pick.one.multi"]], type = "center", within.case = FALSE)
     expect_equal(mean(center.res, na.rm = TRUE), 0, tolerance = 1e-7)
 
-    unit.res <- ScaleVariableSet(test.cases[[3]], type = "unit", within.case = FALSE)
+    unit.res <- ScaleVariableSet(test.cases[["v.from.pick.one.multi"]], type = "unit", within.case = FALSE)
     expect_equal(min(unit.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(max(unit.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
     # Variable from Pick Any
-    std.res <- ScaleVariableSet(test.cases[[4]], type = "standardize", within.case = FALSE)
+    std.res <- ScaleVariableSet(test.cases[["v.from.pick.any"]], type = "standardize", within.case = FALSE)
     expect_equal(mean(std.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(sd(std.res, na.rm = TRUE), 1, tolerance = 1e-7)
 
-    center.res <- ScaleVariableSet(test.cases[[4]], type = "center", within.case = FALSE)
+    center.res <- ScaleVariableSet(test.cases[["v.from.pick.any"]], type = "center", within.case = FALSE)
     expect_equal(mean(center.res, na.rm = TRUE), 0, tolerance = 1e-7)
 
-    unit.res <- ScaleVariableSet(test.cases[[4]], type = "unit", within.case = FALSE)
+    unit.res <- ScaleVariableSet(test.cases[["v.from.pick.any"]], type = "unit", within.case = FALSE)
     expect_equal(min(unit.res, na.rm = TRUE), 0, tolerance = 1e-7)
     expect_equal(max(unit.res, na.rm = TRUE), 1, tolerance = 1e-7)
 })
