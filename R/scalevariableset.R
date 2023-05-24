@@ -106,7 +106,7 @@ replaceFactorsWithValues <- function(x)
 #' @noRd
 removeSUMColumns <- function(df)
 {
-    if (NCOL(df) == 1) # No SUM column if 
+    if (NCOL(df) == 1) # No SUM column if single variable
         return(df)
     qt <- attr(df, "questiontype")
     if (qt == "NumberMulti"){
