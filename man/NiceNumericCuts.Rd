@@ -34,7 +34,7 @@ NiceNumericCuts(
 )
 }
 \arguments{
-\item{input.data}{The \code{\link{data.frame}} or \code{\link{vector}} 
+\item{input.data}{The \code{\link{data.frame}} or \code{\link{vector}}
 containing the data to be categorized. Data should be numeric.}
 
 \item{method}{A string describing which method is to be used to categorize
@@ -48,7 +48,7 @@ implied by the \code{percents} and \code{custom.breaks} arguments
 respectively.}
 
 \item{right}{A boolean value specifying that when determining breaks
-in the data, the close side of the inerval should be on the right 
+in the data, the close side of the inerval should be on the right
 (i.e on the larger end of the interval).}
 
 \item{round.input.data}{A boolean value specifying whether the input
@@ -65,7 +65,7 @@ both end points of the interval. E.g. if \code{TRUE} then interval
 (0, 17] would be "Less than 18", otherwise it would be "0 to 17".}
 
 \item{label.style}{A character indicating the style of labels to use
-for the new factor levels. Options are \code{tidy.labels}, 
+for the new factor levels. Options are \code{tidy.labels},
 \code{inequality.notation}, \code{interval.notation}, and
 \code{percentiles}, with the latter option only being applicable
 if \code{method} is also \code{percentiles}.}
@@ -103,8 +103,8 @@ the increments when using \code{method} of \code{equal.width}. This
 value is optional, and overrides \code{num.categories} as the number
 of categories is determined using the start, end, and increment.}
 
-\item{custom.breaks}{A character containing a comma-seprated list of 
-numeric values to be used as custom break points when the 
+\item{custom.breaks}{A character containing a comma-seprated list of
+numeric values to be used as custom break points when the
 \code{method} is \code{custom}.}
 
 \item{custom.always.includes.endpoints}{A logical value indicating whether,

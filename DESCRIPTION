@@ -29,7 +29,7 @@ Remotes:
     Displayr/flipFormat,
     Displayr/flipTime,
     Displayr/flipU
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Depends:
     R (>= 3.5.0)

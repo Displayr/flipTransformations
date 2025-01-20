@@ -2,7 +2,7 @@
 % Please edit documentation in R/stackingutilities.R
 \name{StackTextAndCategorization}
 \alias{StackTextAndCategorization}
-\title{Stacks several text variables and an existing categorization 
+\title{Stacks several text variables and an existing categorization
 in a consisten manner for text analysis functions.}
 \usage{
 StackTextAndCategorization(
@@ -18,7 +18,7 @@ these start their life as variables in a Text - Multi variable set in Displayr
 or are several related Text variable sets.}
 
 \item{existing.categorization}{A data frame containing the corresponding
-categories. This could be a data frame of factor variables (a single-response 
+categories. This could be a data frame of factor variables (a single-response
 categorization), or a data frame of binary numeric variables (a multiple-response
 categorization). This can be NULL if no existing categorization is to be used
 in the analysis.}
@@ -31,6 +31,6 @@ This will be expanded to align with the stacked data.}
 This will be expanded to align with the stacked data.}
 }
 \description{
-Stacks several text variables and an existing categorization 
+Stacks several text variables and an existing categorization
 in a consisten manner for text analysis functions.
 }
