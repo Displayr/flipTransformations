@@ -6,7 +6,7 @@
 #' to be the appropriate size
 #'
 #' @param unstacked.data A named list of two data frames. Element "X" is the data frame containing
-#'  containing the outcome variable (usually a Numeric - Multi or Nominal/Ordinal - Multi 
+#'  containing the outcome variable (usually a Numeric - Multi or Nominal/Ordinal - Multi
 #'  variable set in Displayr), and element "Y" is the data frame containing the predictor
 #'  variables (a Binary - Grid or Numeric - Grid variable set in Displayr).
 #' @param formula A formula object for the regression.
@@ -201,9 +201,9 @@ checkListStructure <- function(data)
 {
     named.elements <- c("X", "Y") %in% names(data)
     if ((is.null(data) || !(is.list(data) && all(named.elements))))
-        stop("'unstacked.data' needs to be a list with two elements, ",
-             "'Y' containing a data.frame with the outcome variables and ",
-             "'X' containing a data.frame with the predictor variables.")
+        StopForUserError("'unstacked.data' needs to be a list with two elements, ",
+                         "'Y' containing a data.frame with the outcome variables and ",
+                         "'X' containing a data.frame with the predictor variables.")
 }
 
 validateDataForStacking <- function(data)
@@ -240,6 +240,7 @@ validateDataForStacking <- function(data)
 # The stacking requires names of the grid data.frame to be in the form predictor, outcome (comma separated)
 # If metadata available in the codeframe, the names are uniquely identified
 # If metadata is unavailable, no commas allowed in names to avoid ambiguity.
+#' @importFrom flipU StopForUserError
 validateNamesInGrid <- function(data)
 {
     outcome.names <- getMultiOutcomeNames(data[["Y"]])
@@ -255,10 +256,10 @@ validateNamesInGrid <- function(data)
     any.matches <- vapply(matches, any, logical(1))
     # No labels match at all, error since there is nothing to align for stacking
     if (all(!any.matches))
-        stop("It is not possible to stack these variables since none of the outcome variable labels ",
-             "match the variable labels in the predictor variables. The outcome variables ",
-             outcome.variable.set.name, " have labels: ", paste0(sQuote(outcome.names), collapse = ", "),
-             " which don't appear in the labels of the grid of predictor variables.")
+        StopForUserError("It is not possible to stack these variables since none of the outcome variable labels ",
+                         "match the variable labels in the predictor variables. The outcome variables ",
+                         outcome.variable.set.name, " have labels: ", paste0(sQuote(outcome.names), collapse = ", "),
+                         " which don't appear in the labels of the grid of predictor variables.")
     # Check if is a clear match (no clash of predictor names with outcome names) and no codeframe available,
     # then 'transpose' the grid labels, i.e. outcome, predictor labels changed to predictor, outcome
     dimensions.matching <- sum(any.matches)
@@ -273,36 +274,39 @@ validateNamesInGrid <- function(data)
                                     "in both dimensions of the grid predictor variables. Please rename the ",
                                     "labels in either the outcome variables or grid predictor variables to ",
                                     "stack the variables and proceed.")
-        stop("Ambiguous labels in the grid predictors need to be reconciled before stacking can occur. ",
-             ambiguous.message)
+        StopForUserError("Ambiguous labels in the grid predictors need to be reconciled before stacking can occur. ",
+                         ambiguous.message)
     }
     return(data[["X"]])
 }
 
+#' @importFrom flipU StopForUserError
 #' @importFrom methods is
 validMultiOutcome <- function(data)
 {
     if (!is(data, "data.frame"))
-        stop("Outcome variable to be stacked needs to be a data.frame. ",
-             "Please assign a data.frame to the \"Y\" element of the 'unstacked.data' argument.")
+        StopForUserError("Outcome variable to be stacked needs to be a data.frame. ",
+                         "Please assign a data.frame to the \"Y\" element of the 'unstacked.data' argument.")
 }
 
+#' @importFrom flipU StopForUserError
 checkNumberObservations <- function(data)
 {
     if (!diff(unlist(nrows <- lapply(data, NROW))) == 0)
     {
-        stop("Size of variables doesn't agree, the provided outcome variables have ", nrows[["Y"]],
-             " observations while the provided predictor variables have ", nrows[["X"]],
-             " observations. Please input variables that have the same size.")
+        StopForUserError("Size of variables doesn't agree, the provided outcome variables have ", nrows[["Y"]],
+                         " observations while the provided predictor variables have ", nrows[["X"]],
+                         " observations. Please input variables that have the same size.")
     }
 }
 
+#' @importFrom flipU StopForUserError
 #' @importFrom methods is
 validGridPredictor <- function(data)
 {
     if (!is(data, "data.frame"))
-        stop("Predictor variables to be stacked needs to be a data.frame. ",
-             "Please assign a data.frame to the \"X\" element of the 'unstacked.data' argument.")
+        StopForUserError("Predictor variables to be stacked needs to be a data.frame. ",
+                         "Please assign a data.frame to the \"X\" element of the 'unstacked.data' argument.")
 }
 
 validateOutcomeVariables <- function(data, outcome.names, predictor.names)
@@ -379,13 +383,14 @@ checkStackAlignment <- function(data, outcome.names, predictor.names)
     return(data[["Y"]])
 }
 
+#' @importFrom flipU StopForUserError
 stackData <- function(data)
 {
     outcome.names <- getMultiOutcomeNames(data[["Y"]])
     stacked.outcome <- stackOutcome(data[["Y"]], outcome.names)
     stacked.predictors <- stackPredictors(data[["X"]], outcome.names)
     if (!all(row.names(stacked.outcome) == row.names(stacked.predictors)))
-        stop("Stacked variables are not aligned properly. Contact support for further help.")
+        StopForUserError("Stacked variables are not aligned properly. Contact support for further help.")
     stacked.data <- cbind(stacked.outcome, stacked.predictors)
     return(stacked.data)
 }
@@ -530,14 +535,14 @@ throwCodeReductionWarning <- function(reduction.list)
             variable.type.or, " via the Table view options appropriately.")
 }
 
-#' Stacks several text variables and an existing categorization 
+#' Stacks several text variables and an existing categorization
 #' in a consisten manner for text analysis functions.
-#' 
+#'
 #' @param text A data frame containing one or more character vectors. Typically
 #' these start their life as variables in a Text - Multi variable set in Displayr
 #' or are several related Text variable sets.
 #' @param existing.categorization A data frame containing the corresponding
-#' categories. This could be a data frame of factor variables (a single-response 
+#' categories. This could be a data frame of factor variables (a single-response
 #' categorization), or a data frame of binary numeric variables (a multiple-response
 #' categorization). This can be NULL if no existing categorization is to be used
 #' in the analysis.
@@ -550,7 +555,7 @@ throwCodeReductionWarning <- function(reduction.list)
 #' @importFrom flipFormat TidyLabels ExtractCommonPrefix
 #' @export
 StackTextAndCategorization <- function(text, existing.categorization = NULL, subset = TRUE, weights = NULL) {
-    
+
 
     has.existing.categorization <- !is.null(existing.categorization)
     single.text.variable <- is.list(text) && length(text) == 1L
@@ -561,7 +566,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         if (!single.text.variable && !question.type %in% c("PickOneMulti", "PickAnyGrid"))
             stop("The existing categorization should be a Nominal/Ordinal - Multi or Binary - Grid variable set")
     }
-    if (single.text.variable) 
+    if (single.text.variable)
         return(list(text = text[[1]],
                         existing.categorization = existing.categorization,
                         subset = subset,
@@ -578,7 +583,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
     } else {
         text.label <- attr(text, "question")
     }
-    
+
     n.text.vars <- ncol(text)
 
     if (!has.existing.categorization) {
@@ -596,12 +601,12 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
         if (question.type == "PickAnyGrid") {
             text.names <- names(attr(text, "codeframe"))
             stacking <- ProcessAndStackDataForRegression(list(Y = text, X = existing.categorization),
-                                                         formula = NULL, 
-                                                         interaction = NULL, 
-                                                         subset = subset, 
+                                                         formula = NULL,
+                                                         interaction = NULL,
+                                                         subset = subset,
                                                          weights = weights)
-            colnames(stacking$data) <- vapply(stacking$data, 
-                                              FUN = function (x) attr(x, "label"), 
+            colnames(stacking$data) <- vapply(stacking$data,
+                                              FUN = function (x) attr(x, "label"),
                                               FUN.VALUE = character(1))
             text <- stacking$data[, 1]
             existing <- stacking$data[, 2:length(stacking$data)]
@@ -637,6 +642,7 @@ StackTextAndCategorization <- function(text, existing.categorization = NULL, sub
 # which mean that text labels may not ititially match. That is
 # labels on the code frames of grid questions commonly have
 # aditional common prefix and suffix text removed.
+#' @importFrom flipU StopForUserError
 #' @importFrom flipFormat TidyLabels
 prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.question) {
     categorical.codeframe.labels <- names(attr(categorical.question, "codeframe"))
@@ -656,9 +662,9 @@ prepareTextVariableLabelsForStackingWithGrids <- function(text, categorical.ques
     }
 
     if (!any(text.labels %in% categorical.codeframe.labels) && !any(text.labels %in% categorical.secondary.codeframe.labels)) {
-        stop(paste0("Unable to match the labels from the Text variables to the labels of ", 
-                    attr(categorical.question, "question"), 
-                    ". Please modify the labels so that the text variables may be matched."))
+        StopForUserError(paste0("Unable to match the labels from the Text variables to the labels of ",
+                         attr(categorical.question, "question"),
+                         ". Please modify the labels so that the text variables may be matched."))
     }
 
     # Update labels and return
@@ -708,12 +714,12 @@ longestCommonPrefix <- function(x) {
 
 #' Unstack a data frame which corresponds to a categorization of mulitple
 #' text variables in Displayr.
-#' 
+#'
 #' @param categorization The data frame to be unstacked. Its columns are factors
 #' for a single-response categorization (Pick One - Multi) or binary numeric
 #' vectors for a multiple-response categorization (Pick Any - Grid)
 #' @param inds A character vector whose entries are of the form "<casenumber>.<variablename>"
-#' such as would be produced by the \code{stack} function. Usually would be 
+#' such as would be produced by the \code{stack} function. Usually would be
 #' generated by when originally stacking the text data via \code{StackTextAndCategorization}
 #' @export
 UnstackCategorization <- function(categorization, inds) {
@@ -722,8 +728,8 @@ UnstackCategorization <- function(categorization, inds) {
     split.inds <- vapply(inds, FUN = function (x) strsplit(x, "\\.")[[1]][2], FUN.VALUE = character(1))
     var.names <- unique(split.inds)
     single.response <- is.factor(categorization)
-    unstacked <- lapply(var.names, 
-                       FUN = function (v, inds, single.response) if (single.response) categorization[inds == v] else categorization[inds == v, ], 
+    unstacked <- lapply(var.names,
+                       FUN = function (v, inds, single.response) if (single.response) categorization[inds == v] else categorization[inds == v, ],
                        inds = split.inds,
                        single.response = single.response)
     if (single.response) {
@@ -732,6 +738,6 @@ UnstackCategorization <- function(categorization, inds) {
     } else {
         unstacked <- do.call(cbind, unstacked)
         colnames(unstacked) <- paste0(rep(var.names, each = NCOL(categorization)), ": ", colnames(unstacked))
-    }                   
-    unstacked  
+    }
+    unstacked
 }

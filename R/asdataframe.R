@@ -12,6 +12,7 @@
 #' @param remove.first Whether to remove the first binary variable.
 #' @importFrom flipFormat ExtractCommonPrefix Labels Names
 #' @importFrom flipU RemoveAt
+#' @importFrom flipU StopForUserError
 #' @export
 AsDataFrame <- function(input.data,
                         use.names = FALSE,
@@ -44,7 +45,7 @@ AsDataFrame <- function(input.data,
                                  binary = categorical.as.binary)
         }
         else
-            stop("input.data must be a data.frame, list of data.frames/vectors or a matrix")
+            StopForUserError("input.data must be a data.frame, list of data.frames/vectors or a matrix")
 
     return(dat)
 }

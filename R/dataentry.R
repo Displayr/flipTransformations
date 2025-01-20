@@ -73,6 +73,7 @@ removeEmptyRowsAndColumns <- function(m, drop)
 #' @param want.row.names Whether to interpret the first col as row names in a data frame.
 #' @param us.format Whether to use the US convention when parsing dates in a data frame.
 #' @importFrom flipTime AsDateTime
+#' @importFrom flipU StopForUserError
 #' @export
 ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.names = NULL,
                              want.row.names = FALSE, us.format = NULL)
@@ -87,11 +88,11 @@ ParseAsDataFrame <- function(m, warn = TRUE, want.factors = FALSE, want.col.name
     }
 
     if (want.col.names && n.row == 1)
-        stop("There is no data to display as there is only one row in the entered data,
-             and the column names option has been selected.")
+        StopForUserError("There is no data to display as there is only one row in the entered data,
+                         and the column names option has been selected.")
     if (want.row.names && n.col == 1)
-        stop("There is no data to display as there is only one column in the entered data,
-             and the row names option has been selected.")
+        StopForUserError("There is no data to display as there is only one column in the entered data,
+                         and the row names option has been selected.")
 
     start.row <- if (want.col.names) 2 else 1
     start.col <- if (want.row.names) 2 else 1

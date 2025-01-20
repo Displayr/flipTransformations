@@ -76,8 +76,8 @@ AsNumeric.default <- function(x, binary = TRUE, name = NULL, remove.first = FALS
     }
     if (is.character(x))
         x <- Factor(x, levels = unique(x))
-    else if (!is.vector(x) & !is.factor(x))
-        stop("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
+    else if (!is.vector(x) && !is.factor(x))
+        StopForUserError("'AsNumeric' is only applicable to vectors, factors, and data.frames.")
     if (!is.factor(x))
         return(x)
     if (length(x) == 1 && length(levels(x)) == 1) # avoid errors with factor of length 1
@@ -217,4 +217,3 @@ isTextNumeric <- function(t, allow.missing = FALSE)
     else
         return(all(!is.na(v) | t == ""))
 }
-

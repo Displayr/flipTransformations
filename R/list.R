@@ -124,8 +124,8 @@ SplitVectorToList <- function(values, groups)
     ## array with non-NULL "dim" attribute
     ## tapply(values, groups, c)
     if (length(groups) != length(values))
-        stop(gettextf("%s and %s must have the same length.", shQuote("values"),
-                      shQuote("groups")), domain = NA)
+        StopForUserError(gettextf("%s and %s must have the same length.", shQuote("values"),
+                         shQuote("groups")), domain = NA)
     groups <- as.factor(groups)
     ## groups <- addNA(groups, ifany = FALSE)
     gnames <- levels(groups)
