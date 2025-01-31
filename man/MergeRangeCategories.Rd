@@ -23,7 +23,7 @@ in the new factors, excluding any levels that do not contain range
 information.}
 
 \item{method}{A character indicating how the merging is to be performed.
-The available options are \code{"even.proportions"} and 
+The available options are \code{"even.proportions"} and
 \code{even.ranges}.}
 
 \item{grouping.mark}{A character indicating how thousands are grouped within
@@ -34,7 +34,7 @@ for example in European locales.}
 in the input data. Usually a period.}
 
 \item{lower.bound}{A numeric value which indicates the lower bound of the
-numeric ranges when the number is not explicitly included in the 
+numeric ranges when the number is not explicitly included in the
 level labels. For example, when the lowest level is "Under 18", you
 may wish to specify that the lowest possible value in this level
 is 12, 15, 0, etc. Default value of "" means that an estimate will

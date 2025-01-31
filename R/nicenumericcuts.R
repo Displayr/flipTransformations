@@ -1,7 +1,7 @@
 #' Create factor variables from numeric variables using one of a variety of
 #' methods.
-#' 
-#' @param input.data The \code{\link{data.frame}} or \code{\link{vector}} 
+#'
+#' @param input.data The \code{\link{data.frame}} or \code{\link{vector}}
 #'      containing the data to be categorized. Data should be numeric.
 #' @param method A string describing which method is to be used to categorize
 #'      the data. Options are \code{tidy.intervals}, \code{percentiles},
@@ -12,7 +12,7 @@
 #'      implied by the \code{percents} and \code{custom.breaks} arguments
 #'      respectively.
 #' @param right A boolean value specifying that when determining breaks
-#'      in the data, the close side of the inerval should be on the right 
+#'      in the data, the close side of the inerval should be on the right
 #'      (i.e on the larger end of the interval).
 #' @param round.input.data A boolean value specifying whether the input
 #'      data should be rounded before categorization.
@@ -25,7 +25,7 @@
 #'      both end points of the interval. E.g. if \code{TRUE} then interval
 #'      (0, 17] would be "Less than 18", otherwise it would be "0 to 17".
 #' @param label.style A character indicating the style of labels to use
-#'      for the new factor levels. Options are \code{tidy.labels}, 
+#'      for the new factor levels. Options are \code{tidy.labels},
 #'      \code{inequality.notation}, \code{interval.notation}, and
 #'      \code{percentiles}, with the latter option only being applicable
 #'      if \code{method} is also \code{percentiles}.
@@ -53,13 +53,13 @@
 #'      the increments when using \code{method} of \code{equal.width}. This
 #'      value is optional, and overrides \code{num.categories} as the number
 #'      of categories is determined using the start, end, and increment.
-#' @param custom.breaks A character containing a comma-seprated list of 
-#'      numeric values to be used as custom break points when the 
+#' @param custom.breaks A character containing a comma-seprated list of
+#'      numeric values to be used as custom break points when the
 #'      \code{method} is \code{custom}.
 #' @param custom.always.includes.endpoints A logical value indicating whether,
 #'      when \code{method} is \code{custom}, the endpoints are always included.
 #'      If \code{FALSE}, the endpoints for the cuts are determined by the
-#'      \code{custom.breaks} only. 
+#'      \code{custom.breaks} only.
 #' @param percents A single numeric value, or a character containing a comma
 #'      -separated list of numeric values to be used when the \code{method}
 #'      of \code{percentiles} is used. Values should be between 0 and 100.
@@ -70,15 +70,16 @@
 #'      the function will instead try to extract the underlying numerice
 #'      values from Q/Displayr.
 #' @param grouping.mark A character to be used as the thousands-grouping
-#'      mark when inferring numeric information from factor labels. 
+#'      mark when inferring numeric information from factor labels.
 #' @param decimals.mark A character to be used as the decimals-grouping
-#'      mark when inferring numeric information from factor labels. 
+#'      mark when inferring numeric information from factor labels.
 #'
 #' @return A data frame containing the new factor variables as columns.
 #'
 #' @importFrom flipU ConvertCommaSeparatedStringToVector
 #' @importFrom plyr mapvalues
 #' @importFrom stats var quantile
+#' @importFrom flipU StopForUserError
 #' @export
 NiceNumericCuts <- function(input.data,
                            method = c("tidy.intervals", "percentiles", "equal.width", "custom"),
@@ -103,10 +104,10 @@ NiceNumericCuts <- function(input.data,
                            percents = "",
                            quantile.type = 7,
                            factors.use.labels = TRUE,
-                           grouping.mark = ",", 
+                           grouping.mark = ",",
                            decimals.mark = "."
-                           ) { 
-    
+                           ) {
+
     method <- match.arg(method)
 
     # Protect against empty strings supplied
@@ -116,20 +117,20 @@ NiceNumericCuts <- function(input.data,
     equal.intervals.end <- if(nzchar(equal.intervals.end)) as.numeric(equal.intervals.end) else NA
 
     if (method == "custom" && !nzchar(custom.breaks)) {
-        stop("No custom breakpoints have been entered for the custom intervals.")
+        StopForUserError("No custom breakpoints have been entered for the custom intervals.")
     }
 
     if (method == "percentile" && !nzchar(percents)) {
-        stop("No percentages have been entered for the percentiles.")
+        StopForUserError("No percentages have been entered for the percentiles.")
     }
 
 
     # Convert factors if user wants to use numbers present in labels
     get.data.as.numeric <- function(x,
                                     factors.use.labels = TRUE,
-                                    grouping.mark = ",", 
+                                    grouping.mark = ",",
                                     decimals.mark = "\\." ) {
-        
+
         # Coerce characters to factors for ease of mapping
         if (is.character(x)) {
             x <- factor(x)
@@ -142,17 +143,17 @@ NiceNumericCuts <- function(input.data,
                 # Scrape numeric information from labels, check
                 # the numbers are appropriate, and then map
                 # to numeric.
-                label.chunks <- lapply(levels(x), 
-                          FUN = extractRangeInformationFromLabel, 
-                          grouping.mark = grouping.mark, 
+                label.chunks <- lapply(levels(x),
+                          FUN = extractRangeInformationFromLabel,
+                          grouping.mark = grouping.mark,
                           decimals.mark = decimals.mark)
 
                 # Obtain numeric values from each label and count them
-                numbers.from.labels <- lapply(label.chunks, 
+                numbers.from.labels <- lapply(label.chunks,
                                              FUN = function (x) return(x$numbers))
 
-                number.of.numbers <- vapply(numbers.from.labels, 
-                                           FUN = length, 
+                number.of.numbers <- vapply(numbers.from.labels,
+                                           FUN = length,
                                            FUN.VALUE = numeric(1))
 
                 if (any(number.of.numbers == 0)) {
@@ -182,7 +183,7 @@ NiceNumericCuts <- function(input.data,
                 for (j in 1L:length(levels(x))) {
                     lev <- levels(x)[j]
                     if (number.of.numbers[j] == 1) {
-                        new.values[x == lev] <- numbers.from.labels[[j]][1]   
+                        new.values[x == lev] <- numbers.from.labels[[j]][1]
                     }
                 }
                 x.raw <- new.values
@@ -192,7 +193,7 @@ NiceNumericCuts <- function(input.data,
                 q.source.values <- attr(x, "sourcevalues")
                 if (!is.null(q.levels) && !is.null(q.source.values)) {
                     if (length(q.levels) < length(q.source.values)) {
-                        warning("Some categories in ", attr(x, "label"), 
+                        warning("Some categories in ", attr(x, "label"),
                             " have been combined and the average value for the combined ",
                             "categories has been used. Consider reverting any combined categories.")
                     }
@@ -202,7 +203,7 @@ NiceNumericCuts <- function(input.data,
         } else if (is.numeric(x)) {
             x.raw <- x
         } else {
-            stop("Cannot transform data of type ", class(x)[1])
+            StopForUserError("Cannot transform data of type ", class(x)[1])
         }
         return(x.raw)
     }
@@ -211,10 +212,10 @@ NiceNumericCuts <- function(input.data,
     original.data <- input.data
     classes <- lapply(input.data, FUN = class)
     numerics <- vapply(classes, FUN = function (x) return("numeric" %in% x), FUN.VALUE = logical(1))
-    input.data <- as.data.frame(lapply(input.data, 
+    input.data <- as.data.frame(lapply(input.data,
                                       FUN = get.data.as.numeric,
                                       factors.use.labels = factors.use.labels,
-                                      grouping.mark = grouping.mark, 
+                                      grouping.mark = grouping.mark,
                                       decimals.mark = decimals.mark))
 
     # Obtain the full set of raw values from the inputs
@@ -224,8 +225,8 @@ NiceNumericCuts <- function(input.data,
     # User may find tidier intervals if they round first
     if (round.input.data) {
         raw.data <- round(raw.data, decimals)
-        input.data <- as.data.frame(lapply(input.data, 
-                                          FUN = round, 
+        input.data <- as.data.frame(lapply(input.data,
+                                          FUN = round,
                                           digits = decimals))
     }
 
@@ -236,7 +237,7 @@ NiceNumericCuts <- function(input.data,
     uniques <- unique(raw.data)
     n.unique <- length(uniques)
 
-    
+
 
     # Handle each of the allowed methods for forming categories
 
@@ -244,8 +245,8 @@ NiceNumericCuts <- function(input.data,
         percents <- ConvertCommaSeparatedStringToVector(percents)
         percents <- as.numeric(percents)
         if (any(is.na(percents))) {
-            stop("There is a problem with the entries in the Percentages field. ",
-                 "Please enter a single number or a comma-seperated list of numbers.")
+            StopForUserError("There is a problem with the entries in the Percentages field. ",
+                             "Please enter a single number or a comma-seperated list of numbers.")
         }
         if (length(percents) == 1) {
                 percents <- seq(0, 100, by = percents)
@@ -258,11 +259,11 @@ NiceNumericCuts <- function(input.data,
         qq <- quantile(raw.data, probs = percents,
                       na.rm = TRUE, include.lowest = TRUE,
                       type = quantile.type)
-        
+
         if (anyDuplicated(qq) > 0) {
             warning("Some percentiles are empty in the range you have specified and will not be shown.");
         }
-        
+
         # Include -Infinity in cuts if the smallest data point is the upper bound
         # of a quantile. Ensures that that data point is the upper value of the first cut
         # rather than being the starting value of the first cut. Only becomes an
@@ -274,7 +275,7 @@ NiceNumericCuts <- function(input.data,
 
         # Remove duplicate cut points
         qq <- qq[!duplicated(qq, fromLast = TRUE)]
-        
+
 
         if (label.style == "percentiles") {
             lower.labels <- names(qq)[-length(qq)]
@@ -295,37 +296,37 @@ NiceNumericCuts <- function(input.data,
 
 
             percentile.labels <- paste0(lower.labels, " to ", upper.labels)
-            new.factors <- lapply(input.data, 
-                                 FUN = cut, 
-                                 breaks = qq, 
-                                 right = right, 
-                                 include.lowest = TRUE, 
+            new.factors <- lapply(input.data,
+                                 FUN = cut,
+                                 breaks = qq,
+                                 right = right,
+                                 include.lowest = TRUE,
                                  labels = percentile.labels)
         } else {
-            new.factors <- lapply(input.data, 
-                                 FUN = cut, 
-                                 breaks = qq, 
-                                 right = right, 
-                                 include.lowest = TRUE, 
-                                 labels = NULL, 
+            new.factors <- lapply(input.data,
+                                 FUN = cut,
+                                 breaks = qq,
+                                 right = right,
+                                 include.lowest = TRUE,
+                                 labels = NULL,
                                  dig.lab = 4)
             new.labels <- tidyIntervalLabels(levels(new.factors[[1]]),
-                                            raw.data = raw.data, 
-                                            decimals = label.decimals, 
+                                            raw.data = raw.data,
+                                            decimals = label.decimals,
                                             style = label.style,
                                             integer.data = all.integers,
-                                            open.ended = open.ends, 
-                                            prefix = number.prefix, 
+                                            open.ended = open.ends,
+                                            prefix = number.prefix,
                                             suffix = number.suffix,
                                             open.bottom.string = open.bottom.string,
                                             closed.bottom.string = closed.bottom.string,
                                             open.top.string = open.top.string,
                                             closed.top.string = closed.top.string,
-                                            grouping.mark = grouping.mark, 
+                                            grouping.mark = grouping.mark,
                                             decimals.mark = decimals.mark)
-            new.factors <- lapply(new.factors, 
-                                 FUN = mapvalues, 
-                                 from = levels(new.factors[[1]]), 
+            new.factors <- lapply(new.factors,
+                                 FUN = mapvalues,
+                                 from = levels(new.factors[[1]]),
                                  to = new.labels)
         }
         new.factors <- as.data.frame(new.factors)
@@ -348,7 +349,7 @@ NiceNumericCuts <- function(input.data,
             }
             if (max.val > equal.intervals.end) {
                 n.higher <- length(which(raw.data > equal.intervals.end))
-            } 
+            }
             start <- equal.intervals.start
             end <- equal.intervals.end
             if (nchar(start) == 0) {
@@ -373,16 +374,16 @@ NiceNumericCuts <- function(input.data,
         } else if (method == "custom") {
 
             if (is.character(custom.breaks)) {
-                cuts <- as.numeric(ConvertCommaSeparatedStringToVector(custom.breaks))    
+                cuts <- as.numeric(ConvertCommaSeparatedStringToVector(custom.breaks))
             } else {
                 cuts <- custom.breaks
             }
 
             if (any(is.na(cuts))) {
-                stop("Some of the break points could not be interpreted as numbers. ",
-                    "Please ensure Category Boundaries contains a comma-seperated list of numbers.")
+                StopForUserError("Some of the break points could not be interpreted as numbers. ",
+                                "Please ensure Category Boundaries contains a comma-seperated list of numbers.")
             }
-            
+
             if (custom.always.includes.endpoints) {
                 cuts <- c(min.val, cuts, max.val)
             }
@@ -400,14 +401,14 @@ NiceNumericCuts <- function(input.data,
 
             cuts <- pretty(raw.data, n = num.categories)
             if (length(cuts) != num.categories + 1) {
-                warning("Could not find a pretty solution with exactly ", num.categories, 
+                warning("Could not find a pretty solution with exactly ", num.categories,
                     " categories. Pretty solutions break the interval into multiples of ",
                     "2, 5, 10, and some combinations are not guaranteed. Consider changing ",
                     "the \'Target number of categories\' option.")
             }
 
         } else {
-            stop("Method ", method, " is not recognized. Use one of: tidy.intervals, equal.width, percentiles, or custom.")
+            StopForUserError("Method ", method, " is not recognized. Use one of: tidy.intervals, equal.width, percentiles, or custom.")
         }
         new.factors <- as.data.frame(lapply(input.data,
                                            FUN = cut,
@@ -523,7 +524,7 @@ getValuesInInterval <- function(label) {
     return(bounds)
 }
 
-# Tidy an individual interval label accorsing to the 
+# Tidy an individual interval label accorsing to the
 # desired style, taking into account whether the
 # label is first or last in the sequence, and which
 # values directly precede or follow this label.
@@ -596,7 +597,7 @@ tidyIntervalLabel <- function(label,
                          format = "f", big.mark = grouping.mark,
                          decimal.mark = decimals.mark)
     upper.num <- formatC(upper.num, digits = decimals,
-                         format = "f", big.mark = grouping.mark, 
+                         format = "f", big.mark = grouping.mark,
                          decimal.mark = decimals.mark)
 
 
@@ -609,17 +610,17 @@ tidyIntervalLabel <- function(label,
         if (upper.num == lower.num) {
             new.label <- upper.string
         } else if (first.label && open.ended) {
-            new.label <- ifelse(upper.is.open, 
-                        paste0(open.bottom.string, upper.string), 
+            new.label <- ifelse(upper.is.open,
+                        paste0(open.bottom.string, upper.string),
                         paste0(upper.string, closed.bottom.string))
         } else if (last.label && open.ended) {
-            new.label <- ifelse(lower.is.open, 
-                               paste0(open.top.string, lower.string), 
+            new.label <- ifelse(lower.is.open,
+                               paste0(open.top.string, lower.string),
                                paste0(lower.string, closed.top.string))
         } else {
             new.label <- paste0(lower.string, " to ", upper.string)
         }
-            
+
     } else if (style == "inequality.notation") {
         # Only add inequality signs when boundary is open
         # except for first and last label if user wants
@@ -645,7 +646,7 @@ tidyIntervalLabel <- function(label,
                            paste0(lower.symbol, lower.string, "," ,
                            upper.string, upper.symbol))
     } else {
-        stop("Label style ", style, "not recognized. Use one of: tidy.labels, inequality.notation, interval.notation")
+        StopForUserError("Label style ", style, "not recognized. Use one of: tidy.labels, inequality.notation, interval.notation")
     }
 
     return(new.label)

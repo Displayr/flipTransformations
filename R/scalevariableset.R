@@ -20,6 +20,7 @@
 #'                dataset = "dat", name = "x", label = "x", question = "x")
 #'
 #' ScaleVariableSet(x, type = "unit")
+#' @importFrom flipU StopForUserError
 #' @export
 ScaleVariableSet <- function(
                              data,
@@ -29,8 +30,8 @@ ScaleVariableSet <- function(
     type <- match.arg(type)
 
     if (within.case && NCOL(data) == 1L)
-        stop(shQuote("data"), "contains only one variable, scaling within case is ",
-             "not meaningful.")
+        StopForUserError(shQuote("data"), "contains only one variable, scaling within case is ",
+                         "not meaningful.")
 
     is.categorical <- is.factor(data) || (is.data.frame(data) && is.factor(data[[1]]))
     if (is.categorical)
@@ -81,6 +82,7 @@ ScaleVariableSet <- function(
 #' Replace factor levels with values attribute
 #' @param x data.frame
 #' @return numeric matrix with same dimensions as
+#' @importFrom flipU StopForUserError
 #' @noRd
 replaceFactorsWithValues <- function(x)
 {
@@ -88,9 +90,9 @@ replaceFactorsWithValues <- function(x)
     if (is.list(vv))  # multi-variable variable set
     {
         if (length(vv) != ncol(x))
-            stop("Invalid variable set provided; the length of the ",
-                 dQuote("variablevalues"), " attribute does not match ",
-                 " the number of variables in the variable set.")
+            StopForUserError("Invalid variable set provided; the length of the ",
+                             dQuote("variablevalues"), " attribute does not match ",
+                             " the number of variables in the variable set.")
         out <- mapply(function(fact, vals) vals[levels(fact)[fact]], x, vv,
                       SIMPLIFY = TRUE)
         return(out)
@@ -139,20 +141,21 @@ removeSUMColumns <- function(df)
 #'     mapped to the corresponding underlying values in the values
 #'     attribute and averaged.
 #'
+#' @importFrom flipU StopForUserError
 #' @keywords internal
 numbersFromCategoricalVariableSets <- function(x)
 {
     vv <- attr(x, "variablevalues")
     duplicate.levels <- vapply(vv, FUN = function(y) anyDuplicated(names(y)), FUN.VALUE = numeric(1))
     if (!all(duplicate.levels == 0))
-        stop("The variable(s) that you have selected have duplicate category labels. ",
-             "You should edit the category labels to remove duplicates before using this feature.")
+        StopForUserError("The variable(s) that you have selected have duplicate category labels. ",
+                         "You should edit the category labels to remove duplicates before using this feature.")
     if (is.list(vv))  # multi-variable variable set
     {
         if (length(vv) != ncol(x))  # probably not needed
-            stop("Invalid variable set provided; the length of the ",
-                 dQuote("variablevalues"), " attribute does not match ",
-                 " the number of variables in the variable set.")
+            StopForUserError("Invalid variable set provided; the length of the ",
+                             dQuote("variablevalues"), " attribute does not match ",
+                             " the number of variables in the variable set.")
 
         ## out <- mapply(function(fact, vals) vals[levels(fact)[fact]], x, vv,
         ##               SIMPLIFY = TRUE)

@@ -73,6 +73,7 @@ RemoveMissingLevelsFromFactors <- function(data)
 #' whereas \code{"Mean centered"} subtracts a constant such that each
 #' variable has a mean of 0.
 #' @importFrom stats sd
+#' @importFrom flipU StopForUserError
 #' @export
 StandardizeData <- function(data, method, no.variation = "warn", no.variation.value = 0, mean.zero = "warn")
 {
@@ -87,9 +88,10 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
         {
             vars <- paste("There is no variation in the values of", collapseNames(colnames(data)[sd.0]))
             if (no.variation == "stop")
-                stop(vars)
-            else
-                warning(paste0(vars, ". Values that could not be transformed have been set to ", no.variation.value))
+            {
+                StopForUserError(vars)
+            }
+            warning(paste0(vars, ". Values that could not be transformed have been set to ", no.variation.value))
         }
     }
     else if (method == "Mean of 1")
@@ -99,9 +101,10 @@ StandardizeData <- function(data, method, no.variation = "warn", no.variation.va
         {
             vars <- paste("The values for", collapseNames(colnames(data)[mean.0]), "have a mean of 0.")
             if (mean.zero == "stop")
-                stop(vars)
-            else
-                warning(paste(vars, "They have not been standardized."))
+            {
+                StopForUserError(vars)
+            }
+            warning(paste(vars, "They have not been standardized."))
         }
     }
     result <- switch(method,
@@ -127,4 +130,3 @@ collapseNames <- function(names, max.names = 10)
     else
         paste0(names, collapse = ", ")
 }
-

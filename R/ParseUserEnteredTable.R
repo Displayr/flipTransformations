@@ -33,6 +33,7 @@
 #' matrix will have row names, but no column names.
 #'     to extract both row and column names from the resulting matrix
 #' @importFrom utils tail
+#' @importFrom flipU StopForUserError
 #' @export
 ParseUserEnteredTable <- function(raw.matrix,
                                   warn = TRUE,
@@ -43,7 +44,7 @@ ParseUserEnteredTable <- function(raw.matrix,
                                   us.format = NULL)
 {
     if (all(raw.matrix == ""))
-        stop("no data has been entered")
+        StopForUserError("no data has been entered")
 
     keep.col.names <- FALSE
     keep.row.names <- FALSE

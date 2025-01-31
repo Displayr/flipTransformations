@@ -14,7 +14,7 @@ ProcessAndStackDataForRegression(
 }
 \arguments{
 \item{unstacked.data}{A named list of two data frames. Element "X" is the data frame containing
-containing the outcome variable (usually a Numeric - Multi or Nominal/Ordinal - Multi 
+containing the outcome variable (usually a Numeric - Multi or Nominal/Ordinal - Multi
 variable set in Displayr), and element "Y" is the data frame containing the predictor
 variables (a Binary - Grid or Numeric - Grid variable set in Displayr).}
 

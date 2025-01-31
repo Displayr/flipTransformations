@@ -212,16 +212,16 @@ FactorToIndicators <- function(variable, name = NULL)
 {
     if (is.null(name))
         name <- Names(variable)
-    if (nlevels(variable) == 1) { 
+    if (nlevels(variable) == 1) {
         # When only a single level, model.matrix will fail.
         # Instead, create a single-column matrix where all
         # non-na values are set to 1.
-        missings <- is.na(variable)  
+        missings <- is.na(variable)
         result <- matrix(as.numeric(!missings), ncol = 1)
         result[missings] <- NA
 
     } else {
-        result <- stats::model.matrix( ~ variable - 1)    
+        result <- stats::model.matrix( ~ variable - 1)
     }
     levs <- levels(variable)
     colnames(result) <- paste0(name, ".", 1:nlevels(variable))
@@ -245,6 +245,7 @@ FactorToIndicators <- function(variable, name = NULL)
 #' @param warning If TRUE, raise a warning showing the new levels.
 #' @param name An alternate name to show instead of the deparsed variable name.
 #' @importFrom flipFormat RemoveParentName
+#' @importFrom flipU StopForUserError
 #' @export
 DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE,
                               name = RemoveParentName(deparse(substitute(variable)))) {
@@ -254,13 +255,13 @@ DichotomizeFactor <- function(variable, cutoff = 0.5, warning = FALSE,
     if (!is.factor(variable))
         variable <- factor(variable)
     if (nlevels(variable) == 1)
-        stop(paste(deparse(substitute(variable)), "cannot be dichotimized as it only contains one level."))
+        StopForUserError(paste(deparse(substitute(variable)), "cannot be dichotimized as it only contains one level."))
     else if (nlevels(variable) == 2)
         return(variable)
     cumulative.probs <- cumsum(prop.table(table(variable)))
     cut.point <- match(TRUE, cumulative.probs > cutoff)
     if (cut.point == 1)
-        stop(paste(name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
+        StopForUserError(paste(name, "cannot be dichotimized (e.g., perhaps only has 1 value)."))
     new.factor <- factor(suppressWarnings(Unclass(variable, use.numeric.levels = FALSE)) >= cut.point)
     levels(new.factor) <- paste(c("<=", ">="), levels(variable)[c(cut.point - 1, cut.point )])
     if (warning)
